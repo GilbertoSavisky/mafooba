@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "507821248229",
+    "firebase_url": "https://mafooba-a7ea0.firebaseio.com",
+    "project_id": "mafooba-a7ea0",
+    "storage_bucket": "mafooba-a7ea0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:507821248229:android:ed7adab363325b108a0e0c",
+        "android_client_info": {
+          "package_name": "br.com.mafooba.mafooba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "507821248229-9t6v0o4fq42trv1smt3ofn8nkfsap9pb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.mafooba.mafooba",
+            "certificate_hash": "43c298fa78d3b6bd36980752dfd4386d54bdaea8"
+          }
+        },
+        {
+          "client_id": "507821248229-orsb8b1c83u0qt0qq2hlbnbsr6s2lfi9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCh-Uk_u_FtQRWI-uhdYtzE0j_Xz7MuVOU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "507821248229-orsb8b1c83u0qt0qq2hlbnbsr6s2lfi9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
