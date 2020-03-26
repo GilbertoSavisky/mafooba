@@ -2,8 +2,8 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:mafooba/src/equipe/equipe_bloc.dart';
 import 'package:mafooba/src/equipe/equipe_repository.dart';
-import 'package:mafooba/src/person/atleta_bloc.dart';
-import 'package:mafooba/src/person/atleta_repository.dart';
+import 'package:mafooba/src/atleta/atleta_bloc.dart';
+import 'package:mafooba/src/atleta/atleta_repository.dart';
 import 'app_bloc.dart';
 import 'app_widget.dart';
 

@@ -1,8 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:mafooba/src/equipe/equipe_page.dart';
+import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/models/equipe_model.dart';
+import 'package:mafooba/src/atleta/atleta_page.dart';
 import 'home_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -24,24 +27,9 @@ class _HomePageState extends State<HomePage> {
       ),
 
       floatingActionButton: buildSpeedDial(
-
-//        onPressed: () {
-//          var equipe = Equipe()
-//            ..active = true
-//            ..horario = DateTime.now()
-//            ..nomeEquipe = ""
-//            ..estilo = ""
-//            ..local = ""
-//            ..foneCampo = ""
-//            ..totalJogadores = 0;
-//
-//          Navigator.push(
-//            context,
-//            MaterialPageRoute(builder: (context) => EquipePage(equipe)),
-//          );
-//        },
       ),
       body: Container(
+        padding: EdgeInsets.all(15),
         child: StreamBuilder<List<Equipe>>(
           stream: _bloc.equipe,
           builder: (context, snapshot) {
@@ -53,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                   return Dismissible(
                     key: Key(equipe.documentId()),
                     onDismissed: (direction) {
-                      _bloc.delete(equipe.documentId());
+                      _bloc.deleteEquipe(equipe.documentId());
                     },
                     child: ListTile(
                       title: Text(equipe.nomeEquipe),
@@ -134,20 +122,29 @@ class _HomePageState extends State<HomePage> {
               MaterialPageRoute(builder: (context) => EquipePage(equipe)),
             );
           },
-          label: 'Atletas',
+          label: 'Equipes',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.deepOrangeAccent,
         ),
         SpeedDialChild(
-          child: Icon(Icons.brush, color: Colors.white),
+          child: Icon(Icons.person_add, color: Colors.white),
           backgroundColor: Colors.green,
-          onTap: () => print('SECOND CHILD'),
-          label: 'Chat',
+          onTap: () {
+            var atleta = Atleta()
+              ..nome = ""
+              ..isGoleiro = false;
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AtletaPage(atleta)),
+            );
+          },
+          label: 'Atletas',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.green,
         ),
         SpeedDialChild(
-          child: Icon(Icons.keyboard_voice, color: Colors.white),
+          child: Icon(Icons.chat, color: Colors.white),
           backgroundColor: Colors.blue,
           onTap: () => print('THIRD CHILD'),
           labelWidget: Container(

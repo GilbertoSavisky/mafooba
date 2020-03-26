@@ -4,7 +4,7 @@ import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AtletaRepository extends Disposable {
-  CollectionReference _collection = Firestore.instance.collection('people');
+  CollectionReference _collection = Firestore.instance.collection('atleta');
 
   void add(Atleta atleta) => _collection.add(atleta.toMap());
 
@@ -13,7 +13,7 @@ class AtletaRepository extends Disposable {
 
   void delete(String documentId) => _collection.document(documentId).delete();
 
-  Observable<List<Atleta>> get people =>
+  Observable<List<Atleta>> get atleta =>
       Observable(_collection.snapshots().map((query) => query.documents
           .map<Atleta>((document) => Atleta.fromMap(document))
           .toList()));

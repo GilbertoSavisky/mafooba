@@ -11,7 +11,9 @@ class EquipeBloc extends BlocBase {
   String _local;
   String _estilo;
   String _info;
+  String _imagem;
   int _totalJogadores;
+  double _vlrCancha;
   Atleta _capitao;
 //  List<Person> _jogadores;
   String _foneCampo;
@@ -25,6 +27,8 @@ class EquipeBloc extends BlocBase {
     _localController.listen((value) => _local = value);
     _estiloController.listen((value) => _estilo = value);
     _infoController.listen((value) => _info = value);
+    _vlrCanchaController.listen((value) => _vlrCancha = value);
+    _imagemController.listen((value) => _imagem = value);
     _foneCampoController.listen((value) => _foneCampo = value);
     _capitaoController.listen((value) => _capitao = value);
 //    _jogadoresController.listen((value) => _jogadores = value as List<Person>);
@@ -43,6 +47,8 @@ class EquipeBloc extends BlocBase {
     setCapitao(equipe.capitao);
     setFoneCampo(equipe.foneCampo);
     setInfo(equipe.info);
+    setVlrCancha(equipe.vlrCancha);
+    setImagem(equipe.imagem);
     setTotalJogadores(equipe.totalJogadores);
     setActive(equipe.active);
     setHorario(equipe.horario);
@@ -50,42 +56,37 @@ class EquipeBloc extends BlocBase {
 
   var _horarioController = BehaviorSubject<DateTime>();
   Stream<DateTime> get outHorario => _horarioController.stream;
-
   var _nomeEquipeController = BehaviorSubject<String>();
   Stream<String> get outNomeEquipe => _nomeEquipeController.stream;
-
   var _localController = BehaviorSubject<String>();
   Stream<String> get outLocal => _localController.stream;
-
   var _estiloController = BehaviorSubject<String>();
   Stream<String> get outEstilo => _estiloController.stream;
-
   var _infoController = BehaviorSubject<String>();
   Stream<String> get outInfo => _infoController.stream;
-
+  var _imagemController = BehaviorSubject<String>();
+  Stream<String> get outImagem => _imagemController.stream;
   var _jogadoresController = BehaviorSubject<Atleta>();
   Stream<Atleta> get outJogadores => _jogadoresController.stream;
-
   var _capitaoController = BehaviorSubject<Atleta>();
   Stream<Atleta> get outCapitao => _capitaoController.stream;
-
   var _foneCampoController = BehaviorSubject<String>();
   Stream<String> get outFoneCampo => _foneCampoController.stream;
-
   var _totalJogadoresController = BehaviorSubject<int>();
   Stream<int> get outTotalJogadores => _totalJogadoresController.stream;
-
+  var _vlrCanchaController = BehaviorSubject<double>();
+  Stream<double> get outVlrCancha => _vlrCanchaController.stream;
   var _activeController = BehaviorSubject<bool>();
   Stream<bool> get outActive => _activeController.stream;
 
   void setHorario(DateTime value) => _horarioController.sink.add(value);
-
   void setActive(bool value) => _activeController.sink.add(value);
-
   void setNomeEquipe(String value) => _nomeEquipeController.sink.add(value);
   void setLocal(String value) => _localController.sink.add(value);
   void setEstilo(String value) => _estiloController.sink.add(value);
   void setInfo(String value) => _infoController.sink.add(value);
+  void setVlrCancha(double value) => _vlrCanchaController.sink.add(value);
+  void setImagem(String value) => _imagemController.sink.add(value);
   void setTotalJogadores(int value) => _totalJogadoresController.sink.add(value);
   void setCapitao(Atleta value) => _capitaoController.sink.add(value);
 //  void setJogadores(List<Person> value) => _jogadoresController.sink.add(List as Person);
@@ -93,11 +94,17 @@ class EquipeBloc extends BlocBase {
 
   bool insertOrUpdate() {
     var equipe = Equipe()
-      ..nomeEquipe = _nomeEquipe
-      ..horario = _horario
-      ..estilo = _estilo
-      ..local = _local
-      ..active = _active;
+    ..nomeEquipe = _nomeEquipe
+    ..local = _local
+    ..estilo = _estilo
+    ..info = _info
+    ..imagem = _imagem
+    ..totalJogadores = _totalJogadores
+    ..vlrCancha = _vlrCancha
+    ..capitao = _capitao
+    ..foneCampo = _foneCampo
+    ..horario = _horario
+    ..active = _active;
 
     if (_documentId?.isEmpty ?? true) {
       _repository.add(equipe);
@@ -116,6 +123,8 @@ class EquipeBloc extends BlocBase {
     _estiloController.close();
     _localController.close();
     _infoController.close();
+    _vlrCanchaController.close();
+    _imagemController.close();
     _totalJogadoresController.close();
     _capitaoController.close();
     _jogadoresController.close();

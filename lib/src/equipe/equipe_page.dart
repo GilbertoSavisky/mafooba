@@ -45,7 +45,7 @@ class _EquipePageState extends State<EquipePage> {
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(15.0),
           child: ListView(
             children: <Widget>[
               Container(
@@ -77,10 +77,10 @@ class _EquipePageState extends State<EquipePage> {
                   if (!snapshot.hasData) return Container();
 
                   return InkWell(
-                    onTap: () => _selectBirthDate(context, snapshot.data),
+                    onTap: () => _selectDiaJogo(context, snapshot.data),
                     child: InputDecorator(
                       decoration:
-                          InputDecoration(labelText: "Data de Nascimento"),
+                          InputDecoration(labelText: "Dia do Jogo"),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         mainAxisSize: MainAxisSize.min,
@@ -129,7 +129,7 @@ class _EquipePageState extends State<EquipePage> {
     );
   }
 
-  Future _selectBirthDate(BuildContext context, DateTime initialDate) async {
+  Future _selectDiaJogo(BuildContext context, DateTime initialDate) async {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: initialDate,

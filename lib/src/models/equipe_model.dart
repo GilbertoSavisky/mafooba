@@ -9,7 +9,9 @@ class Equipe extends BaseModel {
   String local;
   String estilo;
   String info;
+  String imagem;
   int totalJogadores;
+  double vlrCancha;
   Atleta capitao;
   List<Atleta> jogadores;
   String foneCampo;
@@ -27,6 +29,8 @@ class Equipe extends BaseModel {
     this.local = document.data["local"];
     this.foneCampo = document.data["foneCampo"];
     this.info = document.data["info"];
+    this.vlrCancha = document.data["vlrCancha"];
+    this.imagem = document.data["imagem"];
     this.jogadores = document.data["jogadores"];
     this.totalJogadores = document.data["totalJogadores"];
     this.active = document.data["active"] ?? false;
@@ -43,6 +47,8 @@ class Equipe extends BaseModel {
     map['local'] = this.local;
     map['jogadores'] = this.jogadores;
     map['info'] = this.info;
+    map['vlrCancha'] = this.vlrCancha;
+    map['imagem'] = this.imagem;
     map['totalJogadores'] = this.totalJogadores;
     map['foneCampo'] = this.foneCampo;
     map['capitao'] = this.capitao;
