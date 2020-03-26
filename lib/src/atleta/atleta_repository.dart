@@ -8,8 +8,8 @@ class AtletaRepository extends Disposable {
 
   void add(Atleta atleta) => _collection.add(atleta.toMap());
 
-  void update(String documentId, Atleta atleta) =>
-      _collection.document(documentId).updateData(atleta.toMap());
+  void update(String documentId, Atleta equipe) =>
+      _collection.document(documentId).updateData(equipe.toMap());
 
   void delete(String documentId) => _collection.document(documentId).delete();
 

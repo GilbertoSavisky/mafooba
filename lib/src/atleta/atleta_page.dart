@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:mafooba/src/atleta/atleta_bloc.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
-import 'package:mafooba/src/person/atleta_bloc.dart';
 
 class AtletaPage extends StatefulWidget {
   AtletaPage(this.atleta);
@@ -14,12 +14,9 @@ class AtletaPage extends StatefulWidget {
 }
 
 class _AtletaPageState extends State<AtletaPage> {
-  final _dateFormat = DateFormat("dd/MM/yyyy");
   TextEditingController _nomeController;
   TextEditingController _emailController;
-  TextEditingController _posicaoController;
   TextEditingController _habilidadeController;
-  TextEditingController _foneController;
   final _bloc = AtletaBloc();
 
   @override
@@ -27,9 +24,7 @@ class _AtletaPageState extends State<AtletaPage> {
     _bloc.setAtleta(widget.atleta);
     _nomeController = TextEditingController(text: widget.atleta.nome);
     _emailController = TextEditingController(text: widget.atleta.email);
-    _posicaoController = TextEditingController(text: widget.atleta.posicao);
     _habilidadeController = TextEditingController(text: widget.atleta.habilidade);
-    _foneController = TextEditingController(text: widget.atleta.fone);
     super.initState();
   }
 
@@ -37,7 +32,6 @@ class _AtletaPageState extends State<AtletaPage> {
   void dispose() {
     _nomeController.dispose();
     _emailController.dispose();
-    _posicaoController.dispose();
     _habilidadeController.dispose();
     super.dispose();
   }
@@ -46,11 +40,11 @@ class _AtletaPageState extends State<AtletaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Atleta"),
+        title: Text("Atletas"),
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(15.0),
           child: ListView(
             children: <Widget>[
               Container(
@@ -60,47 +54,29 @@ class _AtletaPageState extends State<AtletaPage> {
                   onChanged: _bloc.setNome,
                 ),
               ),
-              Container(height: 20),
-              Container(
+              Container(height: 20),Container(
                 child: TextField(
-                  decoration: InputDecoration(labelText: "email"),
+                  decoration: InputDecoration(labelText: "Email"),
                   controller: _emailController,
                   onChanged: _bloc.setEmail,
                 ),
               ),
-              Container(height: 20),
-              Container(
+              Container(height: 20),Container(
                 child: TextField(
-                  decoration: InputDecoration(labelText: "Fone"),
-                  controller: _foneController,
-                  onChanged: _bloc.setFone,
-                ),
-              ),
-              Container(height: 20),
-              Container(
-                child: TextField(
-                  decoration: InputDecoration(labelText: "Habilidade"),
+                  decoration: InputDecoration(labelText: "Habilidade do craque"),
                   controller: _habilidadeController,
                   onChanged: _bloc.setHabilidade,
                 ),
               ),
               Container(height: 20),
-              Container(
-                child: TextField(
-                  decoration: InputDecoration(labelText: "Posição"),
-                  controller: _posicaoController,
-                  onChanged: _bloc.setPosicao,
-                ),
-              ),
-              Container(height: 20),
               StreamBuilder(
                 stream: _bloc.outIsGoleiro,
-                initialData: false,
+                initialData: true,
                 builder: (context, snapshot) {
                   return Column(
                     children: <Widget>[
                       Text(
-                        "Goleiro",
+                        "Ativo",
                         textAlign: TextAlign.start,
                         style: TextStyle(),
                       ),
@@ -115,7 +91,7 @@ class _AtletaPageState extends State<AtletaPage> {
                 },
               ),
               FloatingActionButton.extended(
-                  label: Text("Salvar"),
+                  label: Text("Salvar"),elevation: 5,
                   onPressed: () {
                     if (_bloc.insertOrUpdate()) {
                       Navigator.pop(context);

@@ -1,7 +1,6 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:mafooba/src/atleta/atleta_repository.dart';
 import 'package:mafooba/src/equipe/equipe_repository.dart';
-import 'package:mafooba/src/atleta/atleta_repository.dart';
 
 import '../app_module.dart';
 

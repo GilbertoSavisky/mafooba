@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +19,14 @@ class _EquipePageState extends State<EquipePage> {
   TextEditingController _nomeEquipeController;
   TextEditingController _estiloController;
   TextEditingController _localController;
+  TextEditingController _horarioController;
+  TextEditingController _infoController;
+  TextEditingController _vlrCanchaController;
+  TextEditingController _imagemController;
+  TextEditingController _foneCampoController;
+  TextEditingController _capitaoController;
+  TextEditingController _totalJogadoresController;
+
   final _bloc = EquipeBloc();
 
   @override
@@ -25,7 +34,13 @@ class _EquipePageState extends State<EquipePage> {
     _bloc.setEquipe(widget.equipe);
     _nomeEquipeController = TextEditingController(text: widget.equipe.nomeEquipe);
     _localController = TextEditingController(text: widget.equipe.local);
-    _nomeEquipeController = TextEditingController(text: widget.equipe.estilo);
+    _estiloController = TextEditingController(text: widget.equipe.estilo);
+    _infoController = TextEditingController(text: widget.equipe.info);
+//    _vlrCanchaController = TextEditingController(text: widget.equipe.vlrCancha);
+    _imagemController = TextEditingController(text: widget.equipe.imagem);
+    _foneCampoController = TextEditingController(text: widget.equipe.foneCampo);
+//    _capitaoController = TextEditingController(text: widget.equipe.capitao);
+//    _totalJogadoresController = TextEditingController(text: widget.equipe.totalJogadores);
     super.initState();
   }
 
@@ -34,6 +49,13 @@ class _EquipePageState extends State<EquipePage> {
     _nomeEquipeController.dispose();
     _localController.dispose();
     _estiloController.dispose();
+    _horarioController.dispose();
+    _infoController.dispose();
+    _vlrCanchaController.dispose();
+    _imagemController.dispose();
+    _foneCampoController.dispose();
+    _capitaoController.dispose();
+    _totalJogadoresController.dispose();
     super.dispose();
   }
 
@@ -41,13 +63,19 @@ class _EquipePageState extends State<EquipePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Minhas Equipes"),
+        title: Text("Minha Equipe"),
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.only(left: 18, right: 18),
           child: ListView(
             children: <Widget>[
+              Center(
+                child: Image.network('https://firebasestorage.googleapis.com/v0/'
+                    'b/mafooba-a7ea0.appspot.com/o/814bc249dc430c8d34b01'
+                    '1154dfeb6ef.png?alt=media&token=559f7b03-e'
+                    'e32-42b0-ade3-b621a7f94f05',height: 200,),
+              ),
               Container(
                 child: TextField(
                   decoration: InputDecoration(labelText: "Nome da Equipe"),
@@ -55,21 +83,79 @@ class _EquipePageState extends State<EquipePage> {
                   onChanged: _bloc.setNomeEquipe,
                 ),
               ),
-              Container(height: 20),Container(
+              Container(height: 15),
+              Container(
                 child: TextField(
-                  decoration: InputDecoration(labelText: "Local da Cancha"),
-                  controller: _localController,
-                  onChanged: _bloc.setLocal,
+                  decoration: InputDecoration(labelText: "'Capitão' (adm. da equipe) "),
+//                  controller: _localController,
+//                  onChanged: _bloc.setCapitao,
                 ),
               ),
-              Container(height: 20),Container(
+              Container(height: 15),
+              Container(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(labelText: "Local da Cancha"),
+                        controller: _localController,
+                        onChanged: _bloc.setLocal,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(labelText: "Telefone"),
+                        controller: _foneCampoController,
+                        onChanged: _bloc.setFoneCampo,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(height: 15),
+              Container(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(labelText: "Estilo", hintText: 'Society, Salão'),
+                        controller: _estiloController,
+                        onChanged: _bloc.setEstilo,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(labelText: "Total por time",hintText: '0'),
+                        controller: _totalJogadoresController,
+//                        onChanged: _bloc.setTotalJogadores,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(height: 15),
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(labelText: "Valor da Cancha"),
+                  controller: _vlrCanchaController,
+//                  onChanged: _bloc.setVlrCancha,
+                ),
+              ),
+              Container(height: 15),
+              Container(
                 child: TextField(
                   decoration: InputDecoration(labelText: "Estilo da Pelada"),
                   controller: _estiloController,
                   onChanged: _bloc.setEstilo,
                 ),
               ),
-              Container(height: 20),
+              Container(height: 15),
               StreamBuilder<DateTime>(
                 stream: _bloc.outHorario,
                 initialData: DateTime.now(),
@@ -93,7 +179,7 @@ class _EquipePageState extends State<EquipePage> {
                   );
                 },
               ),
-              Container(height: 20),
+              Container(height: 15),
               StreamBuilder(
                 stream: _bloc.outActive,
                 initialData: true,

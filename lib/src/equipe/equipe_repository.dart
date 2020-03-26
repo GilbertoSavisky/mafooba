@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mafooba/src/models/equipe_model.dart';
 import 'package:rxdart/rxdart.dart';
 
-
 class EquipeRepository extends Disposable {
   CollectionReference _collection = Firestore.instance.collection('equipe');
 

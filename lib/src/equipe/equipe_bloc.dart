@@ -1,5 +1,4 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
-import 'package:intl/intl.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/models/equipe_model.dart';
 import 'package:rxdart/rxdart.dart';
