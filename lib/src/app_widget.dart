@@ -8,9 +8,9 @@ class AppWidget extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Slidy',
       theme: ThemeData(
-        primaryColor: Colors.green[800],
-        accentColor: Colors.lightGreen[600],
-        accentIconTheme: IconThemeData(color: Colors.greenAccent),
+        brightness: Brightness.dark,
+        primaryColor: Colors.lightBlue[800],
+        accentColor: Colors.cyan[600],
 
         // Define the default font family.
         fontFamily: 'Georgia',

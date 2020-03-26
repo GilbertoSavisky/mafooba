@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
-import 'package:mafooba/src/atleta/atleta_bloc.dart';
+import 'package:mafooba/src/person/atleta_bloc.dart';
 
 class AtletaPage extends StatefulWidget {
   AtletaPage(this.atleta);
@@ -50,7 +50,7 @@ class _AtletaPageState extends State<AtletaPage> {
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(8.0),
           child: ListView(
             children: <Widget>[
               Container(
@@ -95,7 +95,7 @@ class _AtletaPageState extends State<AtletaPage> {
               Container(height: 20),
               StreamBuilder(
                 stream: _bloc.outIsGoleiro,
-                initialData: true,
+                initialData: false,
                 builder: (context, snapshot) {
                   return Column(
                     children: <Widget>[
