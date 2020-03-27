@@ -9,13 +9,11 @@ class AppWidget extends StatelessWidget {
       title: 'Flutter Slidy',
       theme: ThemeData(
         primaryColor: Colors.green[800],
-        accentColor: Colors.cyan[600],
+        accentColor: Colors.green[600],
 
         // Define the default font family.
         fontFamily: 'Georgia',
 
-        // Define the default TextTheme. Use this to specify the default
-        // text styling for headlines, titles, bodies of text, and more.
         textTheme: TextTheme(
 //        headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
 //        title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),

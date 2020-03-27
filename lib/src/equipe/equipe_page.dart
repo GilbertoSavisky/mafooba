@@ -49,13 +49,12 @@ class _EquipePageState extends State<EquipePage> {
     _nomeEquipeController.dispose();
     _localController.dispose();
     _estiloController.dispose();
-    _horarioController.dispose();
     _infoController.dispose();
-    _vlrCanchaController.dispose();
+//    _vlrCanchaController.dispose();
     _imagemController.dispose();
     _foneCampoController.dispose();
-    _capitaoController.dispose();
-    _totalJogadoresController.dispose();
+//    _capitaoController.dispose();
+//    _totalJogadoresController.dispose();
     super.dispose();
   }
 
@@ -70,11 +69,16 @@ class _EquipePageState extends State<EquipePage> {
           padding: const EdgeInsets.only(left: 18, right: 18),
           child: ListView(
             children: <Widget>[
-              Center(
-                child: Image.network('https://firebasestorage.googleapis.com/v0/'
-                    'b/mafooba-a7ea0.appspot.com/o/814bc249dc430c8d34b01'
-                    '1154dfeb6ef.png?alt=media&token=559f7b03-e'
-                    'e32-42b0-ade3-b621a7f94f05',height: 200,),
+              StreamBuilder(
+                stream: _bloc.outImagem,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return Container(color: Colors.green, width: 100,height: 100,);
+                  return Center(
+                    child: Image.network(snapshot.data, width: 110,
+//                      onChanged: _bloc.setImagem,
+                    ),heightFactor: 1.2,
+                  );
+                },
               ),
               Container(
                 child: TextField(
