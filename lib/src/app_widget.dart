@@ -26,6 +26,7 @@ class AppWidget extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],
+      debugShowCheckedModeBanner: false,
       home: HomeModule(),
     );
   }

@@ -19,41 +19,65 @@ class _HomePageState extends State<HomePage> {
 
   final _dateFormat = DateFormat("dd/MM/yyyy");
 
+
+  Widget _buildBodyBack() => Container(
+    decoration: BoxDecoration(
+        gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(-12, 0, 156, 239),
+              Color.fromARGB(-43, 152, 249, 200),
+              Color.fromARGB(-43, 152, 249, 200),
+              Color.fromARGB(-12, 0, 156, 239),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight
+        )
+    ),
+  );
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
         title: Text("Mafooba (My App of FootBall)"),
         actions: <Widget>[
-          IconButton(onPressed: null, icon: Icon(Icons.menu, color: Colors.amber,),)
+          IconButton(onPressed: null, icon: Icon(Icons.menu, color: Colors.white,),)
         ],
       ),
 
       floatingActionButton: buildSpeedDial(
       ),
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 18, right: 18),
-          child: ListView(
-            children: <Widget>[
-              StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance.collection('home').snapshots(),
-                builder: (context, snapshot) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        image: NetworkImage(snapshot.data.documents[0].data['image']),
+      body: Stack(
+        children: <Widget>[
+          _buildBodyBack(),
+          Container(
+//            color: Colors.green[200],
+            padding: EdgeInsets.only(top: 16),
+            child: ListView(
+              children: <Widget>[
+                StreamBuilder<QuerySnapshot>(
+                  stream: Firestore.instance.collection('home').snapshots(),
+                  builder: (context, snapshot) {
+                    print(snapshot.hasData);
+                    return snapshot.hasData ? Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height -100,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.contain,
+                          image: NetworkImage(
+                               snapshot.data.documents[0].data['image']),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    )  : CircularProgressIndicator;
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -91,11 +115,16 @@ class _HomePageState extends State<HomePage> {
     return SpeedDial(
       animatedIcon: AnimatedIcons.menu_close,
       animatedIconTheme: IconThemeData(size: 22.0),
-      // child: Icon(Icons.add),
       onOpen: () => print('OPENING DIAL'),
       onClose: () => print('DIAL CLOSED'),
       visible: dialVisible,
-      curve: Curves.bounceIn,
+      backgroundColor: Colors.red,
+//      marginBottom: 45,
+//      marginRight: 300,
+      child: Image.asset('images/bola.png', ),
+      elevation: 10,
+
+      curve: Curves.easeInBack,
       children: [
         SpeedDialChild(
           child: Icon(Icons.group_add, color: Colors.white),
@@ -112,7 +141,7 @@ class _HomePageState extends State<HomePage> {
         ),
         SpeedDialChild(
           child: Icon(Icons.person_add, color: Colors.white),
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.amber,
           onTap: () {
             var atleta = Atleta()
               ..nome = ""
@@ -125,7 +154,7 @@ class _HomePageState extends State<HomePage> {
           },
           label: 'Atletas',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.green,
+          labelBackgroundColor: Colors.amberAccent,
         ),
         SpeedDialChild(
           child: Icon(Icons.chat, color: Colors.white),
