@@ -1,0 +1,4 @@
+lib/src/chat/chat_page.dart
+test/src/chat/chat_page_test.dart
+lib/src/chat/chat_bloc.dart
+test/src/chat/chat_bloc_test.dart
