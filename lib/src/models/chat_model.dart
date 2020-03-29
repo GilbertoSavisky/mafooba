@@ -7,6 +7,7 @@ class Chat extends BaseModel {
   String _documentId;
 
   String mensagem;
+  String nickName;
   bool visualizado;
   DateTime horario;
   String uid;
@@ -17,6 +18,7 @@ class Chat extends BaseModel {
     _documentId = document.documentID;
 
     this.mensagem = document.data["mensagem"];
+    this.nickName = document.data["nickName"];
     this.uid = document.data["uid"];
     this.visualizado = document.data["visualizado"] ?? false;
     Timestamp timestamp = document.data["horario"];
@@ -28,6 +30,7 @@ class Chat extends BaseModel {
   toMap() {
     var map = new Map<String, dynamic>();
     map['mensagem'] = this.mensagem;
+    map['nickName'] = this.nickName;
     map['uid'] = this.uid;
     map['visualizado'] = this.visualizado;
     map['horario'] = this.horario;

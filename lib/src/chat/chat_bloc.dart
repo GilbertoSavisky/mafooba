@@ -8,12 +8,14 @@ class ChatBloc extends BlocBase {
   String _documentId;
 
   String _mensagem;
+  String _nickName;
   String _uid;
   DateTime _horario;
   bool _visualizado;
 
   ChatBloc() {
     _mensagemController.listen((value) => _mensagem = value);
+    _nickNameController.listen((value) => _nickName = value);
     _visualizadoController.listen((value) => _visualizado = value);
   }
 
@@ -27,6 +29,8 @@ class ChatBloc extends BlocBase {
 
   var _mensagemController = BehaviorSubject<String>();
   Stream<String> get outMensagem => _mensagemController.stream;
+  var _nickNameController = BehaviorSubject<String>();
+  Stream<String> get outNickName => _nickNameController.stream;
   var _visualizadoController = BehaviorSubject<bool>();
   Stream<bool> get outVisualizado => _visualizadoController.stream;
 
@@ -35,6 +39,7 @@ class ChatBloc extends BlocBase {
   bool insertOrUpdate() {
     var chat = Chat()
       ..mensagem = _mensagem
+      ..nickName = _nickName
       ..uid = _uid
       ..horario = _horario
       ..visualizado = _visualizado;
@@ -52,6 +57,7 @@ class ChatBloc extends BlocBase {
   void dispose() {
     _visualizadoController.close();
     _mensagemController.close();
+    _nickNameController.close();
     super.dispose();
   }
 }

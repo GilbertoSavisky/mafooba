@@ -2,19 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:mafooba/src/chat/chat_page.dart';
 import 'package:mafooba/src/equipe/equipe_page.dart';
 import 'package:mafooba/src/home/home_bloc.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
+import 'package:mafooba/src/models/chat_model.dart';
 import 'package:mafooba/src/models/equipe_model.dart';
 import 'package:mafooba/src/atleta/atleta_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-class EquipeHomePage extends StatefulWidget {
+class ChatHomePage extends StatefulWidget {
   @override
-  _EquipeHomePageState createState() => _EquipeHomePageState();
+  _ChatHomePageState createState() => _ChatHomePageState();
 }
 
-class _EquipeHomePageState extends State<EquipeHomePage> {
+class _ChatHomePageState extends State<ChatHomePage> {
   final _bloc = HomeBloc();
 
   final _dateFormat = DateFormat("dd/MM/yyyy");
@@ -23,36 +25,36 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Minhas Equipes"),
+        title: Text("Minhas Conversas"),
       ),
 
       floatingActionButton: buildSpeedDial(
       ),
       body: Container(
         padding: EdgeInsets.all(15),
-        child: StreamBuilder<List<Equipe>>(
-          stream: _bloc.equipe,
+        child: StreamBuilder<List<Chat>>(
+          stream: _bloc.chat,
           builder: (context, snapshot) {
             if (!snapshot.hasData) return CircularProgressIndicator();
 
             return Container(
               child: ListView(
-                children: snapshot.data.map((equipe) {
+                children: snapshot.data.map((chat) {
                   return Dismissible(
-                    key: Key(equipe.documentId()),
+                    key: Key(chat.documentId()),
                     onDismissed: (direction) {
-                      _bloc.deleteEquipe(equipe.documentId());
+                      _bloc.deleteEquipe(chat.documentId());
                     },
                     child: ListTile(
-                      leading: equipe.imagem != null ? Image.network(equipe.imagem) : Container(),
-                      title: Text(equipe.nomeEquipe),
-                      subtitle: Text(_dateFormat.format(equipe.horario)),
+//                      leading: chat.imagem != null ? Image.network(chat.imagem) : Container(),
+                      title: Text(chat.nickName),
+                      subtitle: Text(chat.mensagem),
                       trailing: Icon(Icons.exit_to_app),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EquipePage(equipe)),
+                              builder: (context) => ChatPage(chat)),
                         );
                       },
                     ),

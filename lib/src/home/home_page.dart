@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:mafooba/src/chat/chat_home_page.dart';
+import 'package:mafooba/src/chat/chat_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/atleta/atleta_page.dart';
@@ -54,23 +56,21 @@ class _HomePageState extends State<HomePage> {
           _buildBodyBack(),
           Container(
 //            color: Colors.green[200],
-            padding: EdgeInsets.only(top: 16),
+            padding: EdgeInsets.only(top: 0),
             child: ListView(
               children: <Widget>[
                 StreamBuilder<QuerySnapshot>(
                   stream: Firestore.instance.collection('home').snapshots(),
                   builder: (context, snapshot) {
                     print(snapshot.hasData);
-                    return snapshot.hasData ? Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height -100,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.contain,
-                          image: NetworkImage(
-                               snapshot.data.documents[0].data['imagem']),
-                        ),
-                      ),
+                    return snapshot.hasData ? Center(
+                      child: Container(
+                       margin: EdgeInsets.only(top: 20),
+//                        padding: EdgeInsets.all(20),
+                        child: Image(image: NetworkImage(
+                            snapshot.data.documents[0].data['imagem'])),
+                      )
+
                     )  : CircularProgressIndicator;
                   },
                 ),
@@ -123,12 +123,12 @@ class _HomePageState extends State<HomePage> {
 //      marginRight: 300,
       child: Image.asset('images/bola.png', ),
       elevation: 10,
-
       curve: Curves.easeInBack,
       children: [
+
         SpeedDialChild(
           child: Icon(Icons.group_add, color: Colors.white),
-          backgroundColor: Colors.deepOrange,
+          backgroundColor: Colors.green,
           onTap: () {
             Navigator.push(
               context,
@@ -137,8 +137,9 @@ class _HomePageState extends State<HomePage> {
           },
           label: 'Equipes',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.deepOrangeAccent,
+          labelBackgroundColor: Colors.greenAccent,
         ),
+
         SpeedDialChild(
           child: Icon(Icons.person_add, color: Colors.white),
           backgroundColor: Colors.amber,
@@ -156,16 +157,20 @@ class _HomePageState extends State<HomePage> {
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.amberAccent,
         ),
+
         SpeedDialChild(
           child: Icon(Icons.chat, color: Colors.white),
           backgroundColor: Colors.blue,
-          onTap: () => print('THIRD CHILD'),
-          labelWidget: Container(
-            color: Colors.blue,
-            margin: EdgeInsets.only(right: 10),
-            padding: EdgeInsets.all(6),
-            child: Text('Custom Label Widget'),
-          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChatHomePage()),
+            );
+          },
+          label: 'Conversas',
+          labelStyle: TextStyle(fontWeight: FontWeight.w500),
+          labelBackgroundColor: Colors.blueAccent,
+
         ),
       ],
     );
