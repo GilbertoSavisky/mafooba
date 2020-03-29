@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                         image: DecorationImage(
                           fit: BoxFit.contain,
                           image: NetworkImage(
-                               snapshot.data.documents[0].data['image']),
+                               snapshot.data.documents[0].data['imagem']),
                         ),
                       ),
                     )  : CircularProgressIndicator;
