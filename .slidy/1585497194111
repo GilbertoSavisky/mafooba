@@ -1,0 +1,4 @@
+lib/src/chat/chat_conversa/chat_conversa_page.dart
+test/src/chat/chat_conversa/chat_conversa_page_test.dart
+lib/src/chat/chat_conversa/chat_conversa_bloc.dart
+test/src/chat/chat_conversa/chat_conversa_bloc_test.dart

@@ -8,6 +8,7 @@ class Chat extends BaseModel {
 
   String mensagem;
   String nickName;
+  String fotoUrl;
   bool visualizado;
   DateTime horario;
   String uid;
@@ -19,6 +20,7 @@ class Chat extends BaseModel {
 
     this.mensagem = document.data["mensagem"];
     this.nickName = document.data["nickName"];
+    this.fotoUrl = document.data["fotoUrl"];
     this.uid = document.data["uid"];
     this.visualizado = document.data["visualizado"] ?? false;
     Timestamp timestamp = document.data["horario"];
@@ -31,6 +33,7 @@ class Chat extends BaseModel {
     var map = new Map<String, dynamic>();
     map['mensagem'] = this.mensagem;
     map['nickName'] = this.nickName;
+    map['fotoUrl'] = this.fotoUrl;
     map['uid'] = this.uid;
     map['visualizado'] = this.visualizado;
     map['horario'] = this.horario;

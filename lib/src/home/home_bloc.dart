@@ -14,7 +14,7 @@ class HomeBloc extends BlocBase {
 
   var _repositoryChat = AppModule.to.getDependency<ChatRepository>();
   get chat => _repositoryChat.chat;
-
+  
   void deleteAtleta(String documentId) => _repositoryAtleta.delete(documentId);
   void deleteEquipe(String documentId) => _repositoryEquipe.delete(documentId);
   void deleteChat(String documentId) => _repositoryChat.delete(documentId);

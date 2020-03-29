@@ -9,6 +9,7 @@ class ChatBloc extends BlocBase {
 
   String _mensagem;
   String _nickName;
+  String _fotoUrl;
   String _uid;
   DateTime _horario;
   bool _visualizado;
@@ -35,11 +36,13 @@ class ChatBloc extends BlocBase {
   Stream<bool> get outVisualizado => _visualizadoController.stream;
 
   void setVisualizado(bool value) => _visualizadoController.sink.add(value);
+  void setMensagem(String value) => _mensagemController.sink.add(value);
 
   bool insertOrUpdate() {
     var chat = Chat()
       ..mensagem = _mensagem
       ..nickName = _nickName
+      ..fotoUrl = _fotoUrl
       ..uid = _uid
       ..horario = _horario
       ..visualizado = _visualizado;

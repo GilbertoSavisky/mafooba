@@ -88,8 +88,6 @@ class AtletaBloc extends BlocBase {
       ..habilidade = _habilidade;
 
     if (_documentId?.isEmpty ?? true) {
-      print(_habilidadeController);
-      print(_habilidade);
       _repository.add(atleta);
     } else {
       _repository.update(_documentId, atleta);

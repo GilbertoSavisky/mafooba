@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
 import 'package:mafooba/src/chat/chat_page.dart';
 import 'package:mafooba/src/equipe/equipe_page.dart';
 import 'package:mafooba/src/home/home_bloc.dart';
@@ -18,8 +17,6 @@ class ChatHomePage extends StatefulWidget {
 
 class _ChatHomePageState extends State<ChatHomePage> {
   final _bloc = HomeBloc();
-
-  final _dateFormat = DateFormat("dd/MM/yyyy");
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +46,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
 //                      leading: chat.imagem != null ? Image.network(chat.imagem) : Container(),
                       title: Text(chat.nickName),
                       subtitle: Text(chat.mensagem),
-                      trailing: Icon(Icons.exit_to_app),
+                      trailing: Text('${chat.horario.hour.toString()}:${chat.horario.minute.toString()}'),
                       onTap: () {
                         Navigator.push(
                           context,

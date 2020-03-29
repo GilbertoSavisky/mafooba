@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                 StreamBuilder<QuerySnapshot>(
                   stream: Firestore.instance.collection('home').snapshots(),
                   builder: (context, snapshot) {
-                    print(snapshot.hasData);
+                    //print(snapshot.hasData);
                     return snapshot.hasData ? Center(
                       child: Container(
                        margin: EdgeInsets.only(top: 20),

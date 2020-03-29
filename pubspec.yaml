@@ -17,7 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  intl: ^0.16.1
+  #intl: ^0.16.1
   cloud_firestore: ^0.13.4+2
   dio: ^3.0.9
   rxdart: ^0.22.0
