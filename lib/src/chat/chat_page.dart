@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_image/network.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -35,6 +36,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _sendMessage({File imgFile}) async {
+    print(_ultimaMsgController.text);
+
     Map<String, dynamic> data = {};
 
     if (imgFile != null) {
@@ -101,7 +104,7 @@ class _ChatPageState extends State<ChatPage> {
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
-                case ConnectionState.waiting:
+//                case ConnectionState.waiting:
                   return Center(
                     child: CircularProgressIndicator(),
                   );
@@ -113,25 +116,64 @@ class _ChatPageState extends State<ChatPage> {
                             itemCount: snapshot.data.documents.length,
                             itemBuilder: (context, index) {
 //                            print(snapshot.data.documents[1].data['mensagem']);
-                              return Card(
-                                color: Colors.greenAccent[100],
-                                margin: EdgeInsets.symmetric(horizontal: 11, vertical: 2),
-                                child: Column(
-                                  children: <Widget>[
-                                    ListTile(
+                              return snapshot.data.documents[index].data['imagem'] != null ?
+
+                                Container(
+                                  child: Card(
+                                    child: ListTile(
                                       title:
-                                      snapshot.data.documents[index].data['imagem'] != null ?
-                                      Image.network(snapshot.data.documents[index].data['imagem'],
-                                        cacheWidth: 260,
-                                        cacheHeight:330,
-                                        alignment: Alignment.centerLeft,
-                                      ) :
-                                      Text(snapshot.data.documents[index].data['mensagem']),
-                                      subtitle: Text(widget.chat.nickName,),
-//                                      trailing: Card(child: Text(widget.chat.nickName)),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Image.network(snapshot.data.documents[index].data['imagem'],
+                                            height: 350,
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle:
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: <Widget>[
+                                          Text(widget.chat.nickName),
+                                        ],
+                                      ),
+
                                     ),
+                                    color: Colors.amber,
+                                    elevation: 10,
+                                    margin: EdgeInsets.all(10),
+                                    semanticContainer: true,
+
+
+                                  ),
+                                  color: Colors.green,
+                                  width: 300,
+                                )
+
+                              :
+
+
+                              ListTile(
+                                title:
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+
+                                    Card(
+                                      child: Container(
+                                        child: Text(snapshot.data.documents[index].data['mensagem'],
+                                        ),
+                                        padding: EdgeInsets.all(5),
+                                      ),
+                                      //color: Colors.amber,
+                                      margin: EdgeInsets.all(1),
+                                      elevation: 15,
+                                      borderOnForeground: true,
+                                    )
                                   ],
+
                                 ),
+                                subtitle: Text(widget.chat.nickName),
                               );
                             },
                           ),
@@ -159,8 +201,11 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(),
-                  onPressed: () {
-                    ImagePicker.pickImage(source: ImageSource.gallery);
+                  onPressed: () async {
+                    final File imgFile =
+                    await ImagePicker.pickImage(source: ImageSource.gallery);
+                    if (imgFile == null) return;
+                    _sendMessage(imgFile: imgFile);
                   },
                 ),
                 Expanded(
@@ -177,6 +222,7 @@ class _ChatPageState extends State<ChatPage> {
                       });
                     },
                     onSubmitted: (texto) {
+                      _sendMessage();
                       _reset();
                     },
                   ),
@@ -185,6 +231,7 @@ class _ChatPageState extends State<ChatPage> {
                   icon: Icon(Icons.send),
                   onPressed: _isComposing
                       ? () {
+                    _sendMessage();
                           _reset();
                         }
                       : null,
