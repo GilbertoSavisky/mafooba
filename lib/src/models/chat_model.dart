@@ -6,7 +6,7 @@ import '../shared/base_model.dart';
 class Chat extends BaseModel {
   String _documentId;
 
-  String mensagem;
+  String ultimaMsg;
   String nickName;
   String fotoUrl;
   bool visualizado;
@@ -18,7 +18,7 @@ class Chat extends BaseModel {
   Chat.fromMap(DocumentSnapshot document) {
     _documentId = document.documentID;
 
-    this.mensagem = document.data["mensagem"];
+    this.ultimaMsg = document.data["ultimaMsg"];
     this.nickName = document.data["nickName"];
     this.fotoUrl = document.data["fotoUrl"];
     this.uid = document.data["uid"];
@@ -31,7 +31,7 @@ class Chat extends BaseModel {
   @override
   toMap() {
     var map = new Map<String, dynamic>();
-    map['mensagem'] = this.mensagem;
+    map['ultimaMsg'] = this.ultimaMsg;
     map['nickName'] = this.nickName;
     map['fotoUrl'] = this.fotoUrl;
     map['uid'] = this.uid;

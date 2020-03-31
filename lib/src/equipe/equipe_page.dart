@@ -205,7 +205,7 @@ class _EquipePageState extends State<EquipePage> {
                   );
                 },
               ),
-              FloatingActionButton.extended(
+              FloatingActionButton.extended (
                   label: Text("Salvar"),elevation: 5,
                   onPressed: () {
                     if (_bloc.insertOrUpdate()) {

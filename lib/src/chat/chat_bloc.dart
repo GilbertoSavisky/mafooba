@@ -7,7 +7,7 @@ import '../app_module.dart';
 class ChatBloc extends BlocBase {
   String _documentId;
 
-  String _mensagem;
+  String _ultimaMsg;
   String _nickName;
   String _fotoUrl;
   String _uid;
@@ -15,7 +15,9 @@ class ChatBloc extends BlocBase {
   bool _visualizado;
 
   ChatBloc() {
-    _mensagemController.listen((value) => _mensagem = value);
+    _ultimaMsgController.listen((value) => _ultimaMsg = value);
+    _fotoUrlController.listen((value) => _fotoUrl = value);
+    _horarioController.listen((value) => _horario = value);
     _nickNameController.listen((value) => _nickName = value);
     _visualizadoController.listen((value) => _visualizado = value);
   }
@@ -26,26 +28,38 @@ class ChatBloc extends BlocBase {
     _documentId = chat.documentId();
 
     setVisualizado(chat.visualizado);
+    setUltimaMsg(chat.ultimaMsg);
+    setNickName(chat.nickName);
+    setFotoUrl(chat.fotoUrl);
+    setHorario(chat.horario);
   }
 
-  var _mensagemController = BehaviorSubject<String>();
-  Stream<String> get outMensagem => _mensagemController.stream;
+  var _ultimaMsgController = BehaviorSubject<String>();
+  Stream<String> get outUltimaMsg => _ultimaMsgController.stream;
   var _nickNameController = BehaviorSubject<String>();
   Stream<String> get outNickName => _nickNameController.stream;
+  var _horarioController = BehaviorSubject<DateTime>();
+  Stream<DateTime> get outHorario => _horarioController.stream;
+  var _fotoUrlController = BehaviorSubject<String>();
+  Stream<String> get outFotoUrl => _fotoUrlController.stream;
   var _visualizadoController = BehaviorSubject<bool>();
   Stream<bool> get outVisualizado => _visualizadoController.stream;
 
   void setVisualizado(bool value) => _visualizadoController.sink.add(value);
-  void setMensagem(String value) => _mensagemController.sink.add(value);
+  void setUltimaMsg(String value) => _ultimaMsgController.sink.add(value);
+  void setNickName(String value) => _nickNameController.sink.add(value);
+  void setHorario(DateTime value) => _horarioController.sink.add(value);
+  void setFotoUrl(String value) => _fotoUrlController.sink.add(value);
 
   bool insertOrUpdate() {
     var chat = Chat()
-      ..mensagem = _mensagem
+      ..ultimaMsg = _ultimaMsg
       ..nickName = _nickName
       ..fotoUrl = _fotoUrl
       ..uid = _uid
       ..horario = _horario
       ..visualizado = _visualizado;
+    print('sdfsdfssdfsdf');
 
     if (_documentId?.isEmpty ?? true) {
       _repository.add(chat);
@@ -59,7 +73,7 @@ class ChatBloc extends BlocBase {
   @override
   void dispose() {
     _visualizadoController.close();
-    _mensagemController.close();
+    _ultimaMsgController.close();
     _nickNameController.close();
     super.dispose();
   }

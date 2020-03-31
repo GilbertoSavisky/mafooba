@@ -8,6 +8,7 @@ import 'package:mafooba/src/chat/chat_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/atleta/atleta_page.dart';
+import 'package:mafooba/src/shared/login.dart';
 import 'home_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -45,7 +46,14 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Mafooba (My App of FootBall)"),
         actions: <Widget>[
-          IconButton(onPressed: null, icon: Icon(Icons.menu, color: Colors.white,),)
+          IconButton(onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Login()),
+            );
+          },
+          icon: Icon(Icons.menu, color: Colors.white,),)
         ],
       ),
 
@@ -71,7 +79,9 @@ class _HomePageState extends State<HomePage> {
                             snapshot.data.documents[0].data['imagem'])),
                       )
 
-                    )  : CircularProgressIndicator;
+                    )  : Center(
+                      child: CircularProgressIndicator(),
+                    );
                   },
                 ),
               ],

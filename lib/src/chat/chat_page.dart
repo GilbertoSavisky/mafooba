@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../models/chat_model.dart';
@@ -14,33 +18,70 @@ class ChatPage extends StatefulWidget {
 
   @override
   _ChatPageState createState() => _ChatPageState();
-
 }
 
 class _ChatPageState extends State<ChatPage> {
-
   bool _isComposing = false;
   final _dateFormat = DateFormat("dd/MM/yyyy");
-  TextEditingController _mensagemController;
+  TextEditingController _ultimaMsgController;
 
   final _bloc = ChatBloc();
+
+  void _reset() {
+    _ultimaMsgController.clear();
+    setState(() {
+      _isComposing = false;
+    });
+  }
+
+  void _sendMessage({File imgFile}) async {
+    Map<String, dynamic> data = {};
+
+    if (imgFile != null) {
+      StorageUploadTask task = FirebaseStorage.instance
+          .ref()
+          .child('mensagens')
+          .child(widget.chat.nickName)
+          .child(DateTime.now().millisecondsSinceEpoch.toString())
+          .putFile(imgFile);
+
+      StorageTaskSnapshot taskSnapshot = await task.onComplete;
+      String url = await taskSnapshot.ref.getDownloadURL();
+      data['imagem'] = url;
+    }
+
+    data['horario'] = DateTime.now();
+    data['visualizado'] = false;
+
+    if (_ultimaMsgController.text != '') {
+      if (_bloc.insertOrUpdate()) {
+        _bloc.setHorario(DateTime.now());
+        Navigator.of(context);
+        data['mensagem'] = _ultimaMsgController.text;
+      }
+    }
+    Firestore.instance
+        .collection('mensagens')
+        .document(widget.chat.documentId())
+        .collection('mensagem')
+        .add(data);
+  }
 
   @override
   void initState() {
     _bloc.setChat(widget.chat);
-    _mensagemController = TextEditingController(text: widget.chat.mensagem);
+    _ultimaMsgController = TextEditingController(text: widget.chat.ultimaMsg);
     super.initState();
   }
 
   @override
   void dispose() {
-    _mensagemController.dispose();
+    _ultimaMsgController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print(widget.chat.documentId());
     return Scaffold(
       appBar: AppBar(
         leading: Container(
@@ -50,52 +91,103 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(
         children: <Widget>[
-          FutureBuilder<QuerySnapshot>(
-            future: Firestore.instance.collection('mensagens').document(widget.chat.documentId()).collection('mensagem').getDocuments(),
-            builder: (context, snapshot){
-
-              return snapshot.hasData ? Expanded(
-                child: ListView.builder(
-                  reverse: true,
-                  itemCount: snapshot.data.documents.length,
-                  itemBuilder: (context, index){
-                    print(snapshot.hasData);
-                    return ListTile(
-                      title: Text(snapshot.data.documents[index].data['mensagem']),
-                    );
-                  },
-                ),
-              ) : Container();
+          StreamBuilder<QuerySnapshot>(
+            stream: Firestore.instance
+                .collection('mensagens')
+                .document(widget.chat.documentId())
+                .collection('mensagem')
+                .orderBy('horario', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  return snapshot.hasData
+                      ? Expanded(
+                          child: ListView.builder(
+                            reverse: true,
+                            itemCount: snapshot.data.documents.length,
+                            itemBuilder: (context, index) {
+//                            print(snapshot.data.documents[1].data['mensagem']);
+                              return Card(
+                                color: Colors.greenAccent[100],
+                                margin: EdgeInsets.symmetric(horizontal: 11, vertical: 2),
+                                child: Column(
+                                  children: <Widget>[
+                                    ListTile(
+                                      title:
+                                      snapshot.data.documents[index].data['imagem'] != null ?
+                                      Image.network(snapshot.data.documents[index].data['imagem'],
+                                        cacheWidth: 260,
+                                        cacheHeight:330,
+                                        alignment: Alignment.centerLeft,
+                                      ) :
+                                      Text(snapshot.data.documents[index].data['mensagem']),
+                                      subtitle: Text(widget.chat.nickName,),
+//                                      trailing: Card(child: Text(widget.chat.nickName)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : Container();
+              }
             },
           ),
           Container(
             child: Row(
               children: <Widget>[
-                IconButton(icon: Icon(Icons.photo_camera),
-                  onPressed: (){
-
+                IconButton(
+                  icon: Icon(Icons.photo_camera),
+                  padding: EdgeInsets.symmetric(),
+                  onPressed: () async {
+                    final File imgFile =
+                        await ImagePicker.pickImage(source: ImageSource.camera);
+                    if (imgFile == null) return;
+                    _sendMessage(imgFile: imgFile);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.attach_file,
+                  ),
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(),
+                  onPressed: () {
+                    ImagePicker.pickImage(source: ImageSource.gallery);
                   },
                 ),
                 Expanded(
                   child: TextField(
-                    decoration: InputDecoration(hintText: 'Enviar mensagem'),
-                    onChanged: (texto){
+                    decoration: InputDecoration.collapsed(
+                      hintText: 'Enviar mensagem',
+                    ),
+                    controller: _ultimaMsgController,
+                    onChanged: (texto) {
                       setState(() {
+                        _bloc.setUltimaMsg(texto);
                         _isComposing = texto.isNotEmpty;
+                        //
                       });
                     },
-                    onSubmitted: (texto){
-
+                    onSubmitted: (texto) {
+                      _reset();
                     },
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: (){
-                    _isComposing ? (){
-
-                    }: null;
-                  },
+                  onPressed: _isComposing
+                      ? () {
+                          _reset();
+                        }
+                      : null,
                 ),
               ],
             ),
@@ -103,7 +195,6 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ],
       ),
-
     );
   }
 }

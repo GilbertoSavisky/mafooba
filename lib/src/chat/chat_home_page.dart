@@ -45,9 +45,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                     child: ListTile(
 //                      leading: chat.imagem != null ? Image.network(chat.imagem) : Container(),
                       title: Text(chat.nickName),
-                      subtitle: Text(chat.mensagem),
+                      subtitle: Text(chat.ultimaMsg),
                       trailing: Text('${chat.horario.hour.toString()}:${chat.horario.minute.toString()}'),
                       onTap: () {
+                        chat.ultimaMsg = '';
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
