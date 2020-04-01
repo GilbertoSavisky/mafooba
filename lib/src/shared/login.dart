@@ -34,6 +34,7 @@ class _LoginState extends State<Login> {
 
       return _currentUser;
     }
+    print('_currentUser = ${_currentUser}');
     // Se for nulo tenta logar e retorna o user
     try{
       //Login com o Google, retorna a conta da pessoa logado no Google
@@ -63,22 +64,22 @@ class _LoginState extends State<Login> {
         backgroundColor: Colors.red,
       ));
     }
-    Map<String, dynamic> data = {
+    else {
+      _snackBar.currentState.showSnackBar(SnackBar(
+        content: Text('Logado com sucesso!'),
+        backgroundColor: Colors.green,
+      ));
+
+    }
+    print(user);
+    Map<String, dynamic> dataUser = {
       "uid": user.uid,
       "email": user.email,
       "displayName": user.displayName,
       "fotoUrl": user.photoUrl,
       "fone": user.phoneNumber
     };
-    QuerySnapshot snapshot = await Firestore.instance.collection('users').getDocuments();
-    snapshot.documents.forEach((element) {
-      if(element.data['uid'] == user.uid)
-      {
-//                  print(element.data['uid']);
-
-      }
-
-    });
+    Firestore.instance.collection('users').add(dataUser);
   }
 
 

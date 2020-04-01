@@ -23,6 +23,8 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   bool _isComposing = false;
   final _dateFormat = DateFormat('dd-MM-yyyy – kk:mm');
+  final bool mine = false;
+  bool _isLoading = false;
   TextEditingController _ultimaMsgController;
 
   final _bloc = ChatBloc();
@@ -47,9 +49,21 @@ class _ChatPageState extends State<ChatPage> {
           .child(DateTime.now().millisecondsSinceEpoch.toString())
           .putFile(imgFile);
 
+      setState(() {
+        _isLoading = true;
+        print('_isLoading true= ${_isLoading}');
+      });
+
       StorageTaskSnapshot taskSnapshot = await task.onComplete;
       String url = await taskSnapshot.ref.getDownloadURL();
       data['imagem'] = url;
+
+      setState(() {
+        _isLoading = false;
+        print('_isLoading false= ${_isLoading}');
+
+      });
+
     }
 
     data['horario'] = DateTime.now();
@@ -88,7 +102,9 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         leading: Container(
             margin: EdgeInsets.only(left: 10),
-            child: Image.network(widget.chat.fotoUrl)),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(widget.chat.fotoUrl),
+            )),
         title: Text(widget.chat.nickName),
       ),
       body: Column(
@@ -120,7 +136,7 @@ class _ChatPageState extends State<ChatPage> {
                               ListTile(
                                 title:
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
                                   children: <Widget>[
                                     Card(
                                       child: Container(
@@ -132,12 +148,18 @@ class _ChatPageState extends State<ChatPage> {
                                             ),
                                             Column(
                                               children: <Widget>[
-                                                Text(_dateFormat.format(widget.chat.horario),
-                                                  style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontSize: 12,
-                                                      letterSpacing: 0.1
+                                                Container(
+                                                  child: Text(_dateFormat.format(widget.chat.horario),
+                                                    style: TextStyle(
+                                                        color: Colors.blueAccent,
+                                                        fontSize: 12,
+                                                        letterSpacing: 0.1
+                                                    ),
                                                   ),
+                                                  color: Colors.white,
+                                                  //alignment: Alignment.bottomRight,
+                                                  padding: EdgeInsets.only(right: 5),
+
                                                 ),
                                               ],
                                             ),
@@ -146,7 +168,7 @@ class _ChatPageState extends State<ChatPage> {
                                         padding: EdgeInsets.all(5),
                                       ),
                                       elevation: 5,
-                                      color: Color.fromARGB(-10, 220, 255, 223),
+                                      color: !mine ? Color.fromARGB(-10, 220, 255, 223) : Color.fromARGB(-5, 250, 252, 220),
                                     ),
                                   ],
                                 ),
@@ -157,31 +179,38 @@ class _ChatPageState extends State<ChatPage> {
                               ListTile(
                                 title:
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
                                   children: <Widget>[
                                     Card(
                                       child: Container(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
                                           children: <Widget>[
                                             Text(snapshot.data.documents[index].data['mensagem'],
                                               style: TextStyle(
-                                                fontSize: 15
+                                                fontSize: 17
                                               ),
+                                              textAlign:  TextAlign.start,
                                             ),
-                                            Text(_dateFormat.format(widget.chat.horario),
-                                              style: TextStyle(
-                                                color: Colors.blueAccent,
-                                                fontSize: 12,
-                                                letterSpacing: 0.1
+                                            Container(
+                                              child: Text(_dateFormat.format(widget.chat.horario),
+                                                style: TextStyle(
+                                                  color: Colors.blueAccent,
+                                                  fontSize: 12,
+                                                  letterSpacing: 0.1,
+                                                ),
                                               ),
+                                              color: Colors.white,
+                                              //alignment: Alignment.bottomRight,
+                                              padding: EdgeInsets.only(right: 5),
                                             ),
                                           ],
                                         ),
                                         padding: EdgeInsets.all(5),
                                       ),
                                       elevation: 5,
-                                      color: Color.fromARGB(-10, 220, 255, 223),
+                                      color: !mine ? Color.fromARGB(-10, 220, 255, 223) : Color.fromARGB(-5, 250, 252, 220),
+                                      margin: !mine ? EdgeInsets.only(right: 30) : EdgeInsets.only(left: 30),
                                     ),
                                   ],
                                 ),
@@ -193,6 +222,7 @@ class _ChatPageState extends State<ChatPage> {
               }
             },
           ),
+          _isLoading ? LinearProgressIndicator() : Container(),
           Container(
             child: Row(
               children: <Widget>[
@@ -203,6 +233,7 @@ class _ChatPageState extends State<ChatPage> {
                     final File imgFile =
                         await ImagePicker.pickImage(source: ImageSource.camera);
                     if (imgFile == null) return;
+                    _isLoading ? LinearProgressIndicator() : Container();
                     _sendMessage(imgFile: imgFile);
                   },
                 ),
@@ -212,10 +243,12 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(),
+
                   onPressed: () async {
                     final File imgFile =
                     await ImagePicker.pickImage(source: ImageSource.gallery);
                     if (imgFile == null) return;
+                    _isLoading ? LinearProgressIndicator() : Container();
                     _sendMessage(imgFile: imgFile);
                   },
                 ),
@@ -242,6 +275,7 @@ class _ChatPageState extends State<ChatPage> {
                   icon: Icon(Icons.send),
                   onPressed: _isComposing
                       ? () {
+                    _isLoading ? LinearProgressIndicator() : Container();
                     _sendMessage();
                           _reset();
                         }
