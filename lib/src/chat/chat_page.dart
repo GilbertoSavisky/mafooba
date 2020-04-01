@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_image/network.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -23,7 +22,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   bool _isComposing = false;
-  final _dateFormat = DateFormat("dd/MM/yyyy");
+  final _dateFormat = DateFormat('dd-MM-yyyy – kk:mm');
   TextEditingController _ultimaMsgController;
 
   final _bloc = ChatBloc();
@@ -118,38 +117,40 @@ class _ChatPageState extends State<ChatPage> {
 //                            print(snapshot.data.documents[1].data['mensagem']);
                               return snapshot.data.documents[index].data['imagem'] != null ?
 
-                                Container(
-                                  child: Card(
-                                    child: ListTile(
-                                      title:
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Image.network(snapshot.data.documents[index].data['imagem'],
-                                            height: 350,
-                                          ),
-                                        ],
+                              ListTile(
+                                title:
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Card(
+                                      child: Container(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Image.network(snapshot.data.documents[index].data['imagem'],
+                                              height: 330,
+                                            ),
+                                            Column(
+                                              children: <Widget>[
+                                                Text(_dateFormat.format(widget.chat.horario),
+                                                  style: TextStyle(
+                                                      color: Colors.blueAccent,
+                                                      fontSize: 12,
+                                                      letterSpacing: 0.1
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        padding: EdgeInsets.all(5),
                                       ),
-                                      subtitle:
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Text(widget.chat.nickName),
-                                        ],
-                                      ),
-
+                                      elevation: 5,
+                                      color: Color.fromARGB(-10, 220, 255, 223),
                                     ),
-                                    color: Colors.amber,
-                                    elevation: 10,
-                                    margin: EdgeInsets.all(10),
-                                    semanticContainer: true,
-
-
-                                  ),
-                                  color: Colors.green,
-                                  width: 300,
-                                )
-
+                                  ],
+                                ),
+                              )
                               :
 
 
@@ -158,22 +159,32 @@ class _ChatPageState extends State<ChatPage> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-
                                     Card(
                                       child: Container(
-                                        child: Text(snapshot.data.documents[index].data['mensagem'],
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(snapshot.data.documents[index].data['mensagem'],
+                                              style: TextStyle(
+                                                fontSize: 15
+                                              ),
+                                            ),
+                                            Text(_dateFormat.format(widget.chat.horario),
+                                              style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontSize: 12,
+                                                letterSpacing: 0.1
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         padding: EdgeInsets.all(5),
                                       ),
-                                      //color: Colors.amber,
-                                      margin: EdgeInsets.all(1),
-                                      elevation: 15,
-                                      borderOnForeground: true,
-                                    )
+                                      elevation: 5,
+                                      color: Color.fromARGB(-10, 220, 255, 223),
+                                    ),
                                   ],
-
                                 ),
-                                subtitle: Text(widget.chat.nickName),
                               );
                             },
                           ),
