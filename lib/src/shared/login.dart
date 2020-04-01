@@ -75,11 +75,11 @@ class _LoginState extends State<Login> {
     Map<String, dynamic> dataUser = {
       "uid": user.uid,
       "email": user.email,
-      "displayName": user.displayName,
+      "nome": user.displayName,
       "fotoUrl": user.photoUrl,
       "fone": user.phoneNumber
     };
-    Firestore.instance.collection('users').add(dataUser);
+    Firestore.instance.collection('atleta').add(dataUser);
   }
 
 

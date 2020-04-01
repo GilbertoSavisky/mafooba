@@ -9,6 +9,7 @@ class Atleta extends BaseModel {
   String nome;
   bool isGoleiro;
   bool isAtivo;
+  bool selecionado;
   int faltas;
   String posicao;
   String email;
@@ -25,6 +26,7 @@ class Atleta extends BaseModel {
     this.nome = document.data["nome"];
     this.isGoleiro = document.data["isGoleiro"] ?? false;
     this.isAtivo = document.data["isAtivo"] ?? false;
+    this.selecionado = document.data["selecionado"] ?? false;
     this.faltas = document.data["faltas"];
     this.posicao = document.data["posicao"];
     this.email = document.data["email"];
@@ -39,6 +41,7 @@ class Atleta extends BaseModel {
     map['nome'] = this.nome;
     map['isGoleiro'] = this.isGoleiro;
     map['isAtivo'] = this.isAtivo;
+    map['selecionado'] = this.selecionado;
     map['faltas'] = this.faltas;
     map['posicao'] = this.posicao;
     map['email'] = this.email;

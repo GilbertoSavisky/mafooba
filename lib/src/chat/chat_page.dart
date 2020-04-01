@@ -156,8 +156,6 @@ class _ChatPageState extends State<ChatPage> {
                                                         letterSpacing: 0.1
                                                     ),
                                                   ),
-                                                  color: Colors.white,
-                                                  //alignment: Alignment.bottomRight,
                                                   padding: EdgeInsets.only(right: 5),
 
                                                 ),
@@ -200,8 +198,6 @@ class _ChatPageState extends State<ChatPage> {
                                                   letterSpacing: 0.1,
                                                 ),
                                               ),
-                                              color: Colors.white,
-                                              //alignment: Alignment.bottomRight,
                                               padding: EdgeInsets.only(right: 5),
                                             ),
                                           ],

@@ -10,23 +10,27 @@ class AtletaBloc extends BlocBase {
   String _nome;
   bool _isGoleiro;
   bool _isAtivo;
+  bool _selecionado;
   int _faltas;
   String _posicao;
   String _email;
   String _fone;
   String _fotoUrl;
   String _habilidade;
+  String _uid;
 
   AtletaBloc() {
     _nomeController.listen((value) => _nome = value);
     _isGoleiroController.listen((value) => _isGoleiro = value);
     _isAtivoController.listen((value) => _isAtivo = value);
+    _selecionadoController.listen((value) => _selecionado = value);
     _faltasController.listen((value) => _faltas = value);
     _posicaoController.listen((value) => _posicao = value);
     _emailController.listen((value) => _email = value);
     _foneController.listen((value) => _fone = value);
     _fotoUrlController.listen((value) => _fotoUrl = value);
     _habilidadeController.listen((value) => _habilidade = value);
+    _uidController.listen((value) => _uid = value);
   }
 
   var _repository = AppModule.to.getDependency<AtletaRepository>();
@@ -37,10 +41,12 @@ class AtletaBloc extends BlocBase {
     setPosicao(atleta.posicao);
     setIsGoleiro(atleta.isGoleiro);
     setIsAtivo(atleta.isAtivo);
+    setSelecionado(atleta.selecionado);
     setFaltas(atleta.faltas);
     setEmail(atleta.email);
     setFone(atleta.fone);
     setFotoUrl(atleta.fotoUrl);
+    setUid(atleta.uid);
   }
 
   var _nomeController = BehaviorSubject<String>();
@@ -48,6 +54,8 @@ class AtletaBloc extends BlocBase {
   var _isGoleiroController = BehaviorSubject<bool>();
   Stream<bool> get outIsGoleiro => _isGoleiroController.stream;
   var _isAtivoController = BehaviorSubject<bool>();
+  Stream<bool> get outSelecionado => _selecionadoController.stream;
+  var _selecionadoController = BehaviorSubject<bool>();
   Stream<bool> get outIsAtivo => _isAtivoController.stream;
   var _faltasController = BehaviorSubject<int>();
   Stream<int> get outFaltas => _faltasController.stream;
@@ -61,17 +69,21 @@ class AtletaBloc extends BlocBase {
   Stream<String> get outEmail => _emailController.stream;
   var _habilidadeController = BehaviorSubject<String>();
   Stream<String> get outHabilidade => _habilidadeController.stream;
+  var _uidController = BehaviorSubject<String>();
+  Stream<String> get outUid => _uidController.stream;
 
 
   void setNome(String value) => _nomeController.sink.add(value);
   void setIsGoleiro(bool value) => _isGoleiroController.sink.add(value);
   void setIsAtivo(bool value) => _isAtivoController.sink.add(value);
+  void setSelecionado(bool value) => _selecionadoController.sink.add(value);
   void setFaltas(int value) => _faltasController.sink.add(value);
   void setPosicao(String value) => _posicaoController.sink.add(value);
   void setFone(String value) => _foneController.sink.add(value);
   void setFotoUrl(String value) => _fotoUrlController.sink.add(value);
   void setEmail(String value) => _emailController.sink.add(value);
   void setHabilidade(String value) => _habilidadeController.sink.add(value);
+  void setUid(String value) => _uidController.sink.add(value);
 
 
 
@@ -80,12 +92,14 @@ class AtletaBloc extends BlocBase {
       ..nome = _nome
       ..isGoleiro = _isGoleiro
       ..isAtivo =_isAtivo
+      ..selecionado =_selecionado
       ..faltas = _faltas
       ..posicao = _posicao
       ..email = _email
       ..fone = _fone
       ..fotoUrl = _fotoUrl
-      ..habilidade = _habilidade;
+      ..habilidade = _habilidade
+      ..uid = _uid;
 
     if (_documentId?.isEmpty ?? true) {
       _repository.add(atleta);
@@ -107,6 +121,7 @@ class AtletaBloc extends BlocBase {
     _foneController.close();
     _fotoUrlController.close();
     _habilidadeController.close();
+    _uidController.close();
     super.dispose();
   }
 }

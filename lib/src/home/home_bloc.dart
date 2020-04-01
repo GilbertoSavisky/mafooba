@@ -5,7 +5,7 @@ import 'package:mafooba/src/equipe/equipe_repository.dart';
 
 import '../app_module.dart';
 
-class HomeBloc extends BlocBase {
+class                       HomeBloc extends BlocBase {
   var _repositoryAtleta = AppModule.to.getDependency<AtletaRepository>();
   get atleta => _repositoryAtleta.atleta;
 

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:mafooba/src/atleta/atleta_home_page.dart';
 import 'package:mafooba/src/chat/chat_home_page.dart';
 import 'package:mafooba/src/chat/chat_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
@@ -154,13 +155,9 @@ class _HomePageState extends State<HomePage> {
           child: Icon(Icons.person_add, color: Colors.white),
           backgroundColor: Colors.amber,
           onTap: () {
-            var atleta = Atleta()
-              ..nome = ""
-              ..isGoleiro = false;
-
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AtletaPage(atleta)),
+              MaterialPageRoute(builder: (context) => AtletaHomePage()),
             );
           },
           label: 'Atletas',
