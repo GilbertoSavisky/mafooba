@@ -1,4 +1,5 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/models/equipe_model.dart';
 import 'package:rxdart/rxdart.dart';
@@ -14,7 +15,7 @@ class EquipeBloc extends BlocBase {
   int _totalJogadores;
   double _vlrCancha;
   Atleta _capitao;
-//  List<Person> _jogadores;
+  List<Atleta> _listaAtletas;
   String _foneCampo;
   DateTime _horario;
   bool _active;
@@ -30,9 +31,10 @@ class EquipeBloc extends BlocBase {
     _imagemController.listen((value) => _imagem = value);
     _foneCampoController.listen((value) => _foneCampo = value);
     _capitaoController.listen((value) => _capitao = value);
-//    _jogadoresController.listen((value) => _jogadores = value as List<Person>);
     _totalJogadoresController.listen((value) => _totalJogadores = value as int);
     _activeController.listen((value) => _active = value);
+
+    _listaAtletasController.listen((value) => _listaAtletas = value as List);
   }
 
   var _repository = AppModule.to.getDependency<EquipeRepository>();
@@ -42,7 +44,6 @@ class EquipeBloc extends BlocBase {
     setNomeEquipe(equipe.nomeEquipe);
     setEstilo(equipe.estilo);
     setLocal(equipe.local);
-//    setJogadores(equipe.jogadores);
     setCapitao(equipe.capitao);
     setFoneCampo(equipe.foneCampo);
     setInfo(equipe.info);
@@ -51,6 +52,8 @@ class EquipeBloc extends BlocBase {
     setTotalJogadores(equipe.totalJogadores);
     setActive(equipe.active);
     setHorario(equipe.horario);
+
+    //setListaAtletas(equipe.listaAtletas);
   }
 
   var _horarioController = BehaviorSubject<DateTime>();
@@ -65,8 +68,10 @@ class EquipeBloc extends BlocBase {
   Stream<String> get outInfo => _infoController.stream;
   var _imagemController = BehaviorSubject<String>();
   Stream<String> get outImagem => _imagemController.stream;
-  var _jogadoresController = BehaviorSubject<Atleta>();
-  Stream<Atleta> get outJogadores => _jogadoresController.stream;
+
+  var _listaAtletasController = BehaviorSubject<List<Atleta>>();
+  Stream<List<Atleta>> get outListaAtletas => _listaAtletasController.stream;
+
   var _capitaoController = BehaviorSubject<Atleta>();
   Stream<Atleta> get outCapitao => _capitaoController.stream;
   var _foneCampoController = BehaviorSubject<String>();
@@ -88,7 +93,9 @@ class EquipeBloc extends BlocBase {
   void setImagem(String value) => _imagemController.sink.add(value);
   void setTotalJogadores(int value) => _totalJogadoresController.sink.add(value);
   void setCapitao(Atleta value) => _capitaoController.sink.add(value);
-//  void setJogadores(List<Person> value) => _jogadoresController.sink.add(List as Person);
+
+  void setListaAtletas(Atleta value) => _listaAtletasController.sink.add(value as List);
+
   void setFoneCampo(String value) => _foneCampoController.sink.add(value);
 
   bool insertOrUpdate() {
@@ -103,7 +110,8 @@ class EquipeBloc extends BlocBase {
     ..capitao = _capitao
     ..foneCampo = _foneCampo
     ..horario = _horario
-    ..active = _active;
+    ..active = _active
+    ..listaAtletas = _listaAtletas;
 
     if (_documentId?.isEmpty ?? true) {
       _repository.add(equipe);
@@ -126,8 +134,8 @@ class EquipeBloc extends BlocBase {
     _imagemController.close();
     _totalJogadoresController.close();
     _capitaoController.close();
-    _jogadoresController.close();
     _foneCampoController.close();
+    _listaAtletasController.close();
     super.dispose();
   }
 }

@@ -37,7 +37,6 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _sendMessage({File imgFile}) async {
-    print(_ultimaMsgController.text);
 
     Map<String, dynamic> data = {};
 
@@ -51,7 +50,6 @@ class _ChatPageState extends State<ChatPage> {
 
       setState(() {
         _isLoading = true;
-        print('_isLoading true= ${_isLoading}');
       });
 
       StorageTaskSnapshot taskSnapshot = await task.onComplete;
@@ -60,7 +58,6 @@ class _ChatPageState extends State<ChatPage> {
 
       setState(() {
         _isLoading = false;
-        print('_isLoading false= ${_isLoading}');
 
       });
 

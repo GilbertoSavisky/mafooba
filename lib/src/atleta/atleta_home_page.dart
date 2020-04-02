@@ -58,7 +58,7 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
                         onChanged: (c){
                           setState(() {
                             atleta.selecionado = c;
-                            print(atleta.selecionado);
+                            //print(atleta.selecionado);
                           });
                         },
                       ),

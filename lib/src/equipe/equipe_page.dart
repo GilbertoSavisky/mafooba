@@ -154,7 +154,7 @@ class _EquipePageState extends State<EquipePage> {
               Container(height: 15),
               Container(
                 child: TextField(
-                  decoration: InputDecoration(labelText: "Estilo da Pelada"),
+                  decoration: InputDecoration(labelText: "Atletas"),
                   controller: _estiloController,
                   onChanged: _bloc.setEstilo,
                 ),

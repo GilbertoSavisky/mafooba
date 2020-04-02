@@ -59,7 +59,6 @@ class ChatBloc extends BlocBase {
       ..uid = _uid
       ..horario = _horario
       ..visualizado = _visualizado;
-    print('sdfsdfssdfsdf');
 
     if (_documentId?.isEmpty ?? true) {
       _repository.add(chat);

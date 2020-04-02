@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,6 +20,14 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
 
   final _dateFormat = DateFormat("dd/MM/yyyy");
 
+//  void ver ()async{
+//    QuerySnapshot doc = await Firestore.instance.collection('equipe').getDocuments();
+  //    doc.documents.forEach((f){
+  //      List<dynamic> docRef = f.data['atletas'];
+  //      print(docRef[1].documentID);
+  //    });
+//  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +42,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
         child: StreamBuilder<List<Equipe>>(
           stream: _bloc.equipe,
           builder: (context, snapshot) {
+            print(snapshot.data[0]);
             if (!snapshot.hasData) return CircularProgressIndicator();
 
             return Container(

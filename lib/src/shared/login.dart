@@ -34,7 +34,6 @@ class _LoginState extends State<Login> {
 
       return _currentUser;
     }
-    print('_currentUser = ${_currentUser}');
     // Se for nulo tenta logar e retorna o user
     try{
       //Login com o Google, retorna a conta da pessoa logado no Google
@@ -49,6 +48,29 @@ class _LoginState extends State<Login> {
       final AuthResult authResult = await FirebaseAuth.instance.signInWithCredential(credential);
       //Pega o user do Firebase
       final FirebaseUser user = authResult.user;
+      Map<String, dynamic> dataUser = {
+        "uid": user.uid,
+        "email": user.email,
+        "nome": user.displayName,
+        "fotoUrl": user.photoUrl,
+        "fone": user.phoneNumber
+      };
+      if(user == null){
+        _snackBar.currentState.showSnackBar(SnackBar(
+          content: Text('Não foi possível fazer login. Tente novamente mais tarde!'),
+          backgroundColor: Colors.red,
+        ));
+      }
+      else {
+        _snackBar.currentState.showSnackBar(SnackBar(
+          content: Text('${user.displayName} está logado!'),
+          backgroundColor: Colors.green,
+        ));
+
+      }
+
+      Firestore.instance.collection('atleta').document().setData(dataUser);
+
       return user;
 
     } catch(error){
@@ -58,28 +80,6 @@ class _LoginState extends State<Login> {
 
   void verificaUserLogado()async{
     final FirebaseUser user = await _getUser();
-    if(user == null){
-      _snackBar.currentState.showSnackBar(SnackBar(
-        content: Text('Não foi possível fazer login. Tente novamente mais tarde!'),
-        backgroundColor: Colors.red,
-      ));
-    }
-    else {
-      _snackBar.currentState.showSnackBar(SnackBar(
-        content: Text('Logado com sucesso!'),
-        backgroundColor: Colors.green,
-      ));
-
-    }
-    print(user);
-    Map<String, dynamic> dataUser = {
-      "uid": user.uid,
-      "email": user.email,
-      "nome": user.displayName,
-      "fotoUrl": user.photoUrl,
-      "fone": user.phoneNumber
-    };
-    Firestore.instance.collection('atleta').add(dataUser);
   }
 
 
@@ -87,7 +87,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
 //    print(_currentUser.email);
 //
-    googleSignIn.signOut();
+ //   googleSignIn.signOut();
     verificaUserLogado();
     return Scaffold(
       key: _snackBar,
