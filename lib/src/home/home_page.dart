@@ -7,11 +7,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:mafooba/src/atleta/atleta_home_page.dart';
 import 'package:mafooba/src/chat/chat_home_page.dart';
-import 'package:mafooba/src/chat/chat_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
-import 'package:mafooba/src/models/atleta_model.dart';
-import 'package:mafooba/src/atleta/atleta_page.dart';
 import 'package:mafooba/src/shared/login.dart';
+import '../atleta/atleta_home_page.dart';
+import '../atleta/atleta_page.dart';
+import '../models/atleta_model.dart';
+import '../models/atleta_model.dart';
 import 'home_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -51,7 +52,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
+    verificaUserLogado();
     return Scaffold(
       appBar: AppBar(
         title: Text("Mafooba (My App of FootBall)"),
@@ -60,12 +61,21 @@ class _HomePageState extends State<HomePage> {
             onSelected: (WhyFarther result) {
               setState(() {
 
-                if(result == WhyFarther.editarPerfil)
+                if(result == WhyFarther.editarPerfil)  {
+                  var atleta = Atleta()
+                    ..uid = _currentUser.uid
+                  ..email = _currentUser.email
+                  ..fotoUrl = _currentUser.photoUrl
+                  ..fone = _currentUser.phoneNumber
+                  ..nome = _currentUser.displayName;
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Login()),
+                        builder: (context) => AtletaPage(atleta)),
                   );
+
+                }
 
               });
             },
@@ -131,6 +141,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void verificaUserLogado()async{
+    final FirebaseUser user = await _getUser();
+  }
+
   ScrollController scrollController;
 
   bool dialVisible = true;
@@ -146,13 +160,7 @@ class _HomePageState extends State<HomePage> {
       });
     FirebaseAuth.instance.onAuthStateChanged.listen((user){
       setState(() {
-        if(_currentUser != null){
-          return _currentUser;
-        }
-        else{
-          print('setState login = ${user?.uid}');
-          _currentUser = user;
-        }
+        _currentUser = user;
       });
     });
 

@@ -7,17 +7,19 @@ class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Slidy',
+
       theme: ThemeData(
         primaryColor: Colors.green[800],
         accentColor: Colors.green[600],
+
 
         // Define the default font family.
         fontFamily: 'Georgia',
 
         textTheme: TextTheme(
-//        headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-//        title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-//        body1: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+        headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+        title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
+        body1: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
         ),
 
       ),
