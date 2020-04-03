@@ -20,6 +20,7 @@ class AtletaPage extends StatefulWidget {
 class _AtletaPageState extends State<AtletaPage> {
   final _dateFormat = DateFormat("dd/MM/yyyy");
   TextEditingController _nomeController;
+  TextEditingController _nickNameController;
   TextEditingController _posicaoController;
   TextEditingController _emailController;
   TextEditingController _foneController;
@@ -33,6 +34,7 @@ class _AtletaPageState extends State<AtletaPage> {
   void initState() {
     _bloc.setAtleta(widget.atleta);
     _nomeController = TextEditingController(text: widget.atleta.nome);
+    _nickNameController = TextEditingController(text: widget.atleta.nickName);
     _posicaoController = TextEditingController(text: widget.atleta.posicao);
 //    _faltasController = TextEditingController(text: widget.atleta.faltas);
     _emailController = TextEditingController(text: widget.atleta.email);
@@ -45,6 +47,7 @@ class _AtletaPageState extends State<AtletaPage> {
   @override
   void dispose() {
     _nomeController.dispose();
+    _nickNameController.dispose();
     _posicaoController.dispose();
     _emailController.dispose();
     _foneController.dispose();
@@ -58,7 +61,7 @@ class _AtletaPageState extends State<AtletaPage> {
     return Scaffold(
       appBar: AppBar(
         title: ListTile(
-          title: Text("Editar Perfil de ${widget.atleta.nome}", style: TextStyle(color: Colors.white),),
+          title: Text("Editar Perfil de \n${widget.atleta.nome}", style: TextStyle(color: Colors.white),),
         ),
 
       ),
@@ -70,11 +73,19 @@ class _AtletaPageState extends State<AtletaPage> {
               StreamBuilder(
                 stream: _bloc.outFotoUrl,
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) return Container(color: Colors.green, width: 100,height: 100,);
                   return Center(
-                    child: Image.network(snapshot.data, width: 110,
-//                      onChanged: _bloc.setImagem,
-                    ),heightFactor: 1.2,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: InkWell(
+                        child: CircleAvatar(
+                          backgroundImage: snapshot.hasData ? NetworkImage(snapshot.data) : AssetImage('images/bola.png'),
+                          maxRadius: 55,
+                        ),
+                        onTap: (){
+
+                        },
+                      ),
+                    ),
                   );
                 },
               ),
@@ -85,15 +96,48 @@ class _AtletaPageState extends State<AtletaPage> {
                   onChanged: _bloc.setNome,
                 ),
               ),
-              Container(height: 15),
               Container(
-                child: TextField(
-                  decoration: InputDecoration(labelText: "'Capitão' (adm. da equipe) "),
-//                  controller: _localController,
-//                  onChanged: _bloc.setCapitao,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(labelText: "Apelido"),
+                        controller: _nickNameController,
+                        onChanged: _bloc.setNickName,
+                      ),
+                    ),
+                    StreamBuilder(
+                      stream: _bloc.outIsGoleiro,
+                      initialData: true,
+                      builder: (context, snapshot) {
+                        return Row(
+                          children: <Widget>[
+                            Text(
+                              "Goleiro",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(),
+                            ),
+                            Center(
+                              child: Switch(
+                                value: true,
+                                onChanged: _bloc.setIsGoleiro,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+
+                  ],
                 ),
               ),
-              Container(height: 15),
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(labelText: "Email"),
+                  controller: _emailController,
+                  onChanged: _bloc.setEmail,
+                ),
+              ),
               Container(
                 child: Row(
                   children: <Widget>[
@@ -117,7 +161,6 @@ class _AtletaPageState extends State<AtletaPage> {
                   ],
                 ),
               ),
-              Container(height: 15),
               Container(
                 child: Row(
                   children: <Widget>[
@@ -141,35 +184,12 @@ class _AtletaPageState extends State<AtletaPage> {
                   ],
                 ),
               ),
-              Container(height: 15),
               Container(
                 child: TextField(
                   decoration: InputDecoration(labelText: "Valor da Cancha"),
                   controller: _habilidadeController,
                   onChanged: _bloc.setHabilidade,
                 ),
-              ),
-              Container(height: 15),
-              StreamBuilder(
-                stream: _bloc.outIsGoleiro,
-                initialData: true,
-                builder: (context, snapshot) {
-                  return Column(
-                    children: <Widget>[
-                      Text(
-                        "Goleiro",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(),
-                      ),
-                      Center(
-                        child: Switch(
-                          value: true,
-                          onChanged: _bloc.setIsGoleiro,
-                        ),
-                      ),
-                    ],
-                  );
-                },
               ),
               FloatingActionButton.extended (
                   label: Text("Salvar"),elevation: 5,

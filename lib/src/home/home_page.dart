@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     verificaUserLogado();
     return Scaffold(
+      key: _snackBar,
       appBar: AppBar(
         title: Text("Mafooba (My App of FootBall)"),
         actions: <Widget>[
@@ -152,7 +153,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    googleSignIn.signOut();
     scrollController = ScrollController()
       ..addListener(() {
         setDialVisible(scrollController.position.userScrollDirection ==
@@ -167,7 +167,6 @@ class _HomePageState extends State<HomePage> {
   }
   Future<FirebaseUser> _getUser() async {
     if(_currentUser != null){
-
       return _currentUser;
     }
     // Se for nulo tenta logar e retorna o user
