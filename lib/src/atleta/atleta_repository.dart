@@ -4,7 +4,7 @@ import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AtletaRepository extends Disposable {
-  CollectionReference _collection = Firestore.instance.collection('atleta');
+  CollectionReference _collection = Firestore.instance.collection('atletas');
 
   void add(Atleta atleta) => _collection.add(atleta.toMap());
 

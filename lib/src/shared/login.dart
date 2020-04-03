@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mafooba/src/home/home_page.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -63,15 +64,16 @@ class _LoginState extends State<Login> {
       }
       else {
         _snackBar.currentState.showSnackBar(SnackBar(
-          content: Text('${user.displayName} está logado!'),
+          content: Text('Bem vindo ${user.displayName}!'),
           backgroundColor: Colors.green,
         ));
 
       }
 
-      Firestore.instance.collection('atleta').document().setData(dataUser);
+      Firestore.instance.collection('atletas').document(user.uid).setData(dataUser);
 
       return user;
+
 
     } catch(error){
       return null;
