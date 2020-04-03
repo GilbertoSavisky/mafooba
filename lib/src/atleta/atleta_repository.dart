@@ -6,10 +6,13 @@ import 'package:rxdart/rxdart.dart';
 class AtletaRepository extends Disposable {
   CollectionReference _collection = Firestore.instance.collection('atletas');
 
-  void add(Atleta atleta) => _collection.add(atleta.toMap());
+  void add(Atleta atleta) => _collection.document(atleta.uid).setData(atleta.toMap());
 
-  void update(String documentId, Atleta equipe) =>
-      _collection.document(documentId).updateData(equipe.toMap());
+  void addAtleta(String documentId, Atleta atleta) =>
+      _collection.document(documentId).setData(atleta.toMap());
+
+  void update(String documentId, Atleta atleta) =>
+      _collection.document(documentId).updateData(atleta.toMap());
 
   void delete(String documentId) => _collection.document(documentId).delete();
 

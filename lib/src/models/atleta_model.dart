@@ -22,8 +22,7 @@ class Atleta extends BaseModel {
   Atleta();
 
   Atleta.fromMap(DocumentSnapshot document) {
-    _documentId = document.documentID;
-
+    _documentId =  document.data['uid'];//document.documentID;
     this.nome = document.data["nome"];
     this.nickName = document.data["nickName"];
     this.isGoleiro = document.data["isGoleiro"] ?? false;
@@ -34,7 +33,6 @@ class Atleta extends BaseModel {
     this.email = document.data["email"];
     this.fone = document.data["fone"];
     this.fotoUrl = document.data["fotoUrl"];
-    this.uid = document.data["uid"];
     this.habilidade = document.data["habilidade"];
   }
   @override

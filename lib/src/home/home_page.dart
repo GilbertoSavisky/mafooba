@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:mafooba/src/atleta/atleta_bloc.dart';
 import 'package:mafooba/src/atleta/atleta_home_page.dart';
 import 'package:mafooba/src/chat/chat_home_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
@@ -25,10 +26,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   FirebaseUser _currentUser;
-
+  Atleta atleta = Atleta();
   final GlobalKey<ScaffoldState> _snackBar = GlobalKey<ScaffoldState>();
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final _bloc = HomeBloc();
+  final _blocAtleta = AtletaBloc();
   final _dateFormat = DateFormat("dd/MM/yyyy");
   final _selection = null;
 
@@ -56,45 +58,49 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       key: _snackBar,
       appBar: AppBar(
-        title: Text("Mafooba (My App of FootBall)"),
-        actions: <Widget>[
-          PopupMenuButton<WhyFarther>(
-            onSelected: (WhyFarther result) {
-              setState(() {
-
-                if(result == WhyFarther.editarPerfil)  {
-                  var atleta = Atleta()
-                    ..uid = _currentUser.uid
-                  ..email = _currentUser.email
-                  ..fotoUrl = _currentUser.photoUrl
-                  ..fone = _currentUser.phoneNumber
-                  ..nome = _currentUser.displayName;
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AtletaPage(atleta)),
-                  );
-
-                }
-
-              });
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<WhyFarther>>[
-              const PopupMenuItem<WhyFarther>(
-                value: WhyFarther.editarPerfil,
-                child: Text('Editar Atleta'),
-              ),
-              const PopupMenuItem<WhyFarther>(
-                value: WhyFarther.selfStarter,
-                child: Text('Being a self-starter'),
-              ),
-              const PopupMenuItem<WhyFarther>(
-                value: WhyFarther.tradingCharter,
-                child: Text('Placed in charge of trading charter'),
-              ),
+        title: Container(
+          padding: EdgeInsets.all(15),
+          child: Row(
+            children: <Widget>[
+              Text("Mafooba"),
+              Text('   (My App of FootBall)', style: TextStyle(fontSize: 12),),
             ],
-            icon: Image.asset('images/bola.png'),padding: EdgeInsets.only(right: 15),
+          ),
+        ),
+        actions: <Widget>[
+          Container(
+            padding: EdgeInsets.all(10),
+            child: PopupMenuButton<WhyFarther>(
+              onSelected: (WhyFarther result) {
+                setState(() {
+
+                  if(result == WhyFarther.editarPerfil)  {
+                    print('atleta= ${atleta}');
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AtletaPage(atleta)),
+                    );
+                  }
+                });
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<WhyFarther>>[
+                const PopupMenuItem<WhyFarther>(
+                  value: WhyFarther.editarPerfil,
+                  child: Text('Editar Atleta'),
+                ),
+                const PopupMenuItem<WhyFarther>(
+                  value: WhyFarther.selfStarter,
+                  child: Text('Being a self-starter'),
+                ),
+                const PopupMenuItem<WhyFarther>(
+                  value: WhyFarther.tradingCharter,
+                  child: Text('Placed in charge of trading charter'),
+                ),
+              ],
+              icon: Image.asset('images/bola.png'),padding: EdgeInsets.only(right: 15),
+            ),
           ),
 //          IconButton(onPressed: (){
 //            Navigator.push(
@@ -183,13 +189,25 @@ class _HomePageState extends State<HomePage> {
       final AuthResult authResult = await FirebaseAuth.instance.signInWithCredential(credential);
       //Pega o user do Firebase
       final FirebaseUser user = authResult.user;
-      Map<String, dynamic> dataUser = {
-        "uid": user.uid,
-        "email": user.email,
-        "nome": user.displayName,
-        "fotoUrl": user.photoUrl,
-        "fone": user.phoneNumber
-      };
+
+
+        atleta
+        ..uid = user.uid
+        ..email= user.email
+        ..nome= user.displayName
+        ..fotoUrl= user.photoUrl
+        ..fone = user.phoneNumber
+        ..isAtivo = true
+        ..habilidade = ''
+        ..isGoleiro = false
+        ..nickName = ''
+        ..selecionado = false
+        ..posicao = ''
+        ..faltas = 0;
+
+      _bloc.addAtleta(atleta);
+
+
       if(user == null){
         _snackBar.currentState.showSnackBar(SnackBar(
           content: Text('Não foi possível fazer login. Tente novamente mais tarde!'),
@@ -203,14 +221,6 @@ class _HomePageState extends State<HomePage> {
         ));
 
       }
-
-      Firestore.instance.collection('atletas').document(user.uid).setData(dataUser);
-
-//      return Navigator.push(
-//        context,
-//        MaterialPageRoute(
-//            builder: (context) => HomePage(_currentUser: user,)),
-//      );
 
 
     } catch(error){

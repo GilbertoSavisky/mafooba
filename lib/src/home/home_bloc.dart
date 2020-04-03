@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:mafooba/src/atleta/atleta_repository.dart';
 import 'package:mafooba/src/chat/chat_repository.dart';
 import 'package:mafooba/src/equipe/equipe_repository.dart';
+import 'package:mafooba/src/models/atleta_model.dart';
 
 import '../app_module.dart';
 
@@ -15,8 +16,9 @@ HomeBloc extends BlocBase {
 
   var _repositoryChat = AppModule.to.getDependency<ChatRepository>();
   get chat => _repositoryChat.chat;
-  
+
   void deleteAtleta(String documentId) => _repositoryAtleta.delete(documentId);
+  void addAtleta(Atleta atleta) => _repositoryAtleta.add(atleta);
   void deleteEquipe(String documentId) => _repositoryEquipe.delete(documentId);
   void deleteChat(String documentId) => _repositoryChat.delete(documentId);
 

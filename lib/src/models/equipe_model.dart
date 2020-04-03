@@ -58,7 +58,6 @@ class Equipe extends BaseModel {
 //        this.listaAtletas.insert(0, atleta);
 
       });
-      print('atasa = ${atleta.nome}');
     });
 
   }

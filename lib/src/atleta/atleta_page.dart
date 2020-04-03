@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import 'package:mafooba/src/equipe/equipe_bloc.dart';
-import 'package:mafooba/src/models/equipe_model.dart';
 
 import '../models/atleta_model.dart';
 import 'atleta_bloc.dart';
@@ -108,7 +106,7 @@ class _AtletaPageState extends State<AtletaPage> {
                     ),
                     StreamBuilder(
                       stream: _bloc.outIsGoleiro,
-                      initialData: true,
+                      initialData: widget.atleta.isGoleiro,
                       builder: (context, snapshot) {
                         return Row(
                           children: <Widget>[

@@ -38,7 +38,7 @@ class AtletaBloc extends BlocBase {
   var _repository = AppModule.to.getDependency<AtletaRepository>();
 
   void setAtleta(Atleta atleta) {
-    _documentId = atleta.documentId();
+    _documentId = atleta.uid; //atleta.documentId();
     setNome(atleta.nome);
     setNickName(atleta.nickName);
     setPosicao(atleta.posicao);

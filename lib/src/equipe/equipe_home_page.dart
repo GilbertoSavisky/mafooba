@@ -42,9 +42,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
         child: StreamBuilder<List<Equipe>>(
           stream: _bloc.equipe,
           builder: (context, snapshot) {
-            print(snapshot.data[0]);
             if (!snapshot.hasData) return CircularProgressIndicator();
-
             return Container(
               child: ListView(
                 children: snapshot.data.map((equipe) {
