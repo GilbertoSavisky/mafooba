@@ -10,6 +10,7 @@ import 'package:mafooba/src/atleta/atleta_home_page.dart';
 import 'package:mafooba/src/chat/chat_home_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
 import 'package:mafooba/src/shared/login.dart';
+import 'package:rxdart/rxdart.dart';
 import '../atleta/atleta_home_page.dart';
 import '../atleta/atleta_page.dart';
 import '../models/atleta_model.dart';
@@ -25,6 +26,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+
+  Stream<DocumentSnapshot> _stream;
   FirebaseUser _currentUser;
   Atleta atleta = Atleta();
   final GlobalKey<ScaffoldState> _snackBar = GlobalKey<ScaffoldState>();
@@ -54,7 +57,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    verificaUserLogado();
     return Scaffold(
       key: _snackBar,
       appBar: AppBar(
@@ -68,48 +70,44 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: <Widget>[
-          Container(
-            padding: EdgeInsets.all(10),
-            child: PopupMenuButton<WhyFarther>(
-              onSelected: (WhyFarther result) {
-                setState(() {
+          FutureBuilder<DocumentSnapshot>(
+            future: Firestore.instance.collection('atletas').document(_currentUser?.uid).get(),
+            builder: (context, snapshot) {
+              //if(!snapshot.hasData) atleta = Atleta.fromMap(snapshot.data);
+              return Container(
+                    padding: EdgeInsets.all(10),
+                    child: PopupMenuButton<WhyFarther>(
+                      onSelected: (WhyFarther result) {
+                        setState(() {
+                          if(result == WhyFarther.editarPerfil)  {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AtletaPage(atleta)),
+                            );
 
-                  if(result == WhyFarther.editarPerfil)  {
-                    print('atleta= ${atleta}');
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AtletaPage(atleta)),
-                    );
-                  }
-                });
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<WhyFarther>>[
-                const PopupMenuItem<WhyFarther>(
-                  value: WhyFarther.editarPerfil,
-                  child: Text('Editar Atleta'),
-                ),
-                const PopupMenuItem<WhyFarther>(
-                  value: WhyFarther.selfStarter,
-                  child: Text('Being a self-starter'),
-                ),
-                const PopupMenuItem<WhyFarther>(
-                  value: WhyFarther.tradingCharter,
-                  child: Text('Placed in charge of trading charter'),
-                ),
-              ],
-              icon: Image.asset('images/bola.png'),padding: EdgeInsets.only(right: 15),
-            ),
+                          }
+                        });
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<WhyFarther>>[
+                        const PopupMenuItem<WhyFarther>(
+                          value: WhyFarther.editarPerfil,
+                          child: Text('Editar Atleta'),
+                        ),
+                        const PopupMenuItem<WhyFarther>(
+                          value: WhyFarther.selfStarter,
+                          child: Text('Being a self-starter'),
+                        ),
+                        const PopupMenuItem<WhyFarther>(
+                          value: WhyFarther.tradingCharter,
+                          child: Text('Placed in charge of trading charter'),
+                        ),
+                      ],
+                      icon: Image.asset('images/bola.png'),padding: EdgeInsets.only(right: 15),
+                    ),
+                  );
+            }
           ),
-//          IconButton(onPressed: (){
-//            Navigator.push(
-//              context,
-//              MaterialPageRoute(
-//                  builder: (context) => Login()),
-//            );
-//          },
-//          icon: Icon(Icons.menu, color: Colors.white,),)
         ],
       ),
 
@@ -126,7 +124,6 @@ class _HomePageState extends State<HomePage> {
                 StreamBuilder<QuerySnapshot>(
                   stream: Firestore.instance.collection('home').snapshots(),
                   builder: (context, snapshot) {
-                    //print(snapshot.hasData);
                     return snapshot.hasData ? Center(
                       child: Container(
                        margin: EdgeInsets.only(top: 20),
@@ -148,10 +145,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void verificaUserLogado()async{
-    final FirebaseUser user = await _getUser();
-  }
-
   ScrollController scrollController;
 
   bool dialVisible = true;
@@ -164,14 +157,18 @@ class _HomePageState extends State<HomePage> {
         setDialVisible(scrollController.position.userScrollDirection ==
             ScrollDirection.forward);
       });
+    _getUser();
     FirebaseAuth.instance.onAuthStateChanged.listen((user){
       setState(() {
+        if(user == null)
+          _getUser();
         _currentUser = user;
       });
     });
 
   }
   Future<FirebaseUser> _getUser() async {
+
     if(_currentUser != null){
       return _currentUser;
     }
@@ -190,22 +187,16 @@ class _HomePageState extends State<HomePage> {
       //Pega o user do Firebase
       final FirebaseUser user = authResult.user;
 
+      Stream<DocumentSnapshot> tt = Firestore.instance.collection('atletas').document(user.uid).snapshots();
 
         atleta
         ..uid = user.uid
         ..email= user.email
         ..nome= user.displayName
         ..fotoUrl= user.photoUrl
-        ..fone = user.phoneNumber
-        ..isAtivo = true
-        ..habilidade = ''
-        ..isGoleiro = false
-        ..nickName = ''
-        ..selecionado = false
-        ..posicao = ''
-        ..faltas = 0;
+        ..fone = '41999407329';
 
-      _bloc.addAtleta(atleta);
+        _bloc.addAtleta(user.uid, atleta);
 
 
       if(user == null){
@@ -218,10 +209,11 @@ class _HomePageState extends State<HomePage> {
         _snackBar.currentState.showSnackBar(SnackBar(
           content: Text('Bem vindo ${user.displayName}!'),
           backgroundColor: Colors.green,
+
         ));
 
       }
-
+      return user;
 
     } catch(error){
       return null;

@@ -1,8 +1,10 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mafooba/src/atleta/atleta_repository.dart';
 import 'package:mafooba/src/chat/chat_repository.dart';
 import 'package:mafooba/src/equipe/equipe_repository.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../app_module.dart';
 
@@ -18,7 +20,7 @@ HomeBloc extends BlocBase {
   get chat => _repositoryChat.chat;
 
   void deleteAtleta(String documentId) => _repositoryAtleta.delete(documentId);
-  void addAtleta(Atleta atleta) => _repositoryAtleta.add(atleta);
+  void addAtleta(String docID, Atleta atleta) => _repositoryAtleta.addAtleta(docID, atleta);
   void deleteEquipe(String documentId) => _repositoryEquipe.delete(documentId);
   void deleteChat(String documentId) => _repositoryChat.delete(documentId);
 
@@ -26,4 +28,6 @@ HomeBloc extends BlocBase {
   void dispose() {
     super.dispose();
   }
+
+  Stream<DocumentSnapshot> getData(String uid) => _repositoryAtleta.getData(uid);
 }

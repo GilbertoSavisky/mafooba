@@ -26,7 +26,7 @@ class Atleta extends BaseModel {
     this.nome = document.data["nome"];
     this.nickName = document.data["nickName"];
     this.isGoleiro = document.data["isGoleiro"] ?? false;
-    this.isAtivo = document.data["isAtivo"] ?? false;
+    this.isAtivo = document.data["isAtivo"] ?? true;
     this.selecionado = document.data["selecionado"] ?? false;
     this.faltas = document.data["faltas"];
     this.posicao = document.data["posicao"];
@@ -39,17 +39,17 @@ class Atleta extends BaseModel {
   toMap() {
     var map = new Map<String, dynamic>();
     map['nome'] = this.nome;
-    map['nickName'] = this.nickName;
-    map['isGoleiro'] = this.isGoleiro;
-    map['isAtivo'] = this.isAtivo;
-    map['selecionado'] = this.selecionado;
-    map['faltas'] = this.faltas;
-    map['posicao'] = this.posicao;
+    map['nickName'] = this.nickName ?? '';
+    map['isGoleiro'] = this.isGoleiro ?? false;
+    map['isAtivo'] = this.isAtivo ?? true;
+    map['selecionado'] = this.selecionado ?? false;
+    map['faltas'] = this.faltas ?? 0;
+    map['posicao'] = this.posicao ?? '';
     map['email'] = this.email;
     map['fone'] = this.fone;
     map['fotoUrl'] = this.fotoUrl;
     map['uid'] = this.uid;
-    map['habilidade'] = this.habilidade;
+    map['habilidade'] = this.habilidade ?? '';
 //    print(map);
     return map;
   }

@@ -144,7 +144,7 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AtletaPage(atleta)),
+              MaterialPageRoute(builder: (context) => AtletaPage(atleta,)),
             );
           },
           label: 'Atletas',
