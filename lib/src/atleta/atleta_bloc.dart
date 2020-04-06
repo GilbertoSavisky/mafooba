@@ -1,4 +1,5 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/atleta/atleta_repository.dart';
 import 'package:rxdart/rxdart.dart';
@@ -19,6 +20,7 @@ class AtletaBloc extends BlocBase {
   String _fotoUrl;
   String _habilidade;
   String _uid;
+  DocumentReference _grupoUID;
 
   AtletaBloc() {
     _nomeController.listen((value) => _nome = value);
@@ -33,6 +35,7 @@ class AtletaBloc extends BlocBase {
     _fotoUrlController.listen((value) => _fotoUrl = value);
     _habilidadeController.listen((value) => _habilidade = value);
     _uidController.listen((value) => _uid = value);
+    _grupoUIDController.listen((value) => _grupoUID = value as DocumentReference);
   }
 
   var _repository = AppModule.to.getDependency<AtletaRepository>();
@@ -50,6 +53,8 @@ class AtletaBloc extends BlocBase {
     setFone(atleta.fone);
     setFotoUrl(atleta.fotoUrl);
     setUid(atleta.uid);
+    setHabilidade(atleta.habilidade);
+    setGrupoUID(atleta.grupoUID);
   }
 
   var _nomeController = BehaviorSubject<String>();
@@ -72,10 +77,15 @@ class AtletaBloc extends BlocBase {
   Stream<String> get outFotoUrl => _fotoUrlController.stream;
   var _emailController = BehaviorSubject<String>();
   Stream<String> get outEmail => _emailController.stream;
+
   var _habilidadeController = BehaviorSubject<String>();
   Stream<String> get outHabilidade => _habilidadeController.stream;
+
   var _uidController = BehaviorSubject<String>();
   Stream<String> get outUid => _uidController.stream;
+
+  var _grupoUIDController = BehaviorSubject<DocumentReference>();
+  Stream<DocumentReference> get outGrupoUID => _grupoUIDController.stream;
 
 
   void setNome(String value) => _nomeController.sink.add(value);
@@ -90,11 +100,13 @@ class AtletaBloc extends BlocBase {
   void setEmail(String value) => _emailController.sink.add(value);
   void setHabilidade(String value) => _habilidadeController.sink.add(value);
   void setUid(String value) => _uidController.sink.add(value);
+  void setGrupoUID(DocumentReference value) => _grupoUIDController.sink.add(value);
 
 
 
   bool insertOrUpdate() {
     var atleta = Atleta()
+
       ..nome = _nome
       ..nickName = _nickName
       ..isGoleiro = _isGoleiro
@@ -106,7 +118,8 @@ class AtletaBloc extends BlocBase {
       ..fone = _fone
       ..fotoUrl = _fotoUrl
       ..habilidade = _habilidade
-      ..uid = _uid;
+      ..uid = _uid
+      ..grupoUID = _grupoUID;
 
     if (_documentId?.isEmpty ?? true) {
       _repository.add(atleta);
@@ -130,6 +143,7 @@ class AtletaBloc extends BlocBase {
     _fotoUrlController.close();
     _habilidadeController.close();
     _uidController.close();
+    _grupoUIDController.close();
     super.dispose();
   }
 }

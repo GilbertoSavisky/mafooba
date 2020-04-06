@@ -18,6 +18,7 @@ class Atleta extends BaseModel {
   String fotoUrl;
   String uid;
   String habilidade;
+  DocumentReference grupoUID;
 
   Atleta();
 
@@ -34,6 +35,9 @@ class Atleta extends BaseModel {
     this.fone = document.data["fone"];
     this.fotoUrl = document.data["fotoUrl"];
     this.habilidade = document.data["habilidade"];
+    this.uid = document.data['uid'];
+    this.grupoUID = document.data['grupoUID'];
+
   }
   @override
   toMap() {
@@ -50,7 +54,8 @@ class Atleta extends BaseModel {
     map['fotoUrl'] = this.fotoUrl;
     map['uid'] = this.uid;
     map['habilidade'] = this.habilidade ?? '';
-//    print(map);
+    map['grupoUID'] = this.grupoUID ?? '';
+
     return map;
   }
 

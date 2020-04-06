@@ -138,7 +138,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AtletaPage(atleta)),
+              MaterialPageRoute(builder: (context) => AtletaPage(atleta: atleta)),
             );
           },
           label: 'Atletas',

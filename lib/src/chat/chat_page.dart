@@ -127,7 +127,6 @@ class _ChatPageState extends State<ChatPage> {
                             reverse: true,
                             itemCount: snapshot.data.documents.length,
                             itemBuilder: (context, index) {
-//                            print(snapshot.data.documents[1].data['mensagem']);
                               return snapshot.data.documents[index].data['imagem'] != null ?
 
                               ListTile(

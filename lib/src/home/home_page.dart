@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
 
   Stream<DocumentSnapshot> _stream;
   FirebaseUser _currentUser;
-  Atleta atleta = Atleta();
   final GlobalKey<ScaffoldState> _snackBar = GlobalKey<ScaffoldState>();
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final _bloc = HomeBloc();
@@ -70,10 +69,9 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: <Widget>[
-          FutureBuilder<DocumentSnapshot>(
-            future: Firestore.instance.collection('atletas').document(_currentUser?.uid).get(),
+          StreamBuilder<DocumentSnapshot>(
+            stream: _bloc.getData(_currentUser?.uid),
             builder: (context, snapshot) {
-              //if(!snapshot.hasData) atleta = Atleta.fromMap(snapshot.data);
               return Container(
                     padding: EdgeInsets.all(10),
                     child: PopupMenuButton<WhyFarther>(
@@ -83,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => AtletaPage(atleta)),
+                                  builder: (context) => AtletaPage(documentSnapshot: snapshot.data,)),
                             );
 
                           }
@@ -92,16 +90,16 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (BuildContext context) => <PopupMenuEntry<WhyFarther>>[
                         const PopupMenuItem<WhyFarther>(
                           value: WhyFarther.editarPerfil,
-                          child: Text('Editar Atleta'),
+                          child: Text('Editar meu perfil'),
                         ),
-                        const PopupMenuItem<WhyFarther>(
-                          value: WhyFarther.selfStarter,
-                          child: Text('Being a self-starter'),
-                        ),
-                        const PopupMenuItem<WhyFarther>(
-                          value: WhyFarther.tradingCharter,
-                          child: Text('Placed in charge of trading charter'),
-                        ),
+//                        const PopupMenuItem<WhyFarther>(
+//                          value: WhyFarther.selfStarter,
+//                          child: Text('Being a self-starter'),
+//                        ),
+//                        const PopupMenuItem<WhyFarther>(
+//                          value: WhyFarther.tradingCharter,
+//                          child: Text('Placed in charge of trading charter'),
+//                        ),
                       ],
                       icon: Image.asset('images/bola.png'),padding: EdgeInsets.only(right: 15),
                     ),
@@ -187,17 +185,20 @@ class _HomePageState extends State<HomePage> {
       //Pega o user do Firebase
       final FirebaseUser user = authResult.user;
 
-      Stream<DocumentSnapshot> tt = Firestore.instance.collection('atletas').document(user.uid).snapshots();
+      Firestore.instance.collection('atletas').document(user.uid).snapshots().listen((event) {
+        if(event.data == null)
+        {
+          var atleta = Atleta()
+            ..uid = user.uid
+            ..email= user.email
+            ..nome= user.displayName
+            ..fotoUrl= user.photoUrl
+            ..fone = '41999407329';
 
-        atleta
-        ..uid = user.uid
-        ..email= user.email
-        ..nome= user.displayName
-        ..fotoUrl= user.photoUrl
-        ..fone = '41999407329';
+          _bloc.addAtleta(user.uid, atleta);
 
-        _bloc.addAtleta(user.uid, atleta);
-
+        }
+      });
 
       if(user == null){
         _snackBar.currentState.showSnackBar(SnackBar(

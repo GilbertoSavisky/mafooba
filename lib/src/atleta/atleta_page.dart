@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mafooba/src/home/home_bloc.dart';
 
@@ -9,9 +13,10 @@ import '../models/atleta_model.dart';
 import 'atleta_bloc.dart';
 
 class AtletaPage extends StatefulWidget {
-  AtletaPage(this.atleta);
+  AtletaPage({this.atleta, this.documentSnapshot});
 
   Atleta atleta;
+  DocumentSnapshot documentSnapshot;
 
   @override
   _AtletaPageState createState() => _AtletaPageState();
@@ -27,28 +32,30 @@ class _AtletaPageState extends State<AtletaPage> {
   TextEditingController _fotoUrlController;
   TextEditingController _habilidadeController;
   TextEditingController _faltasController;
-  bool _isGoleiroController;
 
-
+  final GlobalKey<ScaffoldState> _snackBar = GlobalKey<ScaffoldState>();
 
   final _bloc = AtletaBloc();
   final _blocHome = HomeBloc();
+  bool _isLoading = false;
 
   @override
   void initState() {
-
+    if (widget.documentSnapshot != null) {
+      widget.atleta = Atleta.fromMap(widget.documentSnapshot);
+    }
 
     _nomeController = TextEditingController(text: widget.atleta.nome);
     _nickNameController = TextEditingController(text: widget.atleta.nickName);
     _posicaoController = TextEditingController(text: widget.atleta.posicao);
-    _faltasController = TextEditingController(text: widget.atleta.faltas.toString());
+    _faltasController =
+        TextEditingController(text: widget.atleta.faltas.toString());
     _emailController = TextEditingController(text: widget.atleta.email);
     _foneController = TextEditingController(text: widget.atleta.fone);
     _fotoUrlController = TextEditingController(text: widget.atleta.fotoUrl);
-    _habilidadeController = TextEditingController(text: widget.atleta.habilidade);
-    _isGoleiroController = widget.atleta.isGoleiro;
+    _habilidadeController =
+        TextEditingController(text: widget.atleta.habilidade);
     _bloc.setAtleta(widget.atleta);
-
     super.initState();
   }
 
@@ -64,157 +71,167 @@ class _AtletaPageState extends State<AtletaPage> {
     super.dispose();
   }
 
+  Future<String> trocarImagem(File imgFile) async {
+    if (imgFile != null) {
+      StorageUploadTask task = FirebaseStorage.instance
+          .ref()
+          .child('perfilAtletas')
+          .child(widget.atleta.nome)
+          .child(DateTime.now().millisecondsSinceEpoch.toString())
+          .putFile(imgFile);
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      StorageTaskSnapshot taskSnapshot = await task.onComplete;
+      String url = await taskSnapshot.ref.getDownloadURL();
+
+      _bloc.setFotoUrl(url);
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _snackBar,
       appBar: AppBar(
         title: ListTile(
-          title: Text("Editar Perfil de \n${widget.atleta.nome}", style: TextStyle(color: Colors.white),),
+          title: Text(
+            "Editar Perfil de \n${widget.atleta.nome}",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
-
       ),
       body: Container(
         child: Padding(
           padding: const EdgeInsets.only(left: 12, right: 12),
-          child: StreamBuilder<DocumentSnapshot>(
-            stream: Firestore.instance.collection('atletas').document(widget.atleta.uid).snapshots(),
-            builder: (context, snapshot) {
-//              widget.atleta
-//                ..uid = snapshot.data.data['uid'];
-//
-              return ListView(
-                children: <Widget>[
-                  StreamBuilder(
-                    stream: _bloc.outFotoUrl,
-                    builder: (context, snapshot) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: InkWell(
-                            child: CircleAvatar(
-                              backgroundImage: snapshot.hasData ? NetworkImage(snapshot.data) : AssetImage('images/bola.png'),
-                              maxRadius: 55,
+          child: ListView(
+            children: <Widget>[
+              StreamBuilder(
+                stream: _bloc.outFotoUrl,
+                builder: (context, snapshot) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: InkWell(
+                        child: CircleAvatar(
+                          backgroundImage: snapshot.hasData
+                              ? NetworkImage(snapshot.data)
+                              : AssetImage('images/bola.png'),
+                          maxRadius: 55,
+                        ),
+                        onTap: () async {
+                          final File imgFile = await ImagePicker.pickImage(
+                              source: ImageSource.gallery);
+                          if (imgFile == null) return;
+                          trocarImagem(imgFile);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              _isLoading
+                  ? Container(child: Center(child: CircularProgressIndicator()))
+                  : Container(),
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(
+                      labelText: "Nome do Atleta",
+                      labelStyle: TextStyle(color: Colors.green),
+                      enabled: false),
+                  controller: _nomeController,
+                  onChanged: _bloc.setNome,
+                ),
+              ),
+              Container(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(labelText: "Apelido"),
+                        controller: _nickNameController,
+                        onChanged: _bloc.setNickName,
+                      ),
+                    ),
+                    StreamBuilder(
+                      stream: _bloc.outIsGoleiro,
+                      initialData: widget.atleta.isGoleiro,
+                      builder: (context, snapshot) {
+                        return Row(
+                          children: <Widget>[
+                            Text(
+                              "Goleiro",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(),
                             ),
-                            onTap: (){
+                            Center(
+                              child: Switch(
+                                value: snapshot.data,
+                                onChanged: _bloc.setIsGoleiro,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(labelText: "Celular"),
+                  controller: _foneController,
+                  onChanged: _bloc.setFone,
+                ),
+              ),
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(
+                      labelText: "Posição",
+                      hintText: 'zagueiro, meio, atacante'),
+                  controller: _posicaoController,
+                  onChanged: _bloc.setPosicao,
+                ),
+              ),
+              Container(
+                child: TextField(
+                  decoration:
+                      InputDecoration(labelText: "Informações", enabled: false),
+                ),
+              ),
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(
+                      labelText: widget.atleta.faltas > 0 ?
+                          "Você tem ${widget.atleta.faltas} faltas consecutivas" : '',
+                      enabled: false,
+                      labelStyle: TextStyle(
+                        color: Colors.red,
+                      ),
+                  ),
 
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Container(
-                    child: TextField(
-                      decoration: InputDecoration(labelText: "Nome do Atleta", labelStyle: TextStyle(color: Colors.green)),
-                      controller: _nomeController,
-                      onChanged: _bloc.setNome,
-                    ),
-                  ),
-                  Container(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(labelText: "Apelido"),
-                            controller: _nickNameController,
-                            onChanged: _bloc.setNickName,
-                          ),
-                        ),
-                        StreamBuilder(
-                          stream: _bloc.outIsGoleiro,
-                          initialData: _isGoleiroController,
-                          builder: (context, snapshot) {
-                            return Row(
-                              children: <Widget>[
-                                Text(
-                                  "Goleiro",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(),
-                                ),
-                                Center(
-                                  child: Switch(
-                                    value: true,
-                                    onChanged: _bloc.setIsGoleiro,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: TextField(
-                      decoration: InputDecoration(labelText: "Email"),
-                      controller: _emailController,
-                      onChanged: _bloc.setEmail,
-                    ),
-                  ),
-                  Container(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(labelText: "Email"),
-                            controller: _emailController,
-                            onChanged: _bloc.setEmail,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(5),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(labelText: "Telefone"),
-                            controller: _foneController,
-                            onChanged: _bloc.setFone,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(labelText: "Posição", hintText: 'zagueiro, meio'),
-                            controller: _posicaoController,
-                            onChanged: _bloc.setPosicao,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(5),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(labelText: "Total por time",hintText: '0'),
-                            controller: _faltasController,
-//                        onChanged: _bloc.setFaltas,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: TextField(
-                      decoration: InputDecoration(labelText: "Valor da Cancha"),
-                      controller: _habilidadeController,
-                      onChanged: _bloc.setHabilidade,
-                    ),
-                  ),
-                  FloatingActionButton.extended (
-                      label: Text("Salvar"),elevation: 5,
-                      onPressed: () {
-                        if (_bloc.insertOrUpdate()) {
-                          Navigator.pop(context);
-                        }
-                      }),
-                ],
-              );
-            }
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(25),
+              ),
+              FloatingActionButton.extended(
+                  label: Text("Salvar"),
+                  elevation: 5,
+                  onPressed: () {
+                    if (_bloc.insertOrUpdate()) {
+                      _snackBar.currentState.showSnackBar(SnackBar(
+                        content: Text('Dados gravados com sucesso!'),
+                        backgroundColor: Colors.green,
+                      ));
+                    }
+                  }),
+            ],
           ),
         ),
       ),

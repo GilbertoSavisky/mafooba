@@ -20,14 +20,6 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
 
   final _dateFormat = DateFormat("dd/MM/yyyy");
 
-//  void ver ()async{
-//    QuerySnapshot doc = await Firestore.instance.collection('equipe').getDocuments();
-  //    doc.documents.forEach((f){
-  //      List<dynamic> docRef = f.data['atletas'];
-  //      print(docRef[1].documentID);
-  //    });
-//  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,7 +137,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AtletaPage(atleta)),
+              MaterialPageRoute(builder: (context) => AtletaPage(atleta: atleta)),
             );
           },
           label: 'Atletas',

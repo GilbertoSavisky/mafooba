@@ -58,7 +58,6 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
                         onChanged: (c){
                           setState(() {
                             atleta.selecionado = c;
-                            //print(atleta.selecionado);
                           });
                         },
                       ),
@@ -144,7 +143,7 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AtletaPage(atleta,)),
+              MaterialPageRoute(builder: (context) => AtletaPage(atleta: atleta,)),
             );
           },
           label: 'Atletas',

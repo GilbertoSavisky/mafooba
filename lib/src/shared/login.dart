@@ -87,9 +87,6 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-//    print(_currentUser.email);
-//
- //   googleSignIn.signOut();
     verificaUserLogado();
     return Scaffold(
       key: _snackBar,
