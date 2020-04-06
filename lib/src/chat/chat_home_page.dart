@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -9,31 +10,36 @@ import 'package:mafooba/src/models/chat_model.dart';
 import 'package:mafooba/src/models/equipe_model.dart';
 import 'package:mafooba/src/atleta/atleta_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:intl/intl.dart';
 
 class ChatHomePage extends StatefulWidget {
+
+  final FirebaseUser currentUser;
+
+  ChatHomePage(this.currentUser);
   @override
   _ChatHomePageState createState() => _ChatHomePageState();
 }
 
 class _ChatHomePageState extends State<ChatHomePage> {
   final _bloc = HomeBloc();
+  final _horaFormat = DateFormat('hh:mm a');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Minhas Conversas"),
+        title: Text("Nosso Bate Papo"),
       ),
 
       floatingActionButton: buildSpeedDial(
       ),
       body: Container(
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.only(right: 10, left: 10),
         child: StreamBuilder<List<Chat>>(
           stream: _bloc.chat,
           builder: (context, snapshot) {
             if (!snapshot.hasData) return CircularProgressIndicator();
-
             return Container(
               child: ListView(
                 children: snapshot.data.map((chat) {
@@ -42,20 +48,39 @@ class _ChatHomePageState extends State<ChatHomePage> {
                     onDismissed: (direction) {
                       _bloc.deleteEquipe(chat.documentId());
                     },
-                    child: ListTile(
-//                      leading: chat.imagem != null ? Image.network(chat.imagem) : Container(),
-                      title: Text(chat.nickName),
-                      subtitle: Text(chat.ultimaMsg),
-                      trailing: Text('${chat.horario.hour.toString()}:${chat.horario.minute.toString()}'),
-                      onTap: () {
-                        chat.ultimaMsg = '';
+                    child: Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                              radius: 25,
+                          backgroundImage: (chat.fotoUrl != null)
+                              ? NetworkImage(chat.fotoUrl, scale: 1.0)
+                          : AssetImage('images/bola.png'),
+                        ),
+                        title: Text(chat.nickName),
+                        subtitle: Text(chat.ultimaMsg,
+                          style: TextStyle(fontStyle: FontStyle.italic, color: Colors.blue),),
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(_horaFormat.format(chat.horario)),
+                            Card(
+                              child: chat.visualizado ? Text('novo') : Text(''),
+                              color: Colors.green,
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          chat.ultimaMsg = '';
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatPage(chat)),
-                        );
-                      },
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPage(chat, widget.currentUser)),
+                          );
+                        },
+                      ),
+                      margin: EdgeInsets.all(1),
+
                     ),
                   );
                 }).toList(),

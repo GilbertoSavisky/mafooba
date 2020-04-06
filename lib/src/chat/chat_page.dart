@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,10 @@ import '../models/chat_model.dart';
 import 'chat_bloc.dart';
 
 class ChatPage extends StatefulWidget {
-  ChatPage(this.chat);
+  ChatPage(this.chat, this.currentUser);
 
   final Chat chat;
+  final FirebaseUser currentUser;
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -23,7 +25,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   bool _isComposing = false;
   final _dateFormat = DateFormat('dd-MM-yyyy – kk:mm');
-  final bool mine = false;
+  bool mine = false;
   bool _isLoading = false;
   TextEditingController _ultimaMsgController;
 
@@ -65,6 +67,7 @@ class _ChatPageState extends State<ChatPage> {
 
     data['horario'] = DateTime.now();
     data['visualizado'] = false;
+    data['uid'] = widget.currentUser.uid;
 
     if (_ultimaMsgController.text != '') {
       if (_bloc.insertOrUpdate()) {
@@ -127,6 +130,10 @@ class _ChatPageState extends State<ChatPage> {
                             reverse: true,
                             itemCount: snapshot.data.documents.length,
                             itemBuilder: (context, index) {
+                              mine = snapshot.data.documents[index].data['uid'] == widget.currentUser?.uid;
+//                              print('snapshot+++++++++++ ${snapshot.data.documents[index].data['uid']}+++++');
+//                              print('currentUser+++++++++++ ${widget.currentUser?.uid}+++++');
+//                              print('mine+++++++++++ ${mine}+++++');
                               return snapshot.data.documents[index].data['imagem'] != null ?
 
                               ListTile(

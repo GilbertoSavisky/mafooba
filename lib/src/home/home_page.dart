@@ -9,11 +9,8 @@ import 'package:mafooba/src/atleta/atleta_bloc.dart';
 import 'package:mafooba/src/atleta/atleta_home_page.dart';
 import 'package:mafooba/src/chat/chat_home_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
-import 'package:mafooba/src/shared/login.dart';
-import 'package:rxdart/rxdart.dart';
 import '../atleta/atleta_home_page.dart';
 import '../atleta/atleta_page.dart';
-import '../models/atleta_model.dart';
 import '../models/atleta_model.dart';
 import 'home_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -193,7 +190,7 @@ class _HomePageState extends State<HomePage> {
             ..email= user.email
             ..nome= user.displayName
             ..fotoUrl= user.photoUrl
-            ..fone = '41999407329';
+            ..fone = user.phoneNumber;
 
           _bloc.addAtleta(user.uid, atleta);
 
@@ -284,10 +281,10 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatHomePage()),
+              MaterialPageRoute(builder: (context) => ChatHomePage(_currentUser)),
             );
           },
-          label: 'Conversas',
+          label: 'Bate Papo',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.blueAccent,
 

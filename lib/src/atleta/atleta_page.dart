@@ -6,9 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:mafooba/src/home/home_bloc.dart';
-
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../models/atleta_model.dart';
 import 'atleta_bloc.dart';
 
@@ -23,7 +22,7 @@ class AtletaPage extends StatefulWidget {
 }
 
 class _AtletaPageState extends State<AtletaPage> {
-  final _dateFormat = DateFormat("dd/MM/yyyy");
+  final _foneFormat = MaskTextInputFormatter(mask: '(##) # ####-####', filter: { "#": RegExp(r'[0-9]') });
   TextEditingController _nomeController;
   TextEditingController _nickNameController;
   TextEditingController _posicaoController;
@@ -187,6 +186,7 @@ class _AtletaPageState extends State<AtletaPage> {
                   decoration: InputDecoration(labelText: "Celular"),
                   controller: _foneController,
                   onChanged: _bloc.setFone,
+                  inputFormatters: [_foneFormat],
                 ),
               ),
               Container(
