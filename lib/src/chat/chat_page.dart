@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:mafooba/src/home/home_bloc.dart';
+import 'package:mafooba/src/models/atleta_model.dart';
 
 import '../models/chat_model.dart';
 import 'chat_bloc.dart';
@@ -29,7 +31,10 @@ class _ChatPageState extends State<ChatPage> {
   bool _isLoading = false;
   TextEditingController _ultimaMsgController;
 
+
   final _bloc = ChatBloc();
+  final _blocHome = HomeBloc();
+  Atleta atleta ;
 
   void _reset() {
     _ultimaMsgController.clear();
@@ -43,12 +48,8 @@ class _ChatPageState extends State<ChatPage> {
     Map<String, dynamic> data = {};
 
     if (imgFile != null) {
-      StorageUploadTask task = FirebaseStorage.instance
-          .ref()
-          .child('mensagens')
-          .child(widget.chat.nickName)
-          .child(DateTime.now().millisecondsSinceEpoch.toString())
-          .putFile(imgFile);
+      StorageUploadTask task =
+        FirebaseStorage.instance.ref().child('mensagens').child(widget.chat.nickName).child(DateTime.now().millisecondsSinceEpoch.toString()).putFile(imgFile);
 
       setState(() {
         _isLoading = true;
@@ -56,7 +57,9 @@ class _ChatPageState extends State<ChatPage> {
 
       StorageTaskSnapshot taskSnapshot = await task.onComplete;
       String url = await taskSnapshot.ref.getDownloadURL();
+
       data['imagem'] = url;
+      _bloc.setUltimaMsg('${widget.chat.nickName}: enviou uma foto...');
 
       setState(() {
         _isLoading = false;
@@ -71,22 +74,26 @@ class _ChatPageState extends State<ChatPage> {
 
     if (_ultimaMsgController.text != '') {
       if (_bloc.insertOrUpdate()) {
-        _bloc.setHorario(DateTime.now());
-        Navigator.of(context);
         data['mensagem'] = _ultimaMsgController.text;
       }
     }
-    Firestore.instance
-        .collection('mensagens')
-        .document(widget.chat.documentId())
-        .collection('mensagem')
-        .add(data);
+    _bloc.setHorario(DateTime.now());
+    _bloc.setFotoUrl(atleta.fotoUrl);
+    _bloc.setNickName(atleta.nickName);
+    _bloc.setVisualizado(false);
+    _bloc.insertOrUpdate();
+    Firestore.instance.collection('mensagens').document(widget.chat.documentId()).collection('mensagem').add(data);
   }
+
 
   @override
   void initState() {
     _bloc.setChat(widget.chat);
     _ultimaMsgController = TextEditingController(text: widget.chat.ultimaMsg);
+    Firestore.instance.collection('atletas').document(widget.currentUser.uid).snapshots().listen((onData){
+      atleta = Atleta.fromMap(onData);
+    });
+
     super.initState();
   }
 
@@ -110,11 +117,7 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(
         children: <Widget>[
           StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance
-                .collection('mensagens')
-                .document(widget.chat.documentId())
-                .collection('mensagem')
-                .orderBy('horario', descending: true)
+            stream: Firestore.instance.collection('mensagens').document(widget.chat.documentId()).collection('mensagem').orderBy('horario', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
@@ -131,9 +134,7 @@ class _ChatPageState extends State<ChatPage> {
                             itemCount: snapshot.data.documents.length,
                             itemBuilder: (context, index) {
                               mine = snapshot.data.documents[index].data['uid'] == widget.currentUser?.uid;
-//                              print('snapshot+++++++++++ ${snapshot.data.documents[index].data['uid']}+++++');
-//                              print('currentUser+++++++++++ ${widget.currentUser?.uid}+++++');
-//                              print('mine+++++++++++ ${mine}+++++');
+                              var chat = Chat.fromMap(snapshot.data.documents[index]);
                               return snapshot.data.documents[index].data['imagem'] != null ?
 
                               ListTile(
@@ -152,7 +153,7 @@ class _ChatPageState extends State<ChatPage> {
                                             Column(
                                               children: <Widget>[
                                                 Container(
-                                                  child: Text(_dateFormat.format(widget.chat.horario),
+                                                  child: Text(_dateFormat.format(chat.horario),
                                                     style: TextStyle(
                                                         color: Colors.blueAccent,
                                                         fontSize: 12,
@@ -194,7 +195,7 @@ class _ChatPageState extends State<ChatPage> {
                                               textAlign:  TextAlign.start,
                                             ),
                                             Container(
-                                              child: Text(_dateFormat.format(widget.chat.horario),
+                                              child: Text(_dateFormat.format(chat.horario),
                                                 style: TextStyle(
                                                   color: Colors.blueAccent,
                                                   fontSize: 12,
@@ -221,7 +222,11 @@ class _ChatPageState extends State<ChatPage> {
               }
             },
           ),
-          _isLoading ? LinearProgressIndicator() : Container(),
+          _isLoading ? Container(
+//            height: 250,
+//            width: 250,
+//            child: CircularProgressIndicator(),
+          ) : Container(),
           Container(
             child: Row(
               children: <Widget>[

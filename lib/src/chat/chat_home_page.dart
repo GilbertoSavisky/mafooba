@@ -23,13 +23,13 @@ class ChatHomePage extends StatefulWidget {
 
 class _ChatHomePageState extends State<ChatHomePage> {
   final _bloc = HomeBloc();
-  final _horaFormat = DateFormat('hh:mm a');
+  final _horaFormat = DateFormat.yMd().add_jm();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Nosso Bate Papo"),
+        title: Text("Bate Papo"),
       ),
 
       floatingActionButton: buildSpeedDial(
@@ -53,18 +53,18 @@ class _ChatHomePageState extends State<ChatHomePage> {
                         leading: CircleAvatar(
                               radius: 25,
                           backgroundImage: (chat.fotoUrl != null)
-                              ? NetworkImage(chat.fotoUrl, scale: 1.0)
+                              ? NetworkImage(chat.fotoUrl)
                           : AssetImage('images/bola.png'),
                         ),
                         title: Text(chat.nickName),
-                        subtitle: Text(chat.ultimaMsg,
+                        subtitle: Text(chat.nickName +': '+ chat.ultimaMsg,
                           style: TextStyle(fontStyle: FontStyle.italic, color: Colors.blue),),
                         trailing: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(_horaFormat.format(chat.horario)),
                             Card(
-                              child: chat.visualizado ? Text('novo') : Text(''),
+                              child: chat.visualizado ? Text('') : Text('novo'),
                               color: Colors.green,
                             ),
                           ],

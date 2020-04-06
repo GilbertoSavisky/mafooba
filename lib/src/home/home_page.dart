@@ -9,6 +9,7 @@ import 'package:mafooba/src/atleta/atleta_bloc.dart';
 import 'package:mafooba/src/atleta/atleta_home_page.dart';
 import 'package:mafooba/src/chat/chat_home_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
+import 'package:mafooba/src/models/chat_model.dart';
 import '../atleta/atleta_home_page.dart';
 import '../atleta/atleta_page.dart';
 import '../models/atleta_model.dart';
@@ -32,7 +33,6 @@ class _HomePageState extends State<HomePage> {
   final _blocAtleta = AtletaBloc();
   final _dateFormat = DateFormat("dd/MM/yyyy");
   final _selection = null;
-
   Widget _buildBodyBack() => Container(
     decoration: BoxDecoration(
         gradient: LinearGradient(
