@@ -11,7 +11,7 @@ class AppWidget extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.green[800],
         accentColor: Colors.green[600],
-
+        appBarTheme: AppBarTheme(color: Colors.green),
 
         // Define the default font family.
         fontFamily: 'Georgia',

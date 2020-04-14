@@ -7,9 +7,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:mafooba/src/atleta/atleta_bloc.dart';
 import 'package:mafooba/src/atleta/atleta_home_page.dart';
-import 'package:mafooba/src/chat/chat_home_page.dart';
+import 'package:mafooba/src/bate_papo/bate_papo_home_page.dart';
 import 'package:mafooba/src/equipe/equipe_home_page.dart';
-import 'package:mafooba/src/models/chat_model.dart';
 import '../atleta/atleta_home_page.dart';
 import '../atleta/atleta_page.dart';
 import '../models/atleta_model.dart';
@@ -37,13 +36,15 @@ class _HomePageState extends State<HomePage> {
     decoration: BoxDecoration(
         gradient: LinearGradient(
             colors: [
-              Color.fromARGB(-12, 0, 156, 239),
-              Color.fromARGB(-43, 152, 249, 200),
-              Color.fromARGB(-43, 152, 249, 200),
-              Color.fromARGB(-12, 0, 156, 239),
+
+              Color.fromARGB(-43, 14, 158, 60),
+              //Color.fromARGB(-43, 152, 249, 200),
+              //Color.fromARGB(-29, 144, 240, 244),
+              Color.fromARGB(-14, 194, 238, 240),
+
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter
         )
     ),
   );
@@ -56,18 +57,29 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       key: _snackBar,
       appBar: AppBar(
-        title: Container(
-          padding: EdgeInsets.all(15),
-          child: Row(
-            children: <Widget>[
-              Text("Mafooba"),
-              Text('   (My App of FootBall)', style: TextStyle(fontSize: 12),),
-            ],
+        elevation: 0,
+        centerTitle: true,
+        title: Row(
+          children: <Widget>[
+            Text('Mafooba '),
+            Text('(My App of FootBall)', style: TextStyle(fontSize: 12),),
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Color.fromARGB(-25, 13, 66, 13),
+                    Color.fromARGB(-43, 54, 172, 84),
+                  ])
           ),
         ),
+
         actions: <Widget>[
           StreamBuilder<DocumentSnapshot>(
-            stream: _bloc.getData(_currentUser?.uid),
+            stream: _bloc.getAtleta(_currentUser?.uid),
             builder: (context, snapshot) {
               return Container(
                     padding: EdgeInsets.all(10),
@@ -82,6 +94,12 @@ class _HomePageState extends State<HomePage> {
                             );
 
                           }
+                          if(result == WhyFarther.trocarUsuario){
+
+                            googleSignIn.signOut();
+                            _getUser();
+
+                          }
                         });
                       },
                       itemBuilder: (BuildContext context) => <PopupMenuEntry<WhyFarther>>[
@@ -89,10 +107,10 @@ class _HomePageState extends State<HomePage> {
                           value: WhyFarther.editarPerfil,
                           child: Text('Editar meu perfil'),
                         ),
-//                        const PopupMenuItem<WhyFarther>(
-//                          value: WhyFarther.selfStarter,
-//                          child: Text('Being a self-starter'),
-//                        ),
+                        const PopupMenuItem<WhyFarther>(
+                          value: WhyFarther.trocarUsuario,
+                          child: Text('Trocar usuário'),
+                        ),
 //                        const PopupMenuItem<WhyFarther>(
 //                          value: WhyFarther.tradingCharter,
 //                          child: Text('Placed in charge of trading charter'),
@@ -157,6 +175,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         if(user == null)
           _getUser();
+          //googleSignIn.signIn();
         _currentUser = user;
       });
     });
@@ -281,7 +300,7 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatHomePage(_currentUser)),
+              MaterialPageRoute(builder: (context) => BatePapoHomePage(_currentUser)),
             );
           },
           label: 'Bate Papo',
@@ -295,4 +314,4 @@ class _HomePageState extends State<HomePage> {
 }
 
 
-enum WhyFarther { editarPerfil, selfStarter, tradingCharter }
+enum WhyFarther { editarPerfil, trocarUsuario, tradingCharter }

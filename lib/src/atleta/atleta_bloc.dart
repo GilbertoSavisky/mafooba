@@ -35,7 +35,7 @@ class AtletaBloc extends BlocBase {
     _fotoUrlController.listen((value) => _fotoUrl = value);
     _habilidadeController.listen((value) => _habilidade = value);
     _uidController.listen((value) => _uid = value);
-    _grupoUIDController.listen((value) => _grupoUID = value as DocumentReference);
+    //_grupoUIDController.listen((value) => _grupoUID = value as DocumentReference);
   }
 
   var _repository = AppModule.to.getDependency<AtletaRepository>();

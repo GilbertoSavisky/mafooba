@@ -1,5 +1,5 @@
-import 'package:mafooba/src/chat/chat_repository.dart';
-import 'package:mafooba/src/chat/chat_bloc.dart';
+import 'package:mafooba/src/bate_papo/bate_papo_bloc.dart';
+import 'package:mafooba/src/bate_papo/bate_papo_repository.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:mafooba/src/atleta/atleta_bloc.dart';
@@ -12,7 +12,7 @@ import 'app_widget.dart';
 class AppModule extends ModuleWidget {
   @override
   List<Bloc> get blocs => [
-        Bloc((i) => ChatBloc()),
+        Bloc((i) => BatePapoBloc()),
         Bloc((i) => EquipeBloc()),
         Bloc((i) => AtletaBloc()),
         Bloc((i) => AppBloc()),
@@ -20,7 +20,7 @@ class AppModule extends ModuleWidget {
 
   @override
   List<Dependency> get dependencies => [
-        Dependency((i) => ChatRepository()),
+        Dependency((i) => BatePapoRepository()),
         Dependency((i) => AtletaRepository()),
         Dependency((i) => EquipeRepository()),
       ];

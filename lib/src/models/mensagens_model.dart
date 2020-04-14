@@ -3,37 +3,36 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../shared/base_model.dart';
 
-class Chat extends BaseModel {
+class Mensagens extends BaseModel {
   String _documentId;
 
-  String fotoUrl;
   DateTime horario;
-  String nickName;
-  String ultimaMsg;
+  String imagem;
+  String texto;
+  String sender;
   bool visualizado;
 
-  Chat();
+  Mensagens();
 
-  Chat.fromMap(DocumentSnapshot document) {
+  Mensagens.fromMap(DocumentSnapshot document) {
     _documentId = document.documentID;
-    this.fotoUrl = document.data["fotoUrl"];
     Timestamp timestamp = document.data["horario"];
     this.horario =
         DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
-    this.nickName = document.data["nickName"];
-    this.ultimaMsg = document.data["ultimaMsg"];
+    this.imagem = document.data["imagem"];
+    this.texto = document.data["texto"];
+    this.sender = document.data["sender"];
     this.visualizado = document.data["visualizado"] ?? false;
-
-
+    //print('---------------------------${document.data}');
   }
 
   @override
   toMap() {
     var map = new Map<String, dynamic>();
-    map['fotoUrl'] = this.fotoUrl;
-    map['horario'] = DateTime.now();
-    map['nickName'] = this.nickName;
-    map['ultimaMsg'] = this.ultimaMsg;
+    map['horario'] = this.horario;
+    map['imagem'] = this.imagem;
+    map['texto'] = this.texto;
+    map['sender'] = this.sender;
     map['visualizado'] = this.visualizado;
 
     return map;

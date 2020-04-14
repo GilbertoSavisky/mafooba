@@ -16,7 +16,7 @@ class AtletaRepository extends Disposable {
 
   void delete(String documentId) => _collection.document(documentId).delete();
 
-  Stream<DocumentSnapshot>  getData(String docID) => _collection.document(docID).snapshots();
+  Stream<DocumentSnapshot>  getAtleta(String documentId) => _collection.document(documentId).snapshots();
 
   Observable<List<Atleta>> get atleta =>
       Observable(_collection.snapshots().map((query) => query.documents

@@ -36,7 +36,7 @@ class Atleta extends BaseModel {
     this.fotoUrl = document.data["fotoUrl"];
     this.habilidade = document.data["habilidade"];
     this.uid = document.data['uid'];
-    this.grupoUID = document.data['grupoUID'];
+    //this.grupoUID = document.data['grupoUID'];
 
   }
   @override

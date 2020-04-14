@@ -112,16 +112,43 @@ class _AtletaPageState extends State<AtletaPage> {
             children: <Widget>[
               StreamBuilder(
                 stream: _bloc.outFotoUrl,
-                builder: (context, snapshot) {
-                  return Center(
+                builder: (context, foto) {
+                  return foto.data != ''  || !foto.hasData ?  Center(
+
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: InkWell(
                         child: CircleAvatar(
-                          backgroundImage: snapshot.hasData
-                              ? NetworkImage(snapshot.data)
-                              : AssetImage('images/bola.png'),
+                          child: _isLoading ? CircularProgressIndicator(semanticsValue: 'carregando...',) : Container(),
+                          backgroundImage:
+                              NetworkImage(foto.hasData ? foto.data : ''),
+
                           maxRadius: 55,
+                        ),
+                        onTap: () async {
+                          final File imgFile = await ImagePicker.pickImage(
+                              source: ImageSource.gallery);
+                          if (imgFile == null) return;
+                          trocarImagem(imgFile);
+                        },
+                      ),
+                    ),
+                  ) : Center(
+
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: InkWell(
+                        child: CircleAvatar(
+                          child: Column(
+                            children: <Widget>[
+                              _isLoading ? CircularProgressIndicator() : Container(),
+                              CircleAvatar(
+                                  child: Text('carregue sua foto...', style: TextStyle(),textAlign: TextAlign.center,),
+                                radius: 55,
+                              ),
+                            ],
+                          ),
+                          radius: 55,
                         ),
                         onTap: () async {
                           final File imgFile = await ImagePicker.pickImage(
@@ -134,9 +161,6 @@ class _AtletaPageState extends State<AtletaPage> {
                   );
                 },
               ),
-              _isLoading
-                  ? Container(child: Center(child: CircularProgressIndicator()))
-                  : Container(),
               Container(
                 child: TextField(
                   decoration: InputDecoration(
