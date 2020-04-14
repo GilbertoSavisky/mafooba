@@ -43,7 +43,7 @@ class BatePapoBloc extends BlocBase {
     } else {
       _repository.updateBatePapo(_documentId, batePapo);
     }
-
+    print('.........batePapo.....${batePapo.documentId()}');
     return true;
   }
 

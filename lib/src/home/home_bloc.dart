@@ -27,6 +27,7 @@ HomeBloc extends BlocBase {
 
   void deleteAtleta(String documentId) => _repositoryAtleta.delete(documentId);
   void addAtleta(String docID, Atleta atleta) => _repositoryAtleta.addAtleta(docID, atleta);
+  void addBatePapo(BatePapo batePapo) => _repositoryBatePapo.addBatePapo(batePapo);
   void deleteEquipe(String documentId) => _repositoryEquipe.delete(documentId);
   void deleteChat(String documentId) => _repositoryBatePapo.delete(documentId);
   void updateChat(String documentId, BatePapo batePapo) => _repositoryBatePapo.updateBatePapo(documentId, batePapo);

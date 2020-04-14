@@ -110,7 +110,7 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
             stream: _bloc.filtrarBatePapo(currentID : widget.currentUser.uid),
             builder: (context, listaBate_papo) {
               //ListView mapea uma lista das msg filtradas
-              return Expanded(
+              return listaBate_papo.hasData ? Expanded(
                 child: Container(
                   child: ListView(
                     children: listaBate_papo.data.map((listaBate_papoMAP) {
@@ -173,7 +173,7 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                     }).toList(),
                   ),
                 ),
-              );
+              ) : Container();
             },
           ),
         ],
