@@ -1,292 +1,319 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:mafooba/src/bate_papo/bate_papo_bloc.dart';
-import 'package:mafooba/src/bate_papo/mensagens_bloc.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mafooba/src/bate_papo/bate_papo_page.dart';
+import 'package:mafooba/src/equipe/equipe_page.dart';
 import 'package:mafooba/src/home/home_bloc.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/models/bate_papo_model.dart';
+import 'package:mafooba/src/models/equipe_model.dart';
+import 'package:mafooba/src/atleta/atleta_page.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:intl/intl.dart';
 import 'package:mafooba/src/models/mensagens_model.dart';
 
-class BatePapoPage extends StatefulWidget {
-  BatePapoPage(this.atleta, this.currentUser);
-
-  final Atleta atleta;
+class BatePapoHomePage extends StatefulWidget {
   final FirebaseUser currentUser;
 
+  BatePapoHomePage(this.currentUser);
+
   @override
-  _BatePapoPageState createState() => _BatePapoPageState();
+  _BatePapoHomePageState createState() => _BatePapoHomePageState();
 }
 
-class _BatePapoPageState extends State<BatePapoPage> {
-  bool _isComposing = false;
-  final _dateFormat = DateFormat('yy/MM/dd').add_Hm();
-  bool mine = false;
-  bool _isLoading = false;
-  TextEditingController _textoMensagem;
-  BatePapo batePapo;
-
-  final _blocHome = HomeBloc();
-
-  final _bloc = BatePapoBloc();
-  final _blocMsg = MensagensBloc();
-  //Atleta atleta ;
-
-  void _reset() {
-    _textoMensagem.clear();
-    setState(() {
-      _isComposing = false;
-    });
-  }
-
-
-
-  void _sendMessage({File imgFile}) async {
-    Map<String, dynamic> data = {};
-
-    if (imgFile != null) {
-      StorageUploadTask task =
-      FirebaseStorage.instance.ref().child('mensagens').
-      child(widget.atleta.nickName).child(DateTime.now().millisecondsSinceEpoch.toString()).putFile(imgFile);
-
-      setState(() {
-        _isLoading = true;
-      });
-
-      StorageTaskSnapshot taskSnapshot = await task.onComplete;
-      String url = await taskSnapshot.ref.getDownloadURL();
-
-      data['imagem'] = url;
-      data ['enviou uma foto...'];
-
-      setState(() {
-        _isLoading = false;
-
-      });
-
-    }
-
-    if (_textoMensagem.text != '') {
-      if (_bloc.insertOrUpdate()) {
-        data['texto'] = _textoMensagem.text;
-      }
-    }
-
-    _bloc.setDestinatarioUID(widget.atleta.uid);
-    _bloc.setRemetenteUID(widget.currentUser.uid);
-
-
-    data['horario'] = DateTime.now();
-    data['visualizado'] = false;
-    data['sender'] = widget.currentUser.uid;
-    print('----------------${batePapo.documentId()}');
-    _bloc.insertOrUpdate();
-    Firestore.instance.collection('bate_papo').document(batePapo.documentId()).collection('mensagens').add(data);
-  }
-
-  @override
-  void initState() {
-    //_bloc.setChat(widget.chat);
-    _textoMensagem = TextEditingController(text: '');
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _textoMensagem.dispose();
-    super.dispose();
-  }
+class _BatePapoHomePageState extends State<BatePapoHomePage> {
+  final _bloc = HomeBloc();
+  final _horaFormat = DateFormat('dd/MM/yy').add_Hm();
+  Mensagens _mensagens;
+  List<BatePapo> listaBatePapo = [];
+  Atleta asAtleta;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Container(
-            margin: EdgeInsets.only(left: 10, top: 3, bottom: 3),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(widget.atleta.fotoUrl),
-            )),
-        title: Text(widget.atleta.nickName),
-
+        elevation: 0,
+        centerTitle: true,
+        title: Text('Lista de Bate-Papo'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Color.fromARGB(-25, 13, 66, 13),
+                    Color.fromARGB(-43, 54, 172, 84),
+                  ])),
+        ),
       ),
+      floatingActionButton: buildSpeedDial(),
       body: Column(
         children: <Widget>[
-          StreamBuilder<List<BatePapo>>(
-            stream: _blocHome.batePapo,
-            builder: (context, listMensagens){
-              //print('....................${listMensagens.data.first.documentId()}');
-              return listMensagens.data != null ?
-              StreamBuilder<List<BatePapo>>(
-                  stream: _blocHome.filtrarBatePapo(currentID: widget.currentUser.uid),
-                  builder: (context, listaFiltrada) {
-                    //print('----------------------------${snapshot.data.first.documentId()}');
-                    return ListView(
-                      reverse: true,
-                      children: listaFiltrada.data.map((msg){
-                        return listMensagens.data.isNotEmpty ? Container(
-                          child: msg != null ? ListTile(
-                            title:
-                            Column(
-                              crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Card(
-                                  child: Container(
-                                    child: Column(
-                                      crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text('msg.texto',
-                                          style: TextStyle(
-                                              fontSize: 18
-                                          ),
-                                          textAlign:  TextAlign.start,
-                                        ),
-                                        Container(
-                                          child: Text('_dateFormat.format(msg.horario)',
-                                            style: TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontSize: 10,
-                                              letterSpacing: 0.1,
-                                            ),
-                                          ),
-                                          padding: EdgeInsets.only(right: 5),
-                                        ),
-                                      ],
-                                    ),
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  elevation: 5,
-                                  color: !mine ? Color.fromARGB(-10, 220, 255, 223) : Color.fromARGB(-5, 250, 252, 220),
-                                  margin: !mine ? EdgeInsets.only(right: 30) : EdgeInsets.only(left: 30),
-                                ),
-                              ],
+          Container(
+            padding: EdgeInsets.all(7),
+            height: 105,
+            child: StreamBuilder<List<Atleta>>(
+              stream: _bloc.atleta,
+              builder: (context, snapshot) {
+
+                if (!snapshot.hasData) return CircularProgressIndicator();
+
+                return Container(
+                  child: ListView(
+                    children: snapshot.data.map((contato) {
+                      return contato.uid != widget.currentUser.uid ? Column(
+                        children: <Widget>[
+                          Container(
+                            child: GestureDetector(
+                              child: CircleAvatar(
+                                backgroundImage: contato.fotoUrl != null
+                                    ? NetworkImage(contato.fotoUrl)
+                                    : Container(),
+                                radius: 35,
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => BatePapoPage(contato, null, widget.currentUser)));
+                                Text(contato.nickName);
+                              },
                             ),
-                          ) : ListTile(
-                            title: Column(
-                              crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Card(
-                                  child: Container(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Image.network(
-                                          'msg.imagem',
-                                          height: 330,
+                          ),
+                          Container(
+                            child: Text(
+                              contato.nickName,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            alignment: Alignment.center,
+                            width: 100,
+                            //color: Colors.yellow,
+                          ),
+                        ],
+                      ) : Container();
+                    }).toList(),
+                    scrollDirection: Axis.horizontal,
+                  ),
+                );
+              },
+            ),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  Color.fromARGB(-43, 14, 158, 60),
+                  //Color.fromARGB(-43, 152, 249, 200),
+                  //Color.fromARGB(-29, 144, 240, 244),
+                  Color.fromARGB(-14, 194, 238, 240),
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+          ),
+
+          StreamBuilder<List<BatePapo>>(
+              stream: _bloc.filtrarBatePapo(destinatarioID: widget.currentUser.uid),
+              builder: (context, listaBate_papo) {
+                listaBatePapo = [];
+                if(listaBate_papo.hasData && listaBate_papo.connectionState == ConnectionState.active)
+                  listaBatePapo = (listaBate_papo.data);
+                return Container();
+              }
+          ),
+          StreamBuilder<List<BatePapo>>(
+            stream: _bloc.filtrarBatePapo(currentID: widget.currentUser.uid),
+            builder: (context, lista_BatePapo){
+              if(lista_BatePapo.hasData && lista_BatePapo.connectionState == ConnectionState.active)
+                listaBatePapo += (lista_BatePapo.data);
+              listaBatePapo.map((lst){
+              }).toList();
+              return Expanded(
+                child: ListView(
+                  children: listaBatePapo.map((mensagens){
+                    return mensagens != null ? StreamBuilder<DocumentSnapshot>(
+                        stream: _bloc.getAtleta(mensagens.destinatarioUID),
+                        builder: (context, atleta) {
+
+
+                          return StreamBuilder<List<Mensagens>>(
+                            stream: _bloc.getMsg(mensagens.documentId(), false),
+                            builder: (context, msg){
+
+                              if(msg.hasData && msg.connectionState == ConnectionState.active)
+                                msg.data.map((mensagem){
+                                  _mensagens = mensagem;
+                                }).toList();
+
+                              return (atleta.hasData && atleta.connectionState == ConnectionState.active &&
+                                  atleta.data.documentID != widget.currentUser.uid &&
+                                  _mensagens?.documentId() != null) ?
+                              Card(
+                                child: ListTile(
+                                  leading: CircleAvatar(backgroundImage:
+                                  NetworkImage(atleta.data['fotoUrl']),
+                                    radius: 25,
+                                  ),
+                                  title: Text(atleta.data['nickName']),
+                                  subtitle: Text(_mensagens?.texto != null ? _mensagens.texto : '', overflow: TextOverflow.ellipsis),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(_mensagens != null ? _horaFormat.format(_mensagens.horario) : ''),
+                                      Container(
+                                        child: (
+                                            Image.asset(!_mensagens?.visualizado ? 'images/chuteira1.png' : 'images/chuteira2.png', width: 40,)),
+                                      ),
+                                    ],
+                                  ),
+
+                                  onTap: (){
+                                    asAtleta = Atleta.fromMap(atleta.data);
+                                    Navigator.push(
+                                      context,MaterialPageRoute(
+                                        builder: (context) => BatePapoPage(asAtleta, mensagens, widget.currentUser)),
+                                    );
+
+                                  },
+                                ),
+                              ) :
+                              StreamBuilder<DocumentSnapshot>(
+                                  stream: _bloc.getAtleta(mensagens.remetenteUID),
+                                  builder: (context, atleta) {
+                                    if(atleta.hasData && atleta.connectionState == ConnectionState.active)
+                                      asAtleta = Atleta.fromMap(atleta.data);
+                                    return (atleta.hasData && atleta.connectionState == ConnectionState.active) ?
+                                    Card(
+                                      child: ListTile(
+                                        leading: CircleAvatar(backgroundImage:
+                                        NetworkImage(atleta.data['fotoUrl']),
+                                          radius: 25,
                                         ),
-                                        Column(
+                                        title: Text(asAtleta.nickName),
+                                        subtitle: Text(_mensagens.texto, overflow: TextOverflow.ellipsis,),
+                                        trailing: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget>[
-                                            Container(
-                                              child: Text('_dateFormat.format(msg.horario)',
-                                                style: TextStyle(
-                                                    color: Colors.blueAccent,
-                                                    fontSize: 10,
-                                                    letterSpacing: 0.1),
-                                              ),
-                                              padding: EdgeInsets.only(right: 5),
+                                            Text(_mensagens != null ? _horaFormat.format(_mensagens.horario) : ''),
+                                            Card(
+                                                child: Image.asset(!_mensagens?.visualizado ? 'images/chuteira1.png' : 'images/chuteira2.png', width: 40,)
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                    padding: EdgeInsets.all(5),
-
-                                  ),
-                                  elevation: 5,
-                                  color: !mine ? Color.fromARGB(-10, 220, 255, 223)
-                                      : Color.fromARGB(-5, 250, 252, 220),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ) : Container();
-                      }).toList(),
-                    );
-                  }
-              ) : Container();
+                                        onTap: (){
+                                          asAtleta = Atleta.fromMap(atleta.data);
+                                          Navigator.push(
+                                            context,MaterialPageRoute(
+                                              builder: (context) => BatePapoPage(asAtleta, mensagens, widget.currentUser)),
+                                          );
+                                        },
+                                      ),
+                                    ) : Container();
+                                  }
+                              );
+                            },
+                          );
+                        }
+                    ) : Container();
+                  }).toList(),
+                ),
+              );
             },
-          ),
-
-
-
-
-          _isLoading ? Container(
-            height: 250,
-            width: 250,
-            child: CircularProgressIndicator(),
-          ) : Container(),
-          Container(
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.photo_camera),
-                  padding: EdgeInsets.symmetric(),
-                  onPressed: () async {
-                    final File imgFile =
-                    await ImagePicker.pickImage(source: ImageSource.camera);
-                    if (imgFile == null) return;
-                    _isLoading ? LinearProgressIndicator() : Container();
-                    _sendMessage(imgFile: imgFile);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.attach_file,
-                  ),
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.symmetric(),
-
-                  onPressed: () async {
-                    final File imgFile =
-                    await ImagePicker.pickImage(source: ImageSource.gallery);
-                    if (imgFile == null) return;
-                    _isLoading ? LinearProgressIndicator() : Container();
-                    _sendMessage(imgFile: imgFile);
-                  },
-                ),
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration.collapsed(
-                      hintText: 'Enviar mensagem',
-                    ),
-                    controller: _textoMensagem,
-                    onChanged: (texto) {
-                      setState(() {
-                        _blocMsg.setTexto(texto);
-                        _isComposing = texto.isNotEmpty;
-                        //
-                      });
-                    },
-                    onSubmitted: (texto) {
-                      _sendMessage();
-                      _reset();
-                    },
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _isComposing
-                      ? () {
-                    _isLoading ? LinearProgressIndicator() : Container();
-                    _sendMessage();
-                    _reset();
-                  }
-                      : null,
-                ),
-              ],
-            ),
-            color: Colors.green,
           ),
         ],
       ),
+    );
+  }
+
+  ScrollController scrollController;
+
+  bool dialVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrollController = ScrollController()
+      ..addListener(() {
+        setDialVisible(scrollController.position.userScrollDirection ==
+            ScrollDirection.forward);
+      });
+  }
+
+  void setDialVisible(bool value) {
+    setState(() {
+      dialVisible = value;
+    });
+  }
+
+  Widget buildBody() {
+    return ListView.builder(
+      controller: scrollController,
+      itemCount: 30,
+      itemBuilder: (ctx, i) => ListTile(title: Text('Item $i')),
+    );
+  }
+
+  SpeedDial buildSpeedDial() {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      animatedIconTheme: IconThemeData(size: 22.0),
+      // child: Icon(Icons.add),
+      onOpen: () => print('OPENING DIAL'),
+      onClose: () => print('DIAL CLOSED'),
+      visible: dialVisible,
+      curve: Curves.bounceIn,
+      children: [
+        SpeedDialChild(
+          child: Icon(Icons.group_add, color: Colors.white),
+          backgroundColor: Colors.deepOrange,
+          onTap: () {
+            var equipe = Equipe()
+              ..active = true
+              ..horario = DateTime.now()
+              ..nomeEquipe = ""
+              ..estilo = ""
+              ..local = ""
+              ..foneCampo = ""
+              ..totalJogadores = 0;
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
+            );
+          },
+          label: 'Equipes',
+          labelStyle: TextStyle(fontWeight: FontWeight.w500),
+          labelBackgroundColor: Colors.deepOrangeAccent,
+        ),
+        SpeedDialChild(
+          child: Icon(Icons.person_add, color: Colors.white),
+          backgroundColor: Colors.green,
+          onTap: () {
+            var atleta = Atleta()
+              ..nome = ""
+              ..isGoleiro = false;
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AtletaPage(atleta: atleta)),
+            );
+          },
+          label: 'Atletas',
+          labelStyle: TextStyle(fontWeight: FontWeight.w500),
+          labelBackgroundColor: Colors.green,
+        ),
+        SpeedDialChild(
+          child: Icon(Icons.chat, color: Colors.white),
+          backgroundColor: Colors.blue,
+          onTap: () => print('THIRD CHILD'),
+          labelWidget: Container(
+            color: Colors.blue,
+            margin: EdgeInsets.only(right: 10),
+            padding: EdgeInsets.all(6),
+            child: Text('Custom Label Widget'),
+          ),
+        ),
+      ],
     );
   }
 }

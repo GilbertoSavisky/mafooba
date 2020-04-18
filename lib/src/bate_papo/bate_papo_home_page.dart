@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +26,14 @@ class BatePapoHomePage extends StatefulWidget {
 }
 
 class _BatePapoHomePageState extends State<BatePapoHomePage> {
-  final _bloc = HomeBloc();
-  final _horaFormat = DateFormat('yy/MM/dd').add_Hm();
+  final _blocHome = HomeBloc();
+  final _horaFormat = DateFormat('dd/MM/yy').add_Hm();
+  Mensagens _mensagens;
+  BatePapo _batePapo;
   Atleta _atleta;
+  Map<String, dynamic> _listaBatePapo = {};
+  Stream<List<BatePapo>> _listaFiltrada = null;
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,19 +48,19 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: <Color>[
-                Color.fromARGB(-25, 13, 66, 13),
-                Color.fromARGB(-43, 54, 172, 84),
-              ])),
+                    Color.fromARGB(-25, 13, 66, 13),
+                    Color.fromARGB(-43, 54, 172, 84),
+                  ])),
         ),
       ),
-      floatingActionButton: buildSpeedDial(),
+      //floatingActionButton: buildSpeedDial(),
       body: Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.all(7),
-            height: 105,
+            padding: EdgeInsets.all(2),
+            height: 100,
             child: StreamBuilder<List<Atleta>>(
-              stream: _bloc.atleta,
+              stream: _blocHome.atleta,
               builder: (context, snapshot) {
 
                 if (!snapshot.hasData) return CircularProgressIndicator();
@@ -70,13 +76,13 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                                 backgroundImage: contato.fotoUrl != null
                                     ? NetworkImage(contato.fotoUrl)
                                     : Container(),
-                                radius: 35,
+                                radius: 32,
                               ),
                               onTap: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => BatePapoPage(contato, widget.currentUser)));
+                                        builder: (context) => BatePapoPage(contato, null, widget.currentUser)));
                                 Text(contato.nickName);
                               },
                             ),
@@ -85,9 +91,11 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                             child: Text(
                               contato.nickName,
                               overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
                             ),
                             alignment: Alignment.center,
-                            width: 115,
+                            width: 85,
                             //color: Colors.yellow,
                           ),
                         ],
@@ -106,76 +114,109 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                   Color.fromARGB(-14, 194, 238, 240),
                 ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           ),
+
           StreamBuilder<List<BatePapo>>(
-            stream: _bloc.filtrarBatePapo(currentID : widget.currentUser.uid),
-            builder: (context, listaBate_papo) {
-              //ListView mapea uma lista das msg filtradas
-              return listaBate_papo.hasData ? Expanded(
-                child: Container(
-                  child: ListView(
-                    children: listaBate_papo.data.map((listaBate_papoMAP) {
+            stream: _blocHome.filtrarBatePapo(currentID: widget.currentUser.uid),
+            builder: (context, listaBatePapoRemetente){
 
-                      return Column(
-                        children: <Widget>[
+              return (listaBatePapoRemetente.hasData && listaBatePapoRemetente.connectionState == ConnectionState.active) ?
+              Expanded(
+                child: ListView(
+                  children: listaBatePapoRemetente.data.map((batePapoRemetente){
+                    return (batePapoRemetente != null) ?
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: _blocHome.getAtleta(batePapoRemetente.destinatarioUID),
+                      builder: (context, atletaDestinatario){
+                        return
+                          StreamBuilder(
+                            stream: _blocHome.getAtleta(widget.currentUser.uid),
+                            builder: (context, currentUser){
+                              return
+                                StreamBuilder<List<Mensagens>>(
+                                  stream: _blocHome.getMsg(batePapoRemetente.documentId(), true),
+                                  builder: (context, mensagensRemetente){
 
-                          Dismissible(
-                            key: Key(listaBate_papoMAP.documentId()),
-                            onDismissed: (direction) {
-                              _bloc.deleteChat(listaBate_papoMAP.documentId());
-                            },
-
-                            child: StreamBuilder(
-                              stream: _bloc.getAtleta(listaBate_papoMAP.destinatarioUID),
-                              builder: (context, atleta){
-                                if(atleta.hasData)_atleta = Atleta.fromMap(atleta.data);
-                                return atleta.hasData ? StreamBuilder<List<Mensagens>>(
-                                  stream: _bloc.getMsg(listaBate_papoMAP.documentId()),
-                                  builder: (context, msg){
-                                    if(msg.hasData)
-                                    return Card(
-                                      elevation: 5,
-                                      child: ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundImage: NetworkImage(atleta?.data['fotoUrl']),
-                                          radius: 30,
-
-                                        ),
-                                        title: Text(atleta.data['nickName']),
-                                        subtitle: Text(msg.data.first.texto, overflow: TextOverflow.ellipsis,),
-                                        trailing: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Text(_horaFormat.format(msg.data.first.horario), style: TextStyle(fontSize: 12)),
-                                            Card(
-                                              color: Colors.green,
-                                              child: !msg.data.first.visualizado ? Text('novo') : Text(''),
-                                            ),
-                                          ],
-                                        ),
-                                        onTap: (){
-                                          Navigator.push(
-                                            context,MaterialPageRoute(
-                                              builder: (context) => BatePapoPage(_atleta, widget.currentUser)),
-                                          );
-
-                                        },
+                                    //*****************************************************************************************************
+                                    return (atletaDestinatario.hasData && atletaDestinatario.connectionState == ConnectionState.active) ?
+                                    ListTile(
+                                      leading: CircleAvatar(
+                                        radius: 25,
+                                        backgroundImage: NetworkImage(atletaDestinatario.data['fotoUrl']),
                                       ),
-                                    );
-                                    else return Container();
-                                  },
-                                ) : Container();
+                                      title: Text(atletaDestinatario.data['nickName'] != '' ? atletaDestinatario.data['nickName'] : atletaDestinatario.data['nome'], overflow: TextOverflow.ellipsis,),
+                                      subtitle: Text('${currentUser.data['nickName']}: ${mensagensRemetente.data.first.texto}', overflow: TextOverflow.ellipsis,),
+                                      trailing: Column(
+                                        children: <Widget>[
+                                          Text(_horaFormat.format(mensagensRemetente.data.first.horario)),
+                                          Text(mensagensRemetente.data.last.visualizado ? 'true' : 'false')
+                                        ],
+                                      )
+                                    ) : Container(color: Colors.blue,);
+                                    //******************************************************************************************************
 
-                              },
-                            ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
+
+                                  },
+                                );
+                            },
+                          );
+                      },
+                    ) : Container(color: Colors.yellow,);
+                  }).toList(),
                 ),
-              ) : Container();
+              ) : Container(color: Colors.green,);
             },
           ),
+
+          StreamBuilder<List<BatePapo>>(
+            stream: _blocHome.filtrarBatePapo(destinatarioID: widget.currentUser.uid),
+            builder: (context, listaBatePapoDestinatario){
+
+              return (listaBatePapoDestinatario.hasData && listaBatePapoDestinatario.connectionState == ConnectionState.active) ?
+              Expanded(
+                child: ListView(
+                  children: listaBatePapoDestinatario.data.map((batePapoDestinatario){
+                    return (batePapoDestinatario != null) ?
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: _blocHome.getAtleta(batePapoDestinatario.remetenteUID),
+                      builder: (context, atletaRemetente){
+                        return
+                          StreamBuilder(
+                            stream: _blocHome.getAtleta(widget.currentUser.uid),
+                            builder: (context, currentUser){
+                              return
+                              StreamBuilder<List<Mensagens>>(
+                                stream: _blocHome.getMsg(batePapoDestinatario.documentId(), true),
+                                builder: (context, mensagensRemetente){
+
+                                  //*****************************************************************************************************
+                                  return (atletaRemetente.hasData && atletaRemetente.connectionState == ConnectionState.active) ?
+                                  ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage: NetworkImage(atletaRemetente.data['fotoUrl']),
+                                      ),
+                                      title: Text(atletaRemetente.data['nickName'] != '' ? '${atletaRemetente.data['nickName']}' : ' ${atletaRemetente.data['nome']}', overflow: TextOverflow.ellipsis,),
+                                      subtitle: Text(mensagensRemetente.data.first.texto),
+                                      trailing: Column(
+                                        children: <Widget>[
+                                          Text(_horaFormat.format(mensagensRemetente.data.first.horario)),
+                                          Text(mensagensRemetente.data.first.visualizado ? 'true' : 'false')
+                                        ],
+                                      )
+                                  ) : Container(color: Colors.blue,);
+                                  //******************************************************************************************************
+
+
+                                },
+                              );
+                            },
+                          );
+                      },
+                    ) : Container(color: Colors.yellow,);
+                  }).toList(),
+                ),
+              ) : Container(color: Colors.green,);
+            },
+          )
         ],
       ),
     );

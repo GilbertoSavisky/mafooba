@@ -18,12 +18,12 @@ class BatePapoRepository extends Disposable {
 
   void delete(String documentId) => _collection.document(documentId).delete();
 
-  Stream<DocumentSnapshot>  getBatePapo(String documentoID) => _collection.document(documentoID).snapshots();
+  Stream<DocumentSnapshot>  getBatePapo(String documentoID) => _collection.document(documentoID). snapshots();
 
   Stream<DocumentSnapshot>  getMensagens(String docID) => _collection.document(docID).snapshots();
 
-  Stream<List<Mensagens>>  getMsg(String docID) =>
-      _collection.document(docID).collection('mensagens').orderBy('horario', descending: true).snapshots().map((query) =>
+  Stream<List<Mensagens>>  getMsg(String docID, bool ordenar) =>
+      _collection.document(docID).collection('mensagens').orderBy('horario', descending: ordenar).snapshots().map((query) =>
           query.documents.map<Mensagens>((doc) => Mensagens.fromMap(doc)).toList());
 
   Stream<List<BatePapo>>  filtrarBatePapo({String currentID, String destinatarioID}) =>

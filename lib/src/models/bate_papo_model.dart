@@ -16,7 +16,6 @@ class BatePapo extends BaseModel {
 
     this.destinatarioUID = document.data["destinatarioUID"];
     this.remetenteUID = document.data["remetenteUID"];
-    //print('*********************${document.data}');
   }
 
   @override

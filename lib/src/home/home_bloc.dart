@@ -21,7 +21,7 @@ HomeBloc extends BlocBase {
   get batePapo => _repositoryBatePapo.batePapo;
 
   var _repositoryMsg = AppModule.to.getDependency<BatePapoRepository>();
-  getMsg(String docID) => _repositoryBatePapo.getMsg(docID);
+  getMsg(String docID, bool ordenar) => _repositoryMsg.getMsg(docID, ordenar);
 
   filtrarBatePapo({String currentID, String destinatarioID}) => _repositoryBatePapo.filtrarBatePapo(currentID: currentID, destinatarioID: destinatarioID);
 

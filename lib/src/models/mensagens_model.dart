@@ -23,7 +23,6 @@ class Mensagens extends BaseModel {
     this.texto = document.data["texto"];
     this.sender = document.data["sender"];
     this.visualizado = document.data["visualizado"] ?? false;
-    //print('---------------------------${document.data}');
   }
 
   @override

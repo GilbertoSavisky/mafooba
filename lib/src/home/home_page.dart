@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
       }
       else {
         _snackBar.currentState.showSnackBar(SnackBar(
-          content: Text('Bem vindo ${user.displayName}!'),
+          content: Text('Bem vindo ${ user.displayName}!'),
           backgroundColor: Colors.green,
 
         ));
