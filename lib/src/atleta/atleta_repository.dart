@@ -18,6 +18,15 @@ class AtletaRepository extends Disposable {
 
   Stream<DocumentSnapshot>  getAtleta(String documentId) => _collection.document(documentId).snapshots();
 
+  Stream<List<Atleta>> getAtletaFiltro (String documentId) {
+    return _collection.where('uid', isEqualTo: documentId).snapshots().map((query) {
+      return query.documents.map<Atleta>((doc) {
+        return  Atleta.fromMap(doc);
+      }).toList();
+    });
+  }
+
+
   Observable<List<Atleta>> get atleta =>
       Observable(_collection.snapshots().map((query) => query.documents
           .map<Atleta>((document) => Atleta.fromMap(document))

@@ -22,7 +22,7 @@ class BatePapoPage extends StatefulWidget {
 
   final Atleta _atleta;
   BatePapo _batePapo;
-  final FirebaseUser currentUser;
+  final Atleta currentUser;
 
   @override
   _BatePapoPageState createState() => _BatePapoPageState();
@@ -90,8 +90,8 @@ class _BatePapoPageState extends State<BatePapoPage> {
     if (widget._batePapo?.documentId() == null) {
       widget._batePapo = BatePapo();
 
-      widget._batePapo.remetenteUID = widget.currentUser.uid;
-      widget._batePapo.destinatarioUID = widget._atleta.uid;
+      widget._batePapo.remetente = widget.currentUser.uid;
+      widget._batePapo.destinatario = widget._atleta.uid;
 //      _bloc.insertOrUpdate();
 //
       _bloc.setBatePapo(widget._batePapo);
@@ -127,24 +127,24 @@ class _BatePapoPageState extends State<BatePapoPage> {
   }
 
   void filtraBatePapo(){
-    listaFiltrada = _blocHome.filtrarBatePapo(currentID: widget._atleta.documentId() , destinatarioID: widget.currentUser.uid);
-    listaFiltrada.map((lista){
-      lista.map((listaMP){
-        widget._batePapo = listaMP;
-        print('................1..............${widget._batePapo?.toMap()}');
-      }).toList();
-      if(batePapo == null) {
-        listaFiltrada = _blocHome.filtrarBatePapo(destinatarioID: widget._atleta.documentId() , currentID: widget.currentUser.uid);
-        listaFiltrada.map((lista2){
-          lista2.map((lista2MP){
-            widget._batePapo = lista2MP;
-            print('................2..............${widget._batePapo?.toMap()}');
-          }).toList();
-        }).toList();
-      }
-    }).toList().whenComplete((){
-      build(context);
-    });
+//    listaFiltrada = _blocHome.filtrarBatePapo(widget.currentUser.uid);
+//    listaFiltrada.map((lista){
+//      lista.map((listaMP){
+//        widget._batePapo = listaMP;
+//        print('................1..............${widget._batePapo?.toMap()}');
+//      }).toList();
+//      if(batePapo == null) {
+//        listaFiltrada = _blocHome.filtrarBatePapo(widget.currentUser.uid);
+//        listaFiltrada.map((lista2){
+//          lista2.map((lista2MP){
+//            widget._batePapo = lista2MP;
+//            print('................2..............${widget._batePapo?.toMap()}');
+//          }).toList();
+//        }).toList();
+//      }
+//    }).toList().whenComplete((){
+//      build(context);
+//    });
   }
   @override
 
@@ -170,7 +170,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
               filtraBatePapo();
               return widget._batePapo != null ?
                 StreamBuilder<List<Mensagens>>(
-                  stream: _blocHome.getMsg(widget._batePapo.documentId(), true),
+                  stream: null,//_blocHome.getMsg(widget._batePapo.documentId()),
                   builder: (context, listaMensagens){
                     return (listaMensagens.hasData && listaMensagens.connectionState == ConnectionState.active) ?
                     Expanded(

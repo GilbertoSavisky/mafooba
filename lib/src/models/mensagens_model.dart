@@ -10,7 +10,6 @@ class Mensagens extends BaseModel {
   String imagem;
   String texto;
   String sender;
-  bool visualizado;
 
   Mensagens();
 
@@ -22,7 +21,6 @@ class Mensagens extends BaseModel {
     this.imagem = document.data["imagem"];
     this.texto = document.data["texto"];
     this.sender = document.data["sender"];
-    this.visualizado = document.data["visualizado"] ?? false;
   }
 
   @override
@@ -32,7 +30,6 @@ class Mensagens extends BaseModel {
     map['imagem'] = this.imagem;
     map['texto'] = this.texto;
     map['sender'] = this.sender;
-    map['visualizado'] = this.visualizado;
 
     return map;
   }

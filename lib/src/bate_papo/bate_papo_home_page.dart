@@ -30,10 +30,9 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
   final _horaFormat = DateFormat('dd/MM/yy').add_Hm();
   Mensagens _mensagens;
   BatePapo _batePapo;
-  Atleta _atleta;
-  Map<String, dynamic> _listaBatePapo = {};
-  Stream<List<BatePapo>> _listaFiltrada = null;
-
+  Atleta _atleta = Atleta();
+  Atleta _currentUser;
+  List<BatePapo> _listaBatePapo = [];
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +57,7 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
         children: <Widget>[
           Container(
             padding: EdgeInsets.all(2),
-            height: 100,
+            height: 110,
             child: StreamBuilder<List<Atleta>>(
               stream: _blocHome.atleta,
               builder: (context, snapshot) {
@@ -72,24 +71,35 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                         children: <Widget>[
                           Container(
                             child: GestureDetector(
-                              child: CircleAvatar(
-                                backgroundImage: contato.fotoUrl != null
-                                    ? NetworkImage(contato.fotoUrl)
-                                    : Container(),
-                                radius: 32,
+                              child: Container(
+                                child: CircleAvatar(
+                                  backgroundImage: contato.fotoUrl != null
+                                      ? NetworkImage(contato.fotoUrl)
+                                      : Container(),
+                                  radius: 32,
+
+                                ),
+                                decoration:  ShapeDecoration(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(32
+                                    ),
+                                    side: BorderSide(color: Colors.red, width: 2),
+                                  ),
+
+                                ),
                               ),
                               onTap: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => BatePapoPage(contato, null, widget.currentUser)));
-                                Text(contato.nickName);
+                                        builder: (context) => BatePapoPage(contato, null, _currentUser)));
+                                //Text(contato.nickName);
                               },
                             ),
                           ),
                           Container(
                             child: Text(
-                              contato.nickName,
+                              contato.nickName != '' ? contato.nickName : contato.nome,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                               maxLines: 2,
@@ -115,108 +125,119 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                 ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           ),
 
+
           StreamBuilder<List<BatePapo>>(
-            stream: _blocHome.filtrarBatePapo(currentID: widget.currentUser.uid),
-            builder: (context, listaBatePapoRemetente){
-
-              return (listaBatePapoRemetente.hasData && listaBatePapoRemetente.connectionState == ConnectionState.active) ?
-              Expanded(
-                child: ListView(
-                  children: listaBatePapoRemetente.data.map((batePapoRemetente){
-                    return (batePapoRemetente != null) ?
-                    StreamBuilder<DocumentSnapshot>(
-                      stream: _blocHome.getAtleta(batePapoRemetente.destinatarioUID),
-                      builder: (context, atletaDestinatario){
-                        return
-                          StreamBuilder(
-                            stream: _blocHome.getAtleta(widget.currentUser.uid),
-                            builder: (context, currentUser){
-                              return
-                                StreamBuilder<List<Mensagens>>(
-                                  stream: _blocHome.getMsg(batePapoRemetente.documentId(), true),
-                                  builder: (context, mensagensRemetente){
-
-                                    //*****************************************************************************************************
-                                    return (atletaDestinatario.hasData && atletaDestinatario.connectionState == ConnectionState.active) ?
-                                    ListTile(
-                                      leading: CircleAvatar(
-                                        radius: 25,
-                                        backgroundImage: NetworkImage(atletaDestinatario.data['fotoUrl']),
-                                      ),
-                                      title: Text(atletaDestinatario.data['nickName'] != '' ? atletaDestinatario.data['nickName'] : atletaDestinatario.data['nome'], overflow: TextOverflow.ellipsis,),
-                                      subtitle: Text('${currentUser.data['nickName']}: ${mensagensRemetente.data.first.texto}', overflow: TextOverflow.ellipsis,),
-                                      trailing: Column(
-                                        children: <Widget>[
-                                          Text(_horaFormat.format(mensagensRemetente.data.first.horario)),
-                                          Text(mensagensRemetente.data.last.visualizado ? 'true' : 'false')
-                                        ],
-                                      )
-                                    ) : Container(color: Colors.blue,);
-                                    //******************************************************************************************************
+            stream: _blocHome.filtrarCurrenteUserRemetente(widget.currentUser.uid),
+            builder: (context, listaUserRementente){
+              return (listaUserRementente.hasData && listaUserRementente.connectionState == ConnectionState.active) ?
+              StreamBuilder<List<BatePapo>>(
+                stream: _blocHome.filtrarCurrenteUserDestinatario(widget.currentUser.uid),
+                builder: (context, listaUserDestinatario) {
+                  if(listaUserDestinatario.hasData && listaUserDestinatario.connectionState == ConnectionState.active){
+                    _listaBatePapo.clear();
+                    _listaBatePapo.addAll(listaUserDestinatario.data);
+                    _listaBatePapo.addAll(listaUserRementente.data);
+                  }
+                  return (listaUserDestinatario.hasData && listaUserDestinatario.connectionState == ConnectionState.active) ?
+                  Expanded(
+                    child: ListView(
+                      children: _listaBatePapo.map((user){
+                        return StreamBuilder<List<Atleta>>(
+                          stream: _blocHome.getAtletaFiltro(user.remetente),
+                          builder: (context, atletaRemetente) {
+                            return (atletaRemetente.hasData && atletaRemetente.connectionState == ConnectionState.active) ?
+                            StreamBuilder<List<Atleta>>(
+                              stream: _blocHome.getAtletaFiltro(user.destinatario),
+                              builder: (context, atletaDestinatario) {
 
 
-                                  },
-                                );
-                            },
-                          );
-                      },
-                    ) : Container(color: Colors.yellow,);
-                  }).toList(),
-                ),
-              ) : Container(color: Colors.green,);
+                                return (atletaDestinatario.hasData && atletaDestinatario.connectionState == ConnectionState.active) ?
+                                Column(
+                                  children: <Widget>[
+                                    StreamBuilder<List<Mensagens>>(
+                                      stream: _blocHome.getMensagens(user.documentId()),
+                                      builder: (context, mensagens){
+                                        if (atletaDestinatario.hasData && atletaDestinatario.connectionState == ConnectionState.active) {
+                                          if (mensagens.hasData && mensagens.connectionState == ConnectionState.active) {
+                                            _batePapo = user;
+                                            _batePapo.texto = mensagens.data.first.texto;
+                                            _batePapo.imagem = mensagens.data.first.imagem;
+                                            _batePapo.sender = mensagens.data.first.sender;
+                                            _batePapo.horario =
+                                                mensagens.data.first.horario;
+                                            if (atletaDestinatario.data.first.uid != widget.currentUser.uid) {
+                                              _batePapo.fotoUrl = atletaDestinatario.data.first.fotoUrl;
+                                              _batePapo.nome = atletaDestinatario.data.first.nome;
+                                              _batePapo.nickName = atletaDestinatario.data.first.nickName;
+                                            }
+                                            if (atletaRemetente.data.first.uid != widget.currentUser.uid) {
+                                              _batePapo.fotoUrl = atletaRemetente.data.first.fotoUrl;
+                                              _batePapo.nome = atletaRemetente.data.first.nome;
+                                              _batePapo.nickName = atletaRemetente.data.first.nickName;
+                                            }
+                                          }
+                                        }
+                                        return _batePapo != null ?
+                                        Card(
+                                          margin: EdgeInsets.all(1),
+                                          child: ListTile(
+                                            leading: Container(
+                                              child: CircleAvatar(
+                                                backgroundImage: NetworkImage(_batePapo.fotoUrl),
+                                                radius: 25,
+                                              ),
+                                              decoration:  ShapeDecoration(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(32
+                                                  ),
+                                                  side: BorderSide(color: Colors.green, width: 2),
+                                                ),
+
+                                              ),
+                                            ),
+                                            title: Text(_batePapo.nickName != '' ? _batePapo.nickName : _batePapo.nome, overflow: TextOverflow.ellipsis,),
+                                            subtitle: Row(
+                                              children: <Widget>[
+                                                Icon(Icons.arrow_right, ),
+                                                Text('${_batePapo.texto}', style: TextStyle(fontSize: 14, color: Colors.blue),overflow: TextOverflow.ellipsis,),
+                                              ],
+                                            ),
+                                            trailing: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                Text(_horaFormat.format(_batePapo.horario), style: TextStyle(fontSize: 11, color: Colors.blue),),
+                                                Container(
+                                                  child: (
+                                                      Image.asset(_batePapo.visualizado ? 'images/chuteira1.png' : 'images/chuteira2.png', width: 40,)
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            onTap: (){
+                                              Navigator.push(
+                                                context,MaterialPageRoute(
+                                                  builder: (context) => BatePapoPage(_atleta, null, _currentUser)),
+                                              );
+                                            },
+
+                                          ),
+                                        ) : Container();
+                                      },
+                                    ),
+                                  ],
+                                ) : Container();
+                              },
+                            ) : Container();
+                          }
+                        );
+                      }).toList(),
+                    ),
+                  ) : Container();
+                }
+              ) : Container();
             },
           ),
 
-          StreamBuilder<List<BatePapo>>(
-            stream: _blocHome.filtrarBatePapo(destinatarioID: widget.currentUser.uid),
-            builder: (context, listaBatePapoDestinatario){
-
-              return (listaBatePapoDestinatario.hasData && listaBatePapoDestinatario.connectionState == ConnectionState.active) ?
-              Expanded(
-                child: ListView(
-                  children: listaBatePapoDestinatario.data.map((batePapoDestinatario){
-                    return (batePapoDestinatario != null) ?
-                    StreamBuilder<DocumentSnapshot>(
-                      stream: _blocHome.getAtleta(batePapoDestinatario.remetenteUID),
-                      builder: (context, atletaRemetente){
-                        return
-                          StreamBuilder(
-                            stream: _blocHome.getAtleta(widget.currentUser.uid),
-                            builder: (context, currentUser){
-                              return
-                              StreamBuilder<List<Mensagens>>(
-                                stream: _blocHome.getMsg(batePapoDestinatario.documentId(), true),
-                                builder: (context, mensagensRemetente){
-
-                                  //*****************************************************************************************************
-                                  return (atletaRemetente.hasData && atletaRemetente.connectionState == ConnectionState.active) ?
-                                  ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundImage: NetworkImage(atletaRemetente.data['fotoUrl']),
-                                      ),
-                                      title: Text(atletaRemetente.data['nickName'] != '' ? '${atletaRemetente.data['nickName']}' : ' ${atletaRemetente.data['nome']}', overflow: TextOverflow.ellipsis,),
-                                      subtitle: Text(mensagensRemetente.data.first.texto),
-                                      trailing: Column(
-                                        children: <Widget>[
-                                          Text(_horaFormat.format(mensagensRemetente.data.first.horario)),
-                                          Text(mensagensRemetente.data.first.visualizado ? 'true' : 'false')
-                                        ],
-                                      )
-                                  ) : Container(color: Colors.blue,);
-                                  //******************************************************************************************************
-
-
-                                },
-                              );
-                            },
-                          );
-                      },
-                    ) : Container(color: Colors.yellow,);
-                  }).toList(),
-                ),
-              ) : Container(color: Colors.green,);
-            },
-          )
         ],
       ),
     );
@@ -235,6 +256,11 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
         setDialVisible(scrollController.position.userScrollDirection ==
             ScrollDirection.forward);
       });
+
+    Stream user = _blocHome.getAtleta(widget.currentUser.uid);
+    user.map((data){
+      _currentUser = Atleta.fromMap(data);
+    }).toList();
   }
 
   void setDialVisible(bool value) {

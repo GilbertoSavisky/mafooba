@@ -11,14 +11,12 @@ class MensagensBloc extends BlocBase {
   String _imagem;
   String _texto;
   String _sender;
-  bool _visualizado;
 
   MensagensBloc() {
     _horarioController.listen((value) => _horario = value);
     _imagemController.listen((value) => _imagem = value);
     _textoController.listen((value) => _texto = value);
     _senderController.listen((value) => _sender = value);
-    _visualizadoController.listen((value) => _visualizado = value);
 
   }
 
@@ -31,7 +29,6 @@ class MensagensBloc extends BlocBase {
     setImagem(mensagens.imagem);
     setTexto(mensagens.texto);
     setSender(mensagens.sender);
-    setVisualizado(mensagens.visualizado);
   }
 
   var _horarioController = BehaviorSubject<DateTime>();
@@ -42,22 +39,18 @@ class MensagensBloc extends BlocBase {
   Stream<String> get outSender => _senderController.stream;
   var _imagemController = BehaviorSubject<String>();
   Stream<String> get outImagem => _imagemController.stream;
-  var _visualizadoController = BehaviorSubject<bool>();
-  Stream<bool> get outVisualizado => _visualizadoController.stream;
 
   void setHorario(DateTime value) => _horarioController.sink.add(value);
   void setImagem(String value) => _imagemController.sink.add(value);
   void setTexto(String value) => _textoController.sink.add(value);
   void setSender(String value) => _senderController.sink.add(value);
-  void setVisualizado(bool value) => _visualizadoController.sink.add(value);
 
   bool insertOrUpdate() {
     var mensagens = Mensagens()
       ..horario = _horario
       ..imagem = _imagem
       ..texto = _texto
-      ..sender = _sender
-      ..visualizado = _visualizado;
+      ..sender = _sender;
 
     if (_documentId?.isEmpty ?? true) {
       _repository.addMensagem(mensagens);
@@ -74,7 +67,6 @@ class MensagensBloc extends BlocBase {
     _imagemController.close();
     _textoController.close();
     _senderController.close();
-    _visualizadoController.close();
     super.dispose();
   }
 }

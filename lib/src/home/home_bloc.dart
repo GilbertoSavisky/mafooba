@@ -21,9 +21,11 @@ HomeBloc extends BlocBase {
   get batePapo => _repositoryBatePapo.batePapo;
 
   var _repositoryMsg = AppModule.to.getDependency<BatePapoRepository>();
-  getMsg(String docID, bool ordenar) => _repositoryMsg.getMsg(docID, ordenar);
+  getMensagens(String documentID) => _repositoryMsg.getMensagens(documentID);
 
-  filtrarBatePapo({String currentID, String destinatarioID}) => _repositoryBatePapo.filtrarBatePapo(currentID: currentID, destinatarioID: destinatarioID);
+  filtrarCurrenteUserRemetente(String currentID) => _repositoryBatePapo.filtrarCurrenteUserRemetente(currentID);
+  filtrarCurrenteUserDestinatario(String currentID) => _repositoryBatePapo.filtrarCurrenteUserDestinatario(currentID);
+  getAtletaFiltro(String documentId) => _repositoryAtleta.getAtletaFiltro(documentId);
 
   void deleteAtleta(String documentId) => _repositoryAtleta.delete(documentId);
   void addAtleta(String docID, Atleta atleta) => _repositoryAtleta.addAtleta(docID, atleta);
@@ -40,5 +42,4 @@ HomeBloc extends BlocBase {
 
   Stream<DocumentSnapshot> getAtleta(String documentId) => _repositoryAtleta.getAtleta(documentId);
   Stream<DocumentSnapshot> getBatePapo(String documentId) => _repositoryBatePapo.getBatePapo(documentId);
-  //Observable<List<Mensagens>> getMsg(String docID) => _repositoryChat.getMsg(docID);
 }

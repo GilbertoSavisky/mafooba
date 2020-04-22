@@ -10,6 +10,7 @@ class AtletaBloc extends BlocBase {
 
   String _nome;
   String _nickName;
+  String _fotoUrl;
   bool _isGoleiro;
   bool _isAtivo;
   bool _selecionado;
@@ -17,7 +18,6 @@ class AtletaBloc extends BlocBase {
   String _posicao;
   String _email;
   String _fone;
-  String _fotoUrl;
   String _habilidade;
   String _uid;
   DocumentReference _grupoUID;
@@ -25,6 +25,7 @@ class AtletaBloc extends BlocBase {
   AtletaBloc() {
     _nomeController.listen((value) => _nome = value);
     _nickNameController.listen((value) => _nickName = value);
+    _fotoUrlController.listen((value) => _fotoUrl = value);
     _isGoleiroController.listen((value) => _isGoleiro = value);
     _isAtivoController.listen((value) => _isAtivo = value);
     _selecionadoController.listen((value) => _selecionado = value);
@@ -32,7 +33,6 @@ class AtletaBloc extends BlocBase {
     _posicaoController.listen((value) => _posicao = value);
     _emailController.listen((value) => _email = value);
     _foneController.listen((value) => _fone = value);
-    _fotoUrlController.listen((value) => _fotoUrl = value);
     _habilidadeController.listen((value) => _habilidade = value);
     _uidController.listen((value) => _uid = value);
     //_grupoUIDController.listen((value) => _grupoUID = value as DocumentReference);
@@ -44,6 +44,7 @@ class AtletaBloc extends BlocBase {
     _documentId = atleta.uid; //atleta.documentId();
     setNome(atleta.nome);
     setNickName(atleta.nickName);
+    setFotoUrl(atleta.fotoUrl);
     setPosicao(atleta.posicao);
     setIsGoleiro(atleta.isGoleiro);
     setIsAtivo(atleta.isAtivo);
@@ -51,7 +52,6 @@ class AtletaBloc extends BlocBase {
     setFaltas(atleta.faltas);
     setEmail(atleta.email);
     setFone(atleta.fone);
-    setFotoUrl(atleta.fotoUrl);
     setUid(atleta.uid);
     setHabilidade(atleta.habilidade);
     setGrupoUID(atleta.grupoUID);
@@ -61,6 +61,8 @@ class AtletaBloc extends BlocBase {
   Stream<String> get outNome => _nomeController.stream;
   var _nickNameController = BehaviorSubject<String>();
   Stream<String> get outNickName => _nickNameController.stream;
+  var _fotoUrlController = BehaviorSubject<String>();
+  Stream<String> get outFotoUrl => _fotoUrlController.stream;
   var _isGoleiroController = BehaviorSubject<bool>();
   Stream<bool> get outIsGoleiro => _isGoleiroController.stream;
   var _isAtivoController = BehaviorSubject<bool>();
@@ -73,8 +75,6 @@ class AtletaBloc extends BlocBase {
   Stream<String> get outPosicao => _posicaoController.stream;
   var _foneController = BehaviorSubject<String>();
   Stream<String> get outFone => _foneController.stream;
-  var _fotoUrlController = BehaviorSubject<String>();
-  Stream<String> get outFotoUrl => _fotoUrlController.stream;
   var _emailController = BehaviorSubject<String>();
   Stream<String> get outEmail => _emailController.stream;
 
@@ -90,13 +90,13 @@ class AtletaBloc extends BlocBase {
 
   void setNome(String value) => _nomeController.sink.add(value);
   void setNickName(String value) => _nickNameController.sink.add(value);
+  void setFotoUrl(String value) => _fotoUrlController.sink.add(value);
   void setIsGoleiro(bool value) => _isGoleiroController.sink.add(value);
   void setIsAtivo(bool value) => _isAtivoController.sink.add(value);
   void setSelecionado(bool value) => _selecionadoController.sink.add(value);
   void setFaltas(int value) => _faltasController.sink.add(value);
   void setPosicao(String value) => _posicaoController.sink.add(value);
   void setFone(String value) => _foneController.sink.add(value);
-  void setFotoUrl(String value) => _fotoUrlController.sink.add(value);
   void setEmail(String value) => _emailController.sink.add(value);
   void setHabilidade(String value) => _habilidadeController.sink.add(value);
   void setUid(String value) => _uidController.sink.add(value);
@@ -134,13 +134,13 @@ class AtletaBloc extends BlocBase {
   void dispose() {
     _nomeController.close();
     _nickNameController.close();
+    _fotoUrlController.close();
     _isGoleiroController.close();
     _isAtivoController.close();
     _faltasController.close();
     _posicaoController.close();
     _emailController.close();
     _foneController.close();
-    _fotoUrlController.close();
     _habilidadeController.close();
     _uidController.close();
     _grupoUIDController.close();

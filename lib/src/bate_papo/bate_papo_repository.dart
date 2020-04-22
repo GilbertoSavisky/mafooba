@@ -1,11 +1,26 @@
+import 'dart:async';
+
+import 'package:async/async.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mafooba/src/home/home_bloc.dart';
+import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/models/bate_papo_model.dart';
 import 'package:mafooba/src/models/mensagens_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BatePapoRepository extends Disposable {
+  List<BatePapo> _listaBatePapo = [];
+  Stream<List<BatePapo>> _listaBatePapo2 = null;
+  BatePapo _batePapoFiltro = BatePapo();
+  Atleta _atletaRemetente = Atleta();
+  Atleta _atletaDestinatario = Atleta();
+  //HomeBloc _blocHome = HomeBloc();
+
+
   CollectionReference _collection = Firestore.instance.collection('bate_papo');
+  CollectionReference _collectionAtletas = Firestore.instance.collection('atletas');
+
 
   void addBatePapo(BatePapo batePapo) => _collection.document().setData(batePapo.toMap());
   void addMensagem(Mensagens mensagens) => _collection.document().setData(mensagens.toMap());
@@ -20,14 +35,18 @@ class BatePapoRepository extends Disposable {
 
   Stream<DocumentSnapshot>  getBatePapo(String documentoID) => _collection.document(documentoID). snapshots();
 
-  Stream<DocumentSnapshot>  getMensagens(String docID) => _collection.document(docID).snapshots();
+  Stream<List<Mensagens>>  getMensagens(String documentID) {
+    return _collection.document(documentID).collection('mensagens').orderBy('horario', descending: true).snapshots().map((query) {
+      return query.documents.map<Mensagens>((doc) => Mensagens.fromMap(doc)).toList();
+    });
+  }
 
-  Stream<List<Mensagens>>  getMsg(String docID, bool ordenar) =>
-      _collection.document(docID).collection('mensagens').orderBy('horario', descending: ordenar).snapshots().map((query) =>
-          query.documents.map<Mensagens>((doc) => Mensagens.fromMap(doc)).toList());
+  Stream<List<BatePapo>>  filtrarCurrenteUserRemetente(String currentID) =>
+      _collection.where('remetente', isEqualTo: currentID).snapshots().map((query) =>
+          query.documents.map<BatePapo>((doc) => BatePapo.fromMap(doc)).toList());
 
-  Stream<List<BatePapo>>  filtrarBatePapo({String currentID, String destinatarioID}) =>
-      _collection.where('remetenteUID', isEqualTo: currentID).where('destinatarioUID', isEqualTo: destinatarioID).snapshots().map((query) =>
+  Stream<List<BatePapo>>  filtrarCurrenteUserDestinatario(String currentID) =>
+      _collection.where('destinatario', isEqualTo: currentID).snapshots().map((query) =>
           query.documents.map<BatePapo>((doc) => BatePapo.fromMap(doc)).toList());
 
   Observable<List<BatePapo>> get batePapo =>
