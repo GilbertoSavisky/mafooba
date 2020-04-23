@@ -1,302 +1,338 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:mafooba/src/bate_papo/bate_papo_page.dart';
-import 'package:mafooba/src/equipe/equipe_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:mafooba/src/bate_papo/bate_papo_bloc.dart';
+import 'package:mafooba/src/bate_papo/mensagens_bloc.dart';
 import 'package:mafooba/src/home/home_bloc.dart';
 import 'package:mafooba/src/models/atleta_model.dart';
 import 'package:mafooba/src/models/bate_papo_model.dart';
-import 'package:mafooba/src/models/equipe_model.dart';
-import 'package:mafooba/src/atleta/atleta_page.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:intl/intl.dart';
 import 'package:mafooba/src/models/mensagens_model.dart';
+import 'package:rxdart/rxdart.dart';
 
-class BatePapoHomePage extends StatefulWidget {
-  final FirebaseUser currentUser;
+class BatePapoPage extends StatefulWidget {
+  BatePapoPage(this._batePapo, this.currentUser);
 
-  BatePapoHomePage(this.currentUser);
+  final BatePapo _batePapo;
+  final Atleta currentUser;
 
   @override
-  _BatePapoHomePageState createState() => _BatePapoHomePageState();
+  _BatePapoPageState createState() => _BatePapoPageState();
 }
 
-class _BatePapoHomePageState extends State<BatePapoHomePage> {
+class _BatePapoPageState extends State<BatePapoPage> {
+  TextEditingController _textoMensagem;
+
+  final _blocBatePapo = BatePapoBloc();
   final _blocHome = HomeBloc();
-  final _horaFormat = DateFormat('dd/MM/yy').add_Hm();
-  Mensagens _mensagens;
-  BatePapo _batePapo;
-  Atleta _atleta = Atleta();
-  Atleta _currentUser;
-  List<BatePapo> _listaBatePapo = [];
+  final _blocMsg = MensagensBloc();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        title: Text('Lista de Bate-Papo'),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[
-                    Color.fromARGB(-25, 13, 66, 13),
-                    Color.fromARGB(-43, 54, 172, 84),
-                  ])),
-        ),
-      ),
-      //floatingActionButton: buildSpeedDial(),
-      body: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(2),
-            height: 105,
-            child: StreamBuilder<List<Atleta>>(
-              stream: _blocHome.atleta,
-              builder: (context, snapshot) {
+  final _dateFormat = DateFormat('dd/MM/yy').add_Hm();
+  bool _isComposing = false;
+  bool mine = false;
+  bool _isLoading = false;
 
-                if (!snapshot.hasData) return CircularProgressIndicator();
-
-                return Container(
-                  child: ListView(
-                    children: snapshot.data.map((contato) {
-                      return contato.uid != widget.currentUser.uid ? Column(
-                        children: <Widget>[
-                          Container(
-                            child: GestureDetector(
-                              child: CircleAvatar(
-                                backgroundImage: contato.fotoUrl != null
-                                    ? NetworkImage(contato.fotoUrl)
-                                    : Container(),
-                                radius: 32,
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => BatePapoPage(contato, null, _currentUser)));
-                                //Text(contato.nickName);
-                              },
-                            ),
-                          ),
-                          Container(
-                            child: Text(
-                              contato.nickName != '' ? contato.nickName : contato.nome,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                            ),
-                            alignment: Alignment.center,
-                            width: 85,
-                            //color: Colors.yellow,
-                          ),
-                        ],
-                      ) : Container();
-                    }).toList(),
-                    scrollDirection: Axis.horizontal,
-                  ),
-                );
-              },
-            ),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  Color.fromARGB(-43, 14, 158, 60),
-                  //Color.fromARGB(-43, 152, 249, 200),
-                  //Color.fromARGB(-29, 144, 240, 244),
-                  Color.fromARGB(-14, 194, 238, 240),
-                ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-          ),
-
-
-          StreamBuilder<List<BatePapo>>(
-            stream: _blocHome.filtrarCurrenteUserRemetente(widget.currentUser.uid),
-            builder: (context, listaUserRementente){
-              return (listaUserRementente.hasData && listaUserRementente.connectionState == ConnectionState.active) ?
-              StreamBuilder<List<BatePapo>>(
-                  stream: _blocHome.filtrarCurrenteUserDestinatario(widget.currentUser.uid),
-                  builder: (context, listaUserDestinatario) {
-                    if(listaUserDestinatario.hasData && listaUserDestinatario.connectionState == ConnectionState.active){
-                      _listaBatePapo.clear();
-                      _listaBatePapo.addAll(listaUserDestinatario.data);
-                      _listaBatePapo.addAll(listaUserRementente.data);
-                    }
-                    return (listaUserDestinatario.hasData && listaUserDestinatario.connectionState == ConnectionState.active) ?
-                    Expanded(
-                      child: ListView(
-                        children: _listaBatePapo.map((user){
-                          return StreamBuilder<List<Atleta>>(
-                              stream: _blocHome.getAtletaFiltro(user.remetente),
-                              builder: (context, atletaRemetente) {
-                                return (atletaRemetente.hasData && atletaRemetente.connectionState == ConnectionState.active) ?
-                                StreamBuilder<List<Atleta>>(
-                                    stream: _blocHome.getAtletaFiltro(user.destinatario),
-                                    builder: (context, atletaDestinatario) {
-
-                                      if (atletaDestinatario.hasData && atletaDestinatario.connectionState == ConnectionState.active){
-                                        _batePapo = user;
-                                        if(atletaDestinatario.data.first.uid != widget.currentUser.uid) {
-                                          _batePapo.fotoUrl = atletaDestinatario.data.first.fotoUrl;
-                                          _batePapo.nome = atletaDestinatario.data.first.nome;
-                                          _batePapo.nickName = atletaDestinatario.data.first.nickName;
-                                        }
-                                        if(atletaRemetente.data.first.uid != widget.currentUser.uid) {
-                                          _batePapo.fotoUrl = atletaRemetente.data.first.fotoUrl;
-                                          _batePapo.nome = atletaRemetente.data.first.nome;
-                                          _batePapo.nickName = atletaRemetente.data.first.nickName;
-                                        }
-
-                                      }
-                                      return (atletaDestinatario.hasData && atletaDestinatario.connectionState == ConnectionState.active) ?
-                                      ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundImage: NetworkImage(_batePapo.fotoUrl),
-                                          radius: 25,
-                                        ),
-                                        title: Text(_batePapo.nickName != '' ? _batePapo.nickName : _batePapo.nome),
-                                        subtitle: Text('${atletaRemetente.data.first.nickName} : ${user.remetente}'),
-                                        trailing: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            //Text(mensagensRemetente.hasData ? _horaFormat.format(mensagensRemetente.data.first.horario) : ''),
-                                            Container(
-                                              child: (
-                                                  Image.asset(_batePapo.visualizado ? 'images/chuteira1.png' : 'images/chuteira2.png', width: 40,)
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ) : Container();
-                                    }
-                                ) : Container();
-                              }
-                          );
-                        }).toList(),
-                      ),
-                    ) : Container();
-                  }
-              ) : Container();
-            },
-          ),
-
-
-
-
-
-          ListBody(
-            children: _listaBatePapo.map((batePapo){
-              print('-1-${batePapo.toMap()}');
-
-              return Container();
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  ScrollController scrollController;
-
-  bool dialVisible = true;
 
   @override
   void initState() {
+    _blocBatePapo.setBatePapo(widget._batePapo);
+    _textoMensagem = TextEditingController(text: '');
     super.initState();
-
-    scrollController = ScrollController()
-      ..addListener(() {
-        setDialVisible(scrollController.position.userScrollDirection ==
-            ScrollDirection.forward);
-      });
-
-    Stream user = _blocHome.getAtleta(widget.currentUser.uid);
-    user.map((data){
-      _currentUser = Atleta.fromMap(data);
-    }).toList();
   }
 
-  void setDialVisible(bool value) {
+  @override
+  void dispose() {
+    _textoMensagem.dispose();
+    super.dispose();
+  }
+
+
+  void _sendMessage({File imgFile}) async {
+    Map<String, dynamic> data = {};
+
+    if (imgFile != null) {
+      StorageUploadTask task =
+      FirebaseStorage.instance.ref().child('mensagens').
+      child(widget._batePapo.nickName).child(DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString()).putFile(imgFile);
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      StorageTaskSnapshot taskSnapshot = await task.onComplete;
+      String url = await taskSnapshot.ref.getDownloadURL();
+
+      data['imagem'] = url;
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
+
+    if (_textoMensagem.text != '') {
+      data['texto'] = _textoMensagem.text;
+    }
+
+    data['horario'] = DateTime.now();
+    data['visualizado'] = false;
+    data['sender'] = widget.currentUser.uid;
+
+    print('.......widget._batePapo...........${widget._batePapo?.documentId()}');
+
+
+    if (widget._batePapo?.documentId() == null) {
+      //widget._batePapo = BatePapo();
+
+      widget._batePapo.remetente = widget.currentUser.uid;
+      //widget._batePapo.destinatario = widget._atleta.uid;
+//      _bloc.insertOrUpdate();
+//
+//      _blocHome.batePapo;
+      Firestore.instance.collection('bate_papo').add(widget._batePapo.toMap()).then((onValue){
+        print('-----------------------------onValue   ${onValue.documentID}');
+        Firestore.instance.collection('bate_papo')
+            .document(widget._batePapo.documentId())
+            .collection('mensagens')
+            .add(data);
+
+      });
+    }
+
+  }
+
+
+  void _reset() {
+    _textoMensagem.clear();
     setState(() {
-      dialVisible = value;
+      _isComposing = false;
     });
   }
 
-  Widget buildBody() {
-    return ListView.builder(
-      controller: scrollController,
-      itemCount: 30,
-      itemBuilder: (ctx, i) => ListTile(title: Text('Item $i')),
-    );
-  }
 
-  SpeedDial buildSpeedDial() {
-    return SpeedDial(
-      animatedIcon: AnimatedIcons.menu_close,
-      animatedIconTheme: IconThemeData(size: 22.0),
-      // child: Icon(Icons.add),
-      onOpen: () => print('OPENING DIAL'),
-      onClose: () => print('DIAL CLOSED'),
-      visible: dialVisible,
-      curve: Curves.bounceIn,
-      children: [
-        SpeedDialChild(
-          child: Icon(Icons.group_add, color: Colors.white),
-          backgroundColor: Colors.deepOrange,
-          onTap: () {
-            var equipe = Equipe()
-              ..active = true
-              ..horario = DateTime.now()
-              ..nomeEquipe = ""
-              ..estilo = ""
-              ..local = ""
-              ..foneCampo = ""
-              ..totalJogadores = 0;
+  @override
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
-            );
-          },
-          label: 'Equipes',
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.deepOrangeAccent,
-        ),
-        SpeedDialChild(
-          child: Icon(Icons.person_add, color: Colors.white),
-          backgroundColor: Colors.green,
-          onTap: () {
-            var atleta = Atleta()
-              ..nome = ""
-              ..isGoleiro = false;
+  Widget build(BuildContext context) {
+    //batePapo = widget._batePapo;
+    return Scaffold(
+      appBar: AppBar(
+        leading: Container(
+            margin: EdgeInsets.only(left: 10, top: 3, bottom: 3),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(widget._batePapo.fotoUrl),
+            )),
+        title: Text(widget._batePapo.nickName),
+      ),
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AtletaPage(atleta: atleta)),
-            );
-          },
-          label: 'Atletas',
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.green,
-        ),
-        SpeedDialChild(
-          child: Icon(Icons.chat, color: Colors.white),
-          backgroundColor: Colors.blue,
-          onTap: () => print('THIRD CHILD'),
-          labelWidget: Container(
-            color: Colors.blue,
-            margin: EdgeInsets.only(right: 10),
-            padding: EdgeInsets.all(6),
-            child: Text('Custom Label Widget'),
+      body: Column(
+        children: <Widget>[
+          StreamBuilder<List<Mensagens>>(
+            stream: _blocHome.batePapo,
+            builder: (context, listaBatePapo){
+              return widget._batePapo != null ?
+              StreamBuilder<List<Mensagens>>(
+                stream: null,//_blocHome.getMsg(widget._batePapo.documentId()),
+                builder: (context, listaMensagens){
+                  return (listaMensagens.hasData && listaMensagens.connectionState == ConnectionState.active) ?
+                  Expanded(
+                    child: ListView(
+                      reverse: true,
+                      children: listaMensagens.data.map((mensagem){
+                        mine = mensagem.sender == widget.currentUser.uid;
+
+                        return listaMensagens.data.isNotEmpty ? Container(
+                          child: mensagem.texto != null ?
+                          ListTile(
+                            title: Column(
+                              crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Card(
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text(mensagem.texto,
+                                          style: TextStyle(
+                                              fontSize: 18
+                                          ),
+                                          textAlign:  TextAlign.start,
+                                        ),
+                                        Container(
+                                          child: Text(_dateFormat.format(mensagem.horario),
+                                            style: TextStyle(
+                                              color: Colors.blueAccent,
+                                              fontSize: 10,
+                                              letterSpacing: 0.1,
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.only(right: 5),
+                                        ),
+                                      ],
+                                    ),
+                                    padding: EdgeInsets.all(5),
+                                  ),
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: !mine ? BorderRadius.only(
+                                        bottomLeft: Radius.circular(12),
+                                        bottomRight: Radius.circular(12),
+                                        topRight: Radius.circular(12),
+                                      ) : BorderRadius.only(
+                                          bottomLeft: Radius.circular(12),
+                                          bottomRight: Radius.circular(12),
+                                          topLeft: Radius.circular(12),
+                                          topRight: Radius.lerp(Radius.elliptical(1, 1 ), Radius.elliptical(1, 2), 10)
+                                      ),
+                                      side: BorderSide(color: Colors.green)
+                                  ),
+                                  color: !mine ? Color.fromARGB(-10, 220, 255, 223) : Color.fromARGB(-5, 250, 252, 220),
+                                  margin: !mine ? EdgeInsets.only(right: 30) : EdgeInsets.only(left: 30),
+                                ),
+                              ],
+                            ),
+                          ): ListTile(
+                            title: Column(
+                              crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Card(
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Image.network(
+                                          mensagem.imagem,
+                                          height: 310,
+                                          width: 270,
+                                        ),
+                                        Column(
+                                          children: <Widget>[
+                                            Container(
+                                              child: Text(_dateFormat.format(mensagem.horario),
+                                                style: TextStyle(
+                                                    color: Colors.blueAccent,
+                                                    fontSize: 10,
+                                                    letterSpacing: 0.1),
+                                              ),
+                                              padding: EdgeInsets.only(right: 5),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    padding: EdgeInsets.all(5),
+
+                                  ),
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(10),
+                                      bottomRight: Radius.circular(10),
+                                      topRight: Radius.circular(10),
+                                    ),
+                                    side: BorderSide(color: Colors.green),
+                                  ),
+
+                                  color: !mine ? Color.fromARGB(-10, 220, 255, 223)
+                                      : Color.fromARGB(-5, 250, 252, 220),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ): Expanded(child: Container());
+                      }).toList(),
+                    ),
+                  ) : Expanded(child: Container());
+                },
+              )
+
+                  : Expanded(
+                child: Container(
+                  color: Colors.yellow,
+                ),
+              );
+
+            },
           ),
-        ),
-      ],
+
+          _isLoading ? Container(
+            height: 250,
+            width: 250,
+            child: CircularProgressIndicator(),
+          ) : Container(),
+          Container(
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.photo_camera),
+                  padding: EdgeInsets.symmetric(),
+                  onPressed: () async {
+                    final File imgFile =
+                    await ImagePicker.pickImage(source: ImageSource.camera);
+                    if (imgFile == null) return;
+                    _isLoading ? LinearProgressIndicator() : Container();
+                    _sendMessage(imgFile: imgFile);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.attach_file,
+                  ),
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(),
+
+                  onPressed: () async {
+                    final File imgFile =
+                    await ImagePicker.pickImage(source: ImageSource.gallery);
+                    if (imgFile == null) return;
+                    _isLoading ? LinearProgressIndicator() : Container();
+                    _sendMessage(imgFile: imgFile);
+                  },
+                ),
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration.collapsed(
+                      hintText: 'Enviar mensagem',
+                    ),
+                    controller: _textoMensagem,
+                    onChanged: (texto) {
+                      setState(() {
+                        _blocMsg.setTexto(texto);
+                        _isComposing = texto.isNotEmpty;
+                        //
+                      });
+                    },
+                    onSubmitted: (texto) {
+                      _sendMessage();
+                      _reset();
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: _isComposing
+                      ? () {
+                    _isLoading ? LinearProgressIndicator() : Container();
+                    _sendMessage();
+                    _reset();
+                  }
+                      : null,
+                ),
+              ],
+            ),
+            color: Colors.green,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:mafooba/src/bate_papo/bate_papo_repository.dart';
+import 'package:mafooba/src/models/bate_papo_model.dart';
 import 'package:mafooba/src/models/mensagens_model.dart';
 import 'package:rxdart/rxdart.dart';
 import '../app_module.dart';
@@ -45,17 +46,18 @@ class MensagensBloc extends BlocBase {
   void setTexto(String value) => _textoController.sink.add(value);
   void setSender(String value) => _senderController.sink.add(value);
 
-  bool insertOrUpdate() {
+  bool insertOrUpdate(BatePapo batePapo) {
+    print('----${batePapo.toMap()}');
     var mensagens = Mensagens()
       ..horario = _horario
       ..imagem = _imagem
       ..texto = _texto
       ..sender = _sender;
 
-    if (_documentId?.isEmpty ?? true) {
+    if (batePapo.documentId() ?.isEmpty ?? true) {
       _repository.addMensagem(mensagens);
     } else {
-      _repository.updateMensagem(_documentId, mensagens);
+      _repository.updateMensagem(batePapo.documentId(), mensagens);
     }
 
     return true;

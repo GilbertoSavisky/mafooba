@@ -10,26 +10,20 @@ import 'package:mafooba/src/models/mensagens_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BatePapoRepository extends Disposable {
-  List<BatePapo> _listaBatePapo = [];
-  Stream<List<BatePapo>> _listaBatePapo2 = null;
-  BatePapo _batePapoFiltro = BatePapo();
-  Atleta _atletaRemetente = Atleta();
-  Atleta _atletaDestinatario = Atleta();
-  //HomeBloc _blocHome = HomeBloc();
-
 
   CollectionReference _collection = Firestore.instance.collection('bate_papo');
-  CollectionReference _collectionAtletas = Firestore.instance.collection('atletas');
-
 
   void addBatePapo(BatePapo batePapo) => _collection.document().setData(batePapo.toMap());
-  void addMensagem(Mensagens mensagens) => _collection.document().setData(mensagens.toMap());
 
   void updateBatePapo(String documentId, BatePapo batePapo) =>
       _collection.document(documentId).updateData(batePapo.toMap());
 
   void updateMensagem(String documentId, Mensagens mensagem) =>
-      _collection.document(documentId).updateData(mensagem.toMap());
+      _collection.document(documentId).collection('mensagens').document().setData(mensagem.toMap());
+
+  void addMensagem(Mensagens mensagem) =>
+      _collection.document().collection('mensagens').document().setData(mensagem.toMap());
+
 
   void delete(String documentId) => _collection.document(documentId).delete();
 

@@ -92,7 +92,7 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => BatePapoPage(contato, null, _currentUser)));
+                                        builder: (context) => BatePapoPage(null, _currentUser)));
                                 //Text(contato.nickName);
                               },
                             ),
@@ -208,7 +208,7 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                                                 Text(_horaFormat.format(_batePapo.horario), style: TextStyle(fontSize: 11, color: Colors.blue),),
                                                 Container(
                                                   child: (
-                                                      Image.asset(_batePapo.visualizado ? 'images/chuteira1.png' : 'images/chuteira2.png', width: 40,)
+                                                      Image.asset(!_batePapo.visualizado ? 'images/chuteira1.png' : 'images/chuteira3.png', width: 40,)
                                                   ),
                                                 ),
                                               ],
@@ -216,7 +216,7 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
                                             onTap: (){
                                               Navigator.push(
                                                 context,MaterialPageRoute(
-                                                  builder: (context) => BatePapoPage(_atleta, null, _currentUser)),
+                                                  builder: (context) => BatePapoPage(user, _currentUser)),
                                               );
                                             },
 

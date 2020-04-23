@@ -18,10 +18,9 @@ import 'package:mafooba/src/models/mensagens_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BatePapoPage extends StatefulWidget {
-  BatePapoPage(this._atleta, this._batePapo, this.currentUser);
+  BatePapoPage(this._batePapo, this.currentUser);
 
-  final Atleta _atleta;
-  BatePapo _batePapo;
+  final BatePapo _batePapo;
   final Atleta currentUser;
 
   @override
@@ -29,36 +28,44 @@ class BatePapoPage extends StatefulWidget {
 }
 
 class _BatePapoPageState extends State<BatePapoPage> {
-  bool _isComposing = false;
-  final _dateFormat = DateFormat('dd/MM/yy').add_Hm();
-  bool mine = false;
-  bool _isLoading = false;
   TextEditingController _textoMensagem;
-  BatePapo batePapo;
-  Stream<List<BatePapo>> listaFiltrada = null;
-  List<BatePapo> listaFiltrada2 = null;
 
+  final _blocBatePapo = BatePapoBloc();
   final _blocHome = HomeBloc();
-  final _bloc = BatePapoBloc();
   final _blocMsg = MensagensBloc();
 
-  void _reset() {
-    _textoMensagem.clear();
-    setState(() {
-      _isComposing = false;
-    });
+  final _dateFormat = DateFormat('dd/MM/yy').add_Hm();
+  bool _isComposing = false;
+  bool mine = false;
+  bool _isLoading = false;
+
+
+  @override
+  void initState() {
+    _blocBatePapo.setBatePapo(widget._batePapo);
+    _textoMensagem = TextEditingController(text: '');
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _textoMensagem.dispose();
+    super.dispose();
   }
 
 
-
   void _sendMessage({File imgFile}) async {
-    Map<String, dynamic> data = {};
+
+    _blocMsg.setHorario(DateTime.now());
+    _blocMsg.setSender(widget.currentUser.uid);
+
+    _blocBatePapo.setVisualizado(false);
+    _blocBatePapo.insertOrUpdate();
 
     if (imgFile != null) {
       StorageUploadTask task =
-      FirebaseStorage.instance.ref().child('mensagens').
-      child(widget._atleta.nickName).child(DateTime
-          .now()
+      FirebaseStorage.instance.ref().child('mensagens').child(
+          widget._batePapo.nickName).child(DateTime.now()
           .millisecondsSinceEpoch
           .toString()).putFile(imgFile);
 
@@ -69,83 +76,26 @@ class _BatePapoPageState extends State<BatePapoPage> {
       StorageTaskSnapshot taskSnapshot = await task.onComplete;
       String url = await taskSnapshot.ref.getDownloadURL();
 
-      data['imagem'] = url;
+      _blocMsg.setImagem(url);
+      _blocMsg.insertOrUpdate(widget._batePapo);
 
       setState(() {
         _isLoading = false;
       });
+    } else if (_textoMensagem.text != '') {
+      _blocMsg.setTexto(_textoMensagem.text);
+      _blocMsg.insertOrUpdate(widget._batePapo);
     }
+  }
 
-    if (_textoMensagem.text != '') {
-      data['texto'] = _textoMensagem.text;
-    }
-
-    data['horario'] = DateTime.now();
-    data['visualizado'] = false;
-    data['sender'] = widget.currentUser.uid;
-
-    print('.......widget._batePapo...........${widget._batePapo?.documentId()}');
-
-
-    if (widget._batePapo?.documentId() == null) {
-      widget._batePapo = BatePapo();
-
-      widget._batePapo.remetente = widget.currentUser.uid;
-      widget._batePapo.destinatario = widget._atleta.uid;
-//      _bloc.insertOrUpdate();
-//
-      _bloc.setBatePapo(widget._batePapo);
-//      _blocHome.batePapo;
-        Firestore.instance.collection('bate_papo').add(widget._batePapo.toMap()).then((onValue){
-          print('-----------------------------onValue   ${onValue.documentID}');
-          Firestore.instance.collection('bate_papo')
-              .document(widget._batePapo.documentId())
-              .collection('mensagens')
-              .add(data);
-
-        });
-    }
-
+  void _reset() {
+    _textoMensagem.clear();
+    setState(() {
+      _isComposing = false;
+    });
   }
 
 
-  void getIdMensagem(){
-  }
-
-  @override
-  void initState() {
-    _textoMensagem = TextEditingController(text: '');
-
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _textoMensagem.dispose();
-    super.dispose();
-  }
-
-  void filtraBatePapo(){
-//    listaFiltrada = _blocHome.filtrarBatePapo(widget.currentUser.uid);
-//    listaFiltrada.map((lista){
-//      lista.map((listaMP){
-//        widget._batePapo = listaMP;
-//        print('................1..............${widget._batePapo?.toMap()}');
-//      }).toList();
-//      if(batePapo == null) {
-//        listaFiltrada = _blocHome.filtrarBatePapo(widget.currentUser.uid);
-//        listaFiltrada.map((lista2){
-//          lista2.map((lista2MP){
-//            widget._batePapo = lista2MP;
-//            print('................2..............${widget._batePapo?.toMap()}');
-//          }).toList();
-//        }).toList();
-//      }
-//    }).toList().whenComplete((){
-//      build(context);
-//    });
-  }
   @override
 
   Widget build(BuildContext context) {
@@ -155,143 +105,78 @@ class _BatePapoPageState extends State<BatePapoPage> {
         leading: Container(
             margin: EdgeInsets.only(left: 10, top: 3, bottom: 3),
             child: CircleAvatar(
-              backgroundImage: NetworkImage(widget._atleta.fotoUrl),
+              backgroundImage: NetworkImage(widget._batePapo.fotoUrl),
             )),
-        title: Text(widget._atleta.nickName),
-
+        title: Text(widget._batePapo.nickName != '' ? widget._batePapo.nickName : widget._batePapo.nome),
       ),
 
       body: Column(
         children: <Widget>[
 
-          StreamBuilder<List<BatePapo>>(
-            stream: _blocHome.batePapo,
-            builder: (context, listaBatePapo){
-              filtraBatePapo();
-              return widget._batePapo != null ?
-                StreamBuilder<List<Mensagens>>(
-                  stream: null,//_blocHome.getMsg(widget._batePapo.documentId()),
-                  builder: (context, listaMensagens){
-                    return (listaMensagens.hasData && listaMensagens.connectionState == ConnectionState.active) ?
-                    Expanded(
-                      child: ListView(
-                        reverse: true,
-                        children: listaMensagens.data.map((mensagem){
-                          mine = mensagem.sender == widget.currentUser.uid;
-
-                          return listaMensagens.data.isNotEmpty ? Container(
-                            child: mensagem.texto != null ? ListTile(
-                              title: Column(
+          StreamBuilder<List<Mensagens>>(
+            stream: _blocHome.getMensagens(widget._batePapo.documentId()),
+            builder: (context, listaMensagens){
+              return (listaMensagens.hasData && listaMensagens.connectionState == ConnectionState.active) ?
+              Expanded(
+                child: ListView(
+                  reverse: true,
+                  children: listaMensagens.data.map((msg){
+                    mine = msg.sender == widget.currentUser.uid;
+                    return ListTile(
+                      title: Column(
+                        crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Card(
+                            child: Container(
+                              child: Column(
                                 crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
                                 children: <Widget>[
-                                  Card(
-                                    child: Container(
-                                      child: Column(
-                                        crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Text(mensagem.texto,
-                                            style: TextStyle(
-                                                fontSize: 18
-                                            ),
-                                            textAlign:  TextAlign.start,
-                                          ),
-                                          Container(
-                                            child: Text(_dateFormat.format(mensagem.horario),
-                                              style: TextStyle(
-                                                color: Colors.blueAccent,
-                                                fontSize: 10,
-                                                letterSpacing: 0.1,
-                                              ),
-                                            ),
-                                            padding: EdgeInsets.only(right: 5),
-                                          ),
-                                        ],
+                                  Text(msg.texto,
+                                    style: TextStyle(
+                                        fontSize: 18
+                                    ),
+                                    textAlign:  TextAlign.start,
+                                  ),
+                                  Container(
+                                    child: Text(_dateFormat.format(msg.horario),
+                                      style: TextStyle(
+                                        color: Colors.blueAccent,
+                                        fontSize: 10,
+                                        letterSpacing: 0.1,
                                       ),
-                                      padding: EdgeInsets.all(5),
                                     ),
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: !mine ? BorderRadius.only(
-                                          bottomLeft: Radius.circular(12),
-                                          bottomRight: Radius.circular(12),
-                                          topRight: Radius.circular(12),
-                                        ) : BorderRadius.only(
-                                            bottomLeft: Radius.circular(12),
-                                            bottomRight: Radius.circular(12),
-                                            topLeft: Radius.circular(12),
-                                            topRight: Radius.lerp(Radius.elliptical(1, 1 ), Radius.elliptical(1, 2), 10)
-                                        ),
-                                        side: BorderSide(color: Colors.green)
-                                    ),
-                                    color: !mine ? Color.fromARGB(-10, 220, 255, 223) : Color.fromARGB(-5, 250, 252, 220),
-                                    margin: !mine ? EdgeInsets.only(right: 30) : EdgeInsets.only(left: 30),
+                                    padding: EdgeInsets.only(right: 5),
                                   ),
                                 ],
                               ),
-                            ): ListTile(
-                              title: Column(
-                                crossAxisAlignment: !mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Card(
-                                    child: Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Image.network(
-                                            mensagem.imagem,
-                                            height: 310,
-                                            width: 270,
-                                          ),
-                                          Column(
-                                            children: <Widget>[
-                                              Container(
-                                                child: Text(_dateFormat.format(mensagem.horario),
-                                                  style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontSize: 10,
-                                                      letterSpacing: 0.1),
-                                                ),
-                                                padding: EdgeInsets.only(right: 5),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      padding: EdgeInsets.all(5),
-
-                                    ),
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(10),
-                                        bottomRight: Radius.circular(10),
-                                        topRight: Radius.circular(10),
-                                      ),
-                                      side: BorderSide(color: Colors.green),
-                                    ),
-
-                                    color: !mine ? Color.fromARGB(-10, 220, 255, 223)
-                                        : Color.fromARGB(-5, 250, 252, 220),
-                                  ),
-                                ],
-                              ),
+                              padding: EdgeInsets.all(5),
                             ),
-                          ): Expanded(child: Container());
-                        }).toList(),
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: !mine ? BorderRadius.only(
+                                  bottomLeft: Radius.circular(12),
+                                  bottomRight: Radius.circular(12),
+                                  topRight: Radius.circular(12),
+                                ) : BorderRadius.only(
+                                    bottomLeft: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                    topLeft: Radius.circular(12),
+                                    topRight: Radius.lerp(Radius.elliptical(1, 1 ), Radius.elliptical(1, 2), 10)
+                                ),
+                                side: BorderSide(color: Colors.green)
+                            ),
+                            color: !mine ? Color.fromARGB(-10, 220, 255, 223) : Color.fromARGB(-5, 250, 252, 220),
+                            margin: !mine ? EdgeInsets.only(right: 30) : EdgeInsets.only(left: 30),
+                          ),
+                        ],
                       ),
-                    ) : Expanded(child: Container());
-                  },
-                )
-
-                : Expanded(
-                  child: Container(
-                  color: Colors.yellow,
-              ),
-                );
-
+                    );
+                  }).toList(),
+                ),
+              ) : Expanded(child: Container());
             },
           ),
+
 
           _isLoading ? Container(
             height: 250,
