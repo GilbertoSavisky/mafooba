@@ -126,34 +126,26 @@ class _HomePageState extends State<HomePage> {
 
       floatingActionButton: buildSpeedDial(
       ),
-      body: Stack(
-        children: <Widget>[
-          _buildBodyBack(),
-          Container(
+      body: Container(
 //            color: Colors.green[200],
-            padding: EdgeInsets.only(top: 0),
-            child: ListView(
-              children: <Widget>[
-                StreamBuilder<QuerySnapshot>(
-                  stream: Firestore.instance.collection('home').snapshots(),
-                  builder: (context, snapshot) {
-                    return snapshot.hasData ? Center(
-                      child: Container(
-                       margin: EdgeInsets.only(top: 20),
-//                        padding: EdgeInsets.all(20),
-                        child: Image(image: NetworkImage(
-                            snapshot.data.documents[0].data['imagem'])),
-                      )
+        padding: EdgeInsets.only(top: 0),
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: Firestore.instance.collection('home').document().snapshots(),
+          builder: (context, snapshot) {
+            //print('...................${snapshot.data['imagem']}');
+            return snapshot.hasData ? Center(
+                child: Container(
+                  margin: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.all(20),
+                  child: Image(image: NetworkImage(
+                      snapshot.data['imagem'])),
+                )
 
-                    )  : Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+            )  : Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
     );
   }

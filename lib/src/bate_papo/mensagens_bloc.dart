@@ -30,6 +30,8 @@ class MensagensBloc extends BlocBase {
     setImagem(mensagens.imagem);
     setTexto(mensagens.texto);
     setSender(mensagens.sender);
+
+    print('setMsg---------------${mensagens.toMap()}');
   }
 
   var _horarioController = BehaviorSubject<DateTime>();
@@ -47,7 +49,7 @@ class MensagensBloc extends BlocBase {
   void setSender(String value) => _senderController.sink.add(value);
 
   bool insertOrUpdate(BatePapo batePapo) {
-    print('----${batePapo.toMap()}');
+    print('***************************************************${_horario}');
     var mensagens = Mensagens()
       ..horario = _horario
       ..imagem = _imagem
