@@ -37,56 +37,56 @@ class _LoginPageState extends State<LoginPage> {
         title: Text(widget.title),
         elevation: 0,
       ),
-      body: StreamBuilder<Atleta>(
-        stream: _loginBloc.outUser,
-        builder: (context, user){
-          return user.hasData && user.connectionState == ConnectionState.active ?
-              Container()
-           : Stack(
-             children: <Widget>[
-               FundoGradiente(),
-               Container(
-                padding: EdgeInsets.all(25),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: StreamBuilder<LoginState>(
+        stream: _loginBloc.outLoginState,
+        initialData: LoginState.LOADING,
+        builder: (context, state){
+          switch(state.data){
+            case LoginState.LOADING:
+              return Stack(
+                children: <Widget>[
+                  FundoGradiente(),
+                  Center(
+                      child: CircularProgressIndicator()),
+                ],
+              );
+            case LoginState.IDLE:
+            case LoginState.SUCCESS:
+            return Stack(
+              children: <Widget>[
+                FundoGradiente(),
+                Center(
+                    child: CircularProgressIndicator()),
+              ],
+            );
+            case LoginState.FAIL:
+              return
+                Stack(
                   children: <Widget>[
-                    SizedBox(
-                      height: 60,
-                      child: FloatingActionButton.extended(
-                        onPressed: (){
-                          _loginBloc.logar();
-                        },
-                        label: Text('Logar'),
+                    FundoGradiente(),
+                    Container(
+                      padding: EdgeInsets.all(25),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 60,
+                            child: FloatingActionButton.extended(
+                              onPressed: (){
+                                _loginBloc.logar();
+                              },
+                              label: Text('Logar'),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
-          ),
-             ],
-           );
+                );
+          }
         },
       ),
     );
-  }
-  Future<bool> _onBackPressed() {
-    return showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Você tem certeza?'),
-        content: new Text('Você irá voltar para a tela anterior'),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: new Text('Não'),
-          ),
-          new FlatButton(
-            onPressed: () {
-            },
-            child: new Text('Sim'),
-          ),
-        ],
-      ),
-    ) ?? false;
   }
 }

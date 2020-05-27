@@ -295,13 +295,11 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
           backgroundColor: Colors.green,
           onTap: () {
             var atleta = Atleta()
-              ..nome = ""
-              ..isGoleiro = false;
-
+              ..nome = "";
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AtletaPage(atleta)),
+                  builder: (context) => AtletaPage()),
             );
           },
           label: 'Atletas',

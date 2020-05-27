@@ -18,6 +18,7 @@ environment:
 
 dependencies:
   #intl: ^0.16.1
+  flutter_icons: ^1.1.0
   mask_text_input_formatter: ^1.0.6
   flutter_image: ^3.0.0
   cloud_firestore: ^0.13.4+2
@@ -82,11 +83,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
+  fonts:
+    - family: snap
+      fonts:
+        - asset: assets/fonts/McLaren-Regular.ttf
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:

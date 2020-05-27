@@ -10,7 +10,7 @@ import '../models/atleta_model.dart';
 import 'atleta_bloc.dart';
 
 class AtletaPage extends StatefulWidget {
-  AtletaPage(this.atleta);
+  AtletaPage({this.atleta});
 
   final Atleta atleta;
 
@@ -149,27 +149,6 @@ class _AtletaPageState extends State<AtletaPage> {
                 SizedBox(
                   height: 20,
                 ),
-                StreamBuilder(
-                  stream: _bloc.outIsGoleiro,
-                  initialData: widget.atleta.isGoleiro,
-                  builder: (context, snapshot) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("não"),
-                        Center(
-                          child: Switch(
-                            value: snapshot.data,
-                            onChanged: _bloc.setIsGoleiro,
-                            activeColor: Colors.green[800],
-                          ),
-                        ),
-                        Text("sim"),
-                      ],
-                    );
-                  },
-                ),
-                Center(child: Text('Goleiro')),
                 Container(
                   child: TextField(
                     decoration:

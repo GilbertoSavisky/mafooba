@@ -17,17 +17,16 @@ class AppWidget extends StatelessWidget {
         fontFamily: 'snap',
         hintColor: Colors.black, //labelText
         indicatorColor: Colors.teal,
-
         //buttonColor: Colors.green,
 
 
         textTheme: TextTheme(
-          //headline: TextStyle(fontSize: 60.0, fontFamily: 'snap', color: Colors.green[800]),
-          title: TextStyle(fontSize: 30.0, fontFamily: 'snap', color: Colors.blue),
-          body1: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.blue[900]), //Text
-          caption: TextStyle(fontSize: 30.0, fontFamily: 'snap', color: Colors.green[800]),
-          //display1: TextStyle(fontSize: 60.0, fontFamily: 'snap', color: Colors.green[800]),
-          subtitle: TextStyle(fontSize: 30.0, fontFamily: 'snap', color: Colors.green[800]),
+          headline: TextStyle(fontSize: 60.0, fontFamily: 'snap', color: Colors.green[800]),
+          title: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.blue),
+          body1: TextStyle(fontSize: 13.0, fontFamily: 'snap', color: Colors.blue[900]), //Text
+          caption: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.green[800]),
+          display1: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.green[800]),
+          subtitle: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.green[800]),
           subhead: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.blue[900], ),//Text, TextField(labelText),
           display2: TextStyle(fontSize: 10.0, color: Colors.blue[800], ),
         ),

@@ -15,7 +15,6 @@ class AtletaBloc extends BlocBase {
   String _nome;
   String _nickName;
   String _fotoUrl;
-  bool _isGoleiro;
   bool _isAtivo;
   bool _selecionado;
   int _faltas;
@@ -30,7 +29,6 @@ class AtletaBloc extends BlocBase {
     _nomeController.listen((value) => _nome = value);
     _nickNameController.listen((value) => _nickName = value);
     _fotoUrlController.listen((value) => _fotoUrl = value);
-    _isGoleiroController.listen((value) => _isGoleiro = value);
     _isAtivoController.listen((value) => _isAtivo = value);
     _selecionadoController.listen((value) => _selecionado = value);
     _faltasController.listen((value) => _faltas = value);
@@ -50,7 +48,6 @@ class AtletaBloc extends BlocBase {
     setNickName(atleta.nickName);
     setFotoUrl(atleta.fotoUrl);
     setPosicao(atleta.posicao);
-    setIsGoleiro(atleta.isGoleiro);
     setIsAtivo(atleta.isAtivo);
     setSelecionado(atleta.selecionado);
     setFaltas(atleta.faltas);
@@ -67,8 +64,6 @@ class AtletaBloc extends BlocBase {
   Stream<String> get outNickName => _nickNameController.stream;
   var _fotoUrlController = BehaviorSubject<String>();
   Stream<String> get outFotoUrl => _fotoUrlController.stream;
-  var _isGoleiroController = BehaviorSubject<bool>();
-  Stream<bool> get outIsGoleiro => _isGoleiroController.stream;
   var _isAtivoController = BehaviorSubject<bool>();
   Stream<bool> get outSelecionado => _selecionadoController.stream;
   var _selecionadoController = BehaviorSubject<bool>();
@@ -97,7 +92,6 @@ class AtletaBloc extends BlocBase {
   void setNome(String value) => _nomeController.sink.add(value);
   void setNickName(String value) => _nickNameController.sink.add(value);
   void setFotoUrl(String value) => _fotoUrlController.sink.add(value);
-  void setIsGoleiro(bool value) => _isGoleiroController.sink.add(value);
   void setIsAtivo(bool value) => _isAtivoController.sink.add(value);
   void setSelecionado(bool value) => _selecionadoController.sink.add(value);
   void setFaltas(int value) => _faltasController.sink.add(value);
@@ -133,7 +127,6 @@ class AtletaBloc extends BlocBase {
 
       ..nome = _nome
       ..nickName = _nickName
-      ..isGoleiro = _isGoleiro
       ..isAtivo =_isAtivo
       ..selecionado =_selecionado
       ..faltas = _faltas
@@ -159,7 +152,6 @@ class AtletaBloc extends BlocBase {
     _nomeController.close();
     _nickNameController.close();
     _fotoUrlController.close();
-    _isGoleiroController.close();
     _isAtivoController.close();
     _faltasController.close();
     _posicaoController.close();

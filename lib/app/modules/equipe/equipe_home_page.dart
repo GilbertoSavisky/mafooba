@@ -1,16 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:mafooba/app/modules/atleta/atleta_home_page.dart';
 import 'package:mafooba/app/modules/atleta/atleta_page.dart';
 import 'package:mafooba/app/modules/equipe/equipe_page.dart';
+import 'package:mafooba/app/modules/equipe/lista_atletas.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
 import 'package:mafooba/app/modules/models/equipe_model.dart';
 import 'package:mafooba/app/shared/fundo_gradiente.dart';
 
 class EquipeHomePage extends StatefulWidget {
+
+  EquipeHomePage(this.equipe);
+
+  final Equipe equipe;
+
   @override
   _EquipeHomePageState createState() => _EquipeHomePageState();
 }
@@ -24,73 +32,121 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Minhas Equipes"),
+        title: Text(widget.equipe.nome),
         elevation: 0,
       ),
 
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: (){
-            var equipe = Equipe()
-              ..ativo = true
-              ..horario = DateTime.now()
-              ..nome = ""
-              ..estilo = ''
-              ..local = ""
-              ..fone = ""
-              ..qtdeAtletas = 0;
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
-            );
-
-          },
-          label: Text('Adicionar Equipe')
-      ),
       body: Stack(
         children: <Widget>[
           FundoGradiente(),
           Container(
             padding: EdgeInsets.all(15),
-            child: StreamBuilder<List<Equipe>>(
-              stream: _bloc.equipe,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return CircularProgressIndicator();
-                return Container(
-                  child: ListView(
-                    children: snapshot.data.map((equipe) {
-                      return Dismissible(
-                        key: Key(equipe.documentId()),
-                        onDismissed: (direction) {
-                          _bloc.deleteEquipe(equipe.documentId());
-                        },
-                        child: Card(
-                          child: ListTile(
-                            leading: equipe.imagem != null ? Image.network(equipe.imagem) : Container(),
-                            title: Text(equipe.nome, style: TextStyle(color: Colors.black),),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text('Próxima pelada'),
-                                Text(_dateFormat.format(equipe.horario)),
-                              ],
-                            ),
-                            trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EquipePage(equipe)),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    }).toList(),
+            child:
+              ListView(
+                children: <Widget>[
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Foundation.torsos_all, size: 50, color: Colors.green,),
+                      title: Text('Atletas'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Adicione atletas ao seu time'),
+                          //Text(_dateFormat.format(widget.equipe.horario)),
+                        ],
+                      ),
+                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ListaAtletas(widget.equipe))
+                        );
+                      },
+                    ),
+                  ),Card(
+                    child: ListTile(
+                      leading: Icon(MaterialCommunityIcons.soccer_field, size: 50, color: Colors.green,),
+                      title: Text('Partidas'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Lista de atletas'),
+                          //Text(_dateFormat.format(widget.equipe.horario)),
+                        ],
+                      ),
+                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EquipeHomePage(widget.equipe)),
+                        );
+                      },
+                    ),
+                  ),Card(
+                    child: ListTile(
+                      leading: Icon(FontAwesome.cogs, size: 50, color: Colors.green,),
+                      title: Text('Configurações'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Lista de atletas'),
+                          //Text(_dateFormat.format(widget.equipe.horario)),
+                        ],
+                      ),
+                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EquipePage(widget.equipe)),
+                        );
+                      },
+                    ),
+                  ),Card(
+                    child: ListTile(
+                      leading: Icon(AntDesign.wechat, size: 50, color: Colors.green,),
+                      title: Text('Bate-Papo'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Sala de bate papo'),
+                          //Text(_dateFormat.format(widget.equipe.horario)),
+                        ],
+                      ),
+                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EquipeHomePage(widget.equipe)),
+                        );
+                      },
+                    ),
+                  ),Card(
+                    child: ListTile(
+                      leading: Icon(MaterialCommunityIcons.cash_multiple, size: 50, color: Colors.green,),
+                      title: Text('Finanças'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Sala de bate papo'),
+                          //Text(_dateFormat.format(widget.equipe.horario)),
+                        ],
+                      ),
+                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EquipeHomePage(widget.equipe)),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
-            ),
+                ],
+              ),
           ),
         ],
       ),
@@ -163,12 +219,10 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
           backgroundColor: Colors.green,
           onTap: () {
             var atleta = Atleta()
-              ..nome = ""
-              ..isGoleiro = false;
-
+              ..nome = "";
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AtletaPage(atleta)),
+              MaterialPageRoute(builder: (context) => AtletaPage()),
             );
           },
           label: 'Atletas',

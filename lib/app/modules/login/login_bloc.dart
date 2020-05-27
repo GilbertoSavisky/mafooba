@@ -6,16 +6,19 @@ import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
 import 'package:rxdart/rxdart.dart';
 
+enum LoginState {IDLE, LOADING, SUCCESS, FAIL}
 class LoginBloc extends BlocBase {
   final _bloc = HomeBloc();
   Atleta _atleta;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final _userController = BehaviorSubject<Atleta>();
   final _imagemController = BehaviorSubject<String>();
+  final _loginStateController = BehaviorSubject<LoginState>();
   bool _stateController = false;
 
   Stream<Atleta> get outUser => _userController.stream;
   Stream<String> get outImagem => _imagemController.stream;
+  Stream<LoginState> get outLoginState => _loginStateController.stream;
 
   LoginBloc() {
     _getUser();
@@ -23,6 +26,7 @@ class LoginBloc extends BlocBase {
 
     Future<FirebaseUser> _getUser() async {
       _stateController = false;
+      _loginStateController.add(LoginState.LOADING);
       // Se for nulo tenta logar e retorna o user
       try {
         final GoogleSignInAccount googleSignInAccount = await googleSignIn
@@ -57,11 +61,13 @@ class LoginBloc extends BlocBase {
           }
           _stateController = true;
           _userController.add(_atleta);
+          _loginStateController.add(LoginState.SUCCESS);
 
         });
 
       } catch (error) {
         _userController.addError(error);
+        _loginStateController.add(LoginState.FAIL);
         _stateController = false;
       }
     }
@@ -89,5 +95,6 @@ class LoginBloc extends BlocBase {
     super.dispose();
     _userController.close();
     _imagemController.close();
+    _loginStateController.close();
   }
 }

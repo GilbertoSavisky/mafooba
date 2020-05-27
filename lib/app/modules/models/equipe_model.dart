@@ -31,7 +31,6 @@ class Equipe extends BaseModel {
     this.local = document.data["local"];
     this.fone = document.data["fone"];
     this.info = document.data["info"];
-    print('............................................${document.data}');
     this.valor = (document.data["valor"]);
     this.imagem = document.data["imagem"];
     this.qtdeAtletas = document.data["qtdeAtletas"];

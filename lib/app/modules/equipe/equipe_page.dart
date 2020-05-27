@@ -23,7 +23,7 @@ class _EquipePageState extends State<EquipePage> {
   final _foneFormat = MaskTextInputFormatter(mask: '(##) ####-#####', filter: { "#": RegExp(r'[0-9]') });
   final _dateFormat = DateFormat("dd/MM/yyyy").add_Hm();
   TextEditingController _nomeController;
-  TextEditingController _estiloController;
+  //TextEditingController _estiloController;
   TextEditingController _localController;
   TextEditingController _horarioController;
   TextEditingController _infoController;
@@ -54,7 +54,7 @@ class _EquipePageState extends State<EquipePage> {
     _infoController = TextEditingController(text: widget.equipe.info);
     _imagemController = TextEditingController(text: widget.equipe.imagem);
     _foneController = TextEditingController(text: widget.equipe.fone);
-    _valorController = TextEditingController(text: widget.equipe.valor.toStringAsFixed(2));
+    _valorController = TextEditingController(text: widget.equipe.valor?.toStringAsFixed(2));
     _tipoSorteioController = TextEditingController(text: widget.equipe.tipoSorteio);
     _qtdeAtletasController = TextEditingController(text: widget.equipe.qtdeAtletas.toString());
 
@@ -66,7 +66,7 @@ class _EquipePageState extends State<EquipePage> {
   void dispose() {
     _nomeController.dispose();
     _localController.dispose();
-    _estiloController.dispose();
+    //_estiloController.dispose();
     _infoController.dispose();
     _imagemController.dispose();
     _foneController.dispose();
@@ -84,7 +84,7 @@ class _EquipePageState extends State<EquipePage> {
       onWillPop: _onBackPressed,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Minha Equipe"),
+          title: Text(widget.equipe.documentId() == null ?"Criar Equipe" : 'Editar ${widget.equipe.nome}'),
           elevation: 0,
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -140,25 +140,25 @@ class _EquipePageState extends State<EquipePage> {
                             ),
                             padding: EdgeInsets.symmetric(horizontal: 25),
                           ),
-                          Container(
-                            child: StreamBuilder<List<Atleta>>(
-                              stream: _bloc.outCapitao,
-                              builder: (context, capitao){
-                                return capitao.hasData && capitao.connectionState == ConnectionState.active ?
-                                Container(
-                                  child: TextFormField(
-                                    decoration: InputDecoration(labelText: "Capitão da Equipe (adm.)"),
-                                    enabled: false,
-                                    initialValue: capitao.data[0].nickName,
-                                    //controller: _capitaoController,
-//                              onChanged: _bloc.setNome,
-                                  ),
-                                  padding: EdgeInsets.symmetric(horizontal: 25),
-                                )
-                                    : Container();
-                              },
-                            ),
-                          ),
+//                          Container(
+//                            child: StreamBuilder<List<Atleta>>(
+//                              stream: _bloc.outCapitao,
+//                              builder: (context, capitao){
+//                                return capitao.hasData && capitao.connectionState == ConnectionState.active ?
+//                                Container(
+//                                  child: TextFormField(
+//                                    decoration: InputDecoration(labelText: "Capitão da Equipe (adm.)"),
+//                                    enabled: false,
+//                                    initialValue: capitao.data[0].nickName,
+//                                    //controller: _capitaoController,
+////                              onChanged: _bloc.setNome,
+//                                  ),
+//                                  padding: EdgeInsets.symmetric(horizontal: 25),
+//                                )
+//                                    : Container();
+//                              },
+//                            ),
+//                          ),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 25),
                             child: TextField(
@@ -244,7 +244,6 @@ class _EquipePageState extends State<EquipePage> {
                                               backgroundImage: NetworkImage(atleta.fotoUrl),
                                             ),
                                             title: Text(atleta.nickName == null || atleta.nickName == '' ? atleta.nome : atleta.nickName),
-                                            subtitle: Text(atleta.isGoleiro ? 'Goleiro' : '', style: TextStyle(fontSize: 15),),
                                             trailing: GestureDetector(
                                               //key: Key(atleta.documentId()),
                                               child: atleta.selecionado ?
@@ -329,11 +328,11 @@ class _EquipePageState extends State<EquipePage> {
           ),
           new FlatButton(
             onPressed: () {
-              widget.equipe.atletas.forEach((f){
-
-              });
-              widget.equipe.atletasRef.forEach((f){
-              });
+//              widget.equipe.atletas.forEach((f){
+//
+//              });
+//              widget.equipe.atletasRef.forEach((f){
+//              });
               Navigator.of(context).pop(true);
             },
             child: new Text('Sim'),

@@ -12,11 +12,9 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mafooba/app/modules/models/equipe_model.dart';
 
 class AtletaHomePage extends StatefulWidget {
-
-  final List<Atleta> listAtletas;
   final Equipe equipe;
 
-  AtletaHomePage({this.listAtletas, this.equipe});
+  AtletaHomePage(this.equipe);
   @override
   _AtletaHomePageState createState() => _AtletaHomePageState();
 }
@@ -37,7 +35,6 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
   @override
   void initState() {
     super.initState();
-    _listaAtletas = widget.listAtletas;
     _listaAtletasRef = widget.equipe.atletasRef;
     scrollController = ScrollController()
       ..addListener(() {
@@ -50,10 +47,7 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lista de Atletas"),
-      ),
-
-      floatingActionButton: buildSpeedDial(
+        title: Text("Atletas"),
       ),
       body: Container(
         padding: EdgeInsets.all(10),
@@ -111,7 +105,6 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text(snapshot.data[index].isGoleiro ? 'Goleiro' : '', style: TextStyle(fontSize: 13),),
                                 Text(snapshot.data[index].fone, style: TextStyle(fontSize: 13),),
                               ],
                             ),
@@ -175,77 +168,5 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
     setState(() {
       dialVisible = value;
     });
-  }
-
-  Widget buildBody() {
-    return ListView.builder(
-      controller: scrollController,
-      itemCount: 30,
-      itemBuilder: (ctx, i) => ListTile(title: Text('Item $i')),
-    );
-  }
-
-  SpeedDial buildSpeedDial() {
-    return SpeedDial(
-      animatedIcon: AnimatedIcons.menu_close,
-      animatedIconTheme: IconThemeData(size: 22.0),
-      // child: Icon(Icons.add),
-      onOpen: () => print('OPENING DIAL'),
-      onClose: () => print('DIAL CLOSED'),
-      visible: dialVisible,
-      curve: Curves.bounceIn,
-      children: [
-        SpeedDialChild(
-          child: Icon(Icons.group_add, color: Colors.white),
-          backgroundColor: Colors.deepOrange,
-          onTap: () {
-//            var equipe = Equipe()
-//              ..ativo = true
-//              ..horario = DateTime.now()
-//              ..nome = ""
-//              ..estilo = ""
-//              ..local = ""
-//              ..fone = ""
-//              ..qtde_atletas = 0;
-
-//            Navigator.push(
-//              context,
-////              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
-//            );
-          },
-          label: 'Equipes',
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.deepOrangeAccent,
-        ),
-        SpeedDialChild(
-          child: Icon(Icons.person_add, color: Colors.white),
-          backgroundColor: Colors.green,
-          onTap: () {
-            var atleta = Atleta()
-              ..nome = ""
-              ..isGoleiro = false;
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AtletaPage(atleta,)),
-            );
-          },
-          label: 'Atletas',
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.green,
-        ),
-        SpeedDialChild(
-          child: Icon(Icons.chat, color: Colors.white),
-          backgroundColor: Colors.blue,
-          onTap: () => print('THIRD CHILD'),
-          labelWidget: Container(
-            color: Colors.blue,
-            margin: EdgeInsets.only(right: 10),
-            padding: EdgeInsets.all(6),
-            child: Text('Custom Label Widget'),
-          ),
-        ),
-      ],
-    );
   }
 }

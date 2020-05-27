@@ -7,7 +7,6 @@ class Atleta extends BaseModel {
 
   String nome;
   String nickName;
-  bool isGoleiro;
   bool isAtivo;
   bool selecionado;
   int faltas;
@@ -26,7 +25,6 @@ class Atleta extends BaseModel {
     _documentId =  document.data['uid'];//document.documentID;
     this.nome = document.data["nome"];
     this.nickName = document.data["nickName"];
-    this.isGoleiro = document.data["isGoleiro"] ?? false;
     this.isAtivo = document.data["isAtivo"] ?? true;
     this.selecionado = document.data["selecionado"];
     this.faltas = document.data["faltas"];
@@ -45,7 +43,6 @@ class Atleta extends BaseModel {
     var map = new Map<String, dynamic>();
     map['nome'] = this.nome;
     map['nickName'] = this.nickName ?? '';
-    map['isGoleiro'] = this.isGoleiro ?? false;
     map['isAtivo'] = this.isAtivo ?? true;
     map['selecionado'] = this.selecionado ?? false;
     map['faltas'] = this.faltas ?? 0;

@@ -1,5 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mafooba/app/modules/atleta/atleta_bloc.dart';
@@ -7,9 +6,11 @@ import 'package:mafooba/app/modules/atleta/atleta_home_page.dart';
 import 'package:mafooba/app/modules/atleta/atleta_page.dart';
 import 'package:mafooba/app/modules/bate_papo/bate_papo_home_page.dart';
 import 'package:mafooba/app/modules/equipe/equipe_home_page.dart';
+import 'package:mafooba/app/modules/equipe/equipe_page.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/login/login_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
+import 'package:mafooba/app/modules/models/equipe_model.dart';
 import 'package:mafooba/app/shared/fundo_gradiente.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   final AtletaBloc _atletaBloc = AtletaBloc();
   final HomeBloc _homeBloc = HomeBloc();
   bool dialVisible = true;
+  final _dateFormat = DateFormat("dd/MM/yyyy").add_Hm();
 
 
   @override
@@ -64,7 +66,7 @@ class _HomePageState extends State<HomePage> {
                       switch(value) {
                         case 1:
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => AtletaPage(snapshot.requireData) )
+                            MaterialPageRoute(builder: (context) => AtletaPage(atleta: snapshot.requireData,) )
                           );
                           break;
                         case 2:
@@ -99,8 +101,26 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: buildSpeedDial(
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: (){
+            var equipe = Equipe()
+              ..ativo = true
+              ..horario = DateTime.now()
+              ..nome = ""
+              ..estilo = ''
+              ..local = ""
+              ..fone = ""
+              ..qtdeAtletas = 0;
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
+            );
+
+          },
+          label: Text('Adicionar Equipe')
       ),
+
       body: Stack(
         children: <Widget>[
           FundoGradiente(),
@@ -124,6 +144,48 @@ class _HomePageState extends State<HomePage> {
               );
             }
           ),
+          Container(
+            padding: EdgeInsets.all(15),
+            child: StreamBuilder<List<Equipe>>(
+              stream: _homeBloc.equipe,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return CircularProgressIndicator();
+                return Container(
+                  child: ListView(
+                    children: snapshot.data.map((equipe) {
+                      return Dismissible(
+                        key: Key(equipe.documentId()),
+                        onDismissed: (direction) {
+                          _homeBloc.deleteEquipe(equipe.documentId());
+                        },
+                        child: Card(
+                          child: ListTile(
+                            leading: (equipe.imagem != null && equipe.imagem != '') ? Image.network(equipe.imagem) : Image.asset('images/bola.png'),
+                            title: Text(equipe.nome),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text('Próxima pelada'),
+                                Text(_dateFormat.format(equipe.horario)),
+                              ],
+                            ),
+                            trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EquipeHomePage(equipe)),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -135,65 +197,65 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  SpeedDial buildSpeedDial() {
-    return SpeedDial(
-      animatedIcon: AnimatedIcons.menu_close,
-      animatedIconTheme: IconThemeData(size: 22.0),
-      onOpen: () => print('OPENING DIAL'),
-      onClose: () => print('DIAL CLOSED'),
-      visible: dialVisible,
-      backgroundColor: Colors.red,
-//      marginBottom: 45,
-//      marginRight: 300,
-      child: Image.asset('images/bola.png', ),
-      elevation: 10,
-      curve: Curves.easeInBack,
-      children: [
-
-        SpeedDialChild(
-          child: Icon(Icons.group_add, color: Colors.white),
-          backgroundColor: Colors.green,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EquipeHomePage()),
-            );
-          },
-          label: 'Equipes',
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.greenAccent,
-        ),
-
-        SpeedDialChild(
-          child: Icon(Icons.person_add, color: Colors.white),
-          backgroundColor: Colors.amber,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AtletaHomePage()),
-            );
-          },
-          label: 'Atletas',
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.amberAccent,
-        ),
-
-        SpeedDialChild(
-          child: Icon(Icons.chat, color: Colors.white),
-          backgroundColor: Colors.blue,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => BatePapoHomePage()),
-            );
-          },
-          label: 'Bate Papo',
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelBackgroundColor: Colors.blueAccent,
-
-        ),
-      ],
-    );
-  }
+//  SpeedDial buildSpeedDial() {
+//    return SpeedDial(
+//      animatedIcon: AnimatedIcons.menu_close,
+//      animatedIconTheme: IconThemeData(size: 22.0),
+//      onOpen: () => print('OPENING DIAL'),
+//      onClose: () => print('DIAL CLOSED'),
+//      visible: dialVisible,
+//      backgroundColor: Colors.red,
+////      marginBottom: 45,
+////      marginRight: 300,
+//      child: Image.asset('images/bola.png', ),
+//      elevation: 10,
+//      curve: Curves.easeInBack,
+//      children: [
+//
+//        SpeedDialChild(
+//          child: Icon(Icons.group_add, color: Colors.white),
+//          backgroundColor: Colors.green,
+//          onTap: () {
+//            Navigator.push(
+//              context,
+//              MaterialPageRoute(builder: (context) => EquipeHomePage()),
+//            );
+//          },
+//          label: 'Equipes',
+//          labelStyle: TextStyle(fontWeight: FontWeight.w500),
+//          labelBackgroundColor: Colors.greenAccent,
+//        ),
+//
+//        SpeedDialChild(
+//          child: Icon(Icons.person_add, color: Colors.white),
+//          backgroundColor: Colors.amber,
+//          onTap: () {
+//            Navigator.push(
+//              context,
+//              MaterialPageRoute(builder: (context) => AtletaHomePage()),
+//            );
+//          },
+//          label: 'Atletas',
+//          labelStyle: TextStyle(fontWeight: FontWeight.w500),
+//          labelBackgroundColor: Colors.amberAccent,
+//        ),
+//
+//        SpeedDialChild(
+//          child: Icon(Icons.chat, color: Colors.white),
+//          backgroundColor: Colors.blue,
+//          onTap: () {
+//            Navigator.push(
+//              context,
+//              MaterialPageRoute(builder: (context) => BatePapoHomePage()),
+//            );
+//          },
+//          label: 'Bate Papo',
+//          labelStyle: TextStyle(fontWeight: FontWeight.w500),
+//          labelBackgroundColor: Colors.blueAccent,
+//
+//        ),
+//      ],
+//    );
+//  }
 
 }
