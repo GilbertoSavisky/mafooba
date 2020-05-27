@@ -1,34 +1,108 @@
 {
   "project_info": {
-    "project_number": "691688514077",
-    "firebase_url": "https://mafooba.firebaseio.com",
-    "project_id": "mafooba2",
-    "storage_bucket": "mafooba2.appspot.com"
+    "project_number": "72501150325",
+    "firebase_url": "https://mafooba-9f854.firebaseio.com",
+    "project_id": "mafooba-9f854",
+    "storage_bucket": "mafooba-9f854.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:691688514077:android:9093f763062fec6fb6dcf4",
+        "mobilesdk_app_id": "1:72501150325:android:f41598ea4068b1907b2e3c",
         "android_client_info": {
-          "package_name": "br.com.mafooba.mafooba"
+          "package_name": "br.com.mafooba.lojaonline"
         }
       },
       "oauth_client": [
         {
-          "client_id": "691688514077-e0qruq3kku523d4hldm8rkcri1ec5oo9.apps.googleusercontent.com",
+          "client_id": "72501150325-npaegbc36qq4ssftdrg88cthneinbank.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCZlti_ipKowkc-zZi64WZVHJEU66m5I3M"
+          "current_key": "AIzaSyAMPY3ESkk_Kx1Mo_Pz_lUrqJFiNY25Jsg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "691688514077-e0qruq3kku523d4hldm8rkcri1ec5oo9.apps.googleusercontent.com",
+              "client_id": "72501150325-npaegbc36qq4ssftdrg88cthneinbank.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72501150325:android:b5d556fa0d09113a7b2e3c",
+        "android_client_info": {
+          "package_name": "br.com.mafooba.lojavirtual"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "72501150325-npaegbc36qq4ssftdrg88cthneinbank.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMPY3ESkk_Kx1Mo_Pz_lUrqJFiNY25Jsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72501150325-npaegbc36qq4ssftdrg88cthneinbank.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72501150325:android:bd361b7a67b896a87b2e3c",
+        "android_client_info": {
+          "package_name": "br.com.mafooba.mafooba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "72501150325-9d0hfjcrghv9r5r7h1p8ad87v7aucf5t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.mafooba.mafooba",
+            "certificate_hash": "43c298fa78d3b6bd36980752dfd4386d54bdaea8"
+          }
+        },
+        {
+          "client_id": "72501150325-d85u48lg9k5o9f6bd2fcroe1fc4hdfaf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.mafooba.mafooba",
+            "certificate_hash": "5ceed5227b9a3359d6c56f5e7bf5fdc9cca4c547"
+          }
+        },
+        {
+          "client_id": "72501150325-npaegbc36qq4ssftdrg88cthneinbank.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMPY3ESkk_Kx1Mo_Pz_lUrqJFiNY25Jsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72501150325-npaegbc36qq4ssftdrg88cthneinbank.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

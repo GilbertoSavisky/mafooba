@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
 //            color: Colors.green[200],
         padding: EdgeInsets.only(top: 0),
         child: StreamBuilder<DocumentSnapshot>(
-          stream: Firestore.instance.collection('home').document().snapshots(),
+          stream: Firestore.instance.collection('home').document('foto_home').snapshots(),
           builder: (context, snapshot) {
             //print('...................${snapshot.data['imagem']}');
             return snapshot.hasData ? Center(
