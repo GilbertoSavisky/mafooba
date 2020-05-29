@@ -21,107 +21,132 @@ class AtletaHomePage extends StatefulWidget {
 
 class _AtletaHomePageState extends State<AtletaHomePage> {
   final _bloc = HomeBloc();
-  final _atletaBloc = AtletaBloc();
-  final _equipeBloc = EquipeBloc();
+  final _blocEquipe = EquipeBloc();
 
-  final _dateFormat = DateFormat("dd/MM/yyyy");
   final _atletaController = TextEditingController();
 
   List<Atleta> _listaAtletas = [];
-  List _listaAtletasRef = [];
   ScrollController scrollController;
   bool dialVisible = true;
 
   @override
   void initState() {
     super.initState();
-    _listaAtletasRef = widget.equipe.atletasRef;
-    scrollController = ScrollController()
-      ..addListener(() {
-        setDialVisible(scrollController.position.userScrollDirection ==
-            ScrollDirection.forward);
-      });
+    _blocEquipe.setEquipe(widget.equipe);
+    _listaAtletas = widget.equipe.atletas;
   }
+
+  Future<bool> _onBackPressed() {
+    return showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Você tem certeza?'),
+        content: new Text('Você irá voltar para a tela anterior'),
+        actions: <Widget>[
+          new FlatButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: new Text('Não'),
+          ),
+          new FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+            child: new Text('Sim'),
+          ),
+        ],
+      ),
+    ) ?? false;
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Atletas"),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(10),
-        child: StreamBuilder<List<Atleta>>(
-          stream: _bloc.atleta,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return CircularProgressIndicator();
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Atletas"),
+        ),
+        body: Container(
+          padding: EdgeInsets.all(10),
+          child: StreamBuilder<List<Atleta>>(
+            stream: _bloc.atleta,
+            builder: (context, atletas) {
+              if (!atletas.hasData) return CircularProgressIndicator();
 
-            return Column(
-              children: <Widget>[
-                 Container(
-                   padding: EdgeInsets.only(left: 10, right: 10),
-                   child: Row(
-                     children: <Widget>[
-                       Expanded(
-                         child: TextField(
-                           controller: _atletaController,
-                           decoration: InputDecoration(
-                             labelText: 'Atleta '
+              return Column(
+                children: <Widget>[
+                  Container(
+                     padding: EdgeInsets.only(left: 10, right: 10),
+                     child: Row(
+                       children: <Widget>[
+                         Expanded(
+                           child: TextField(
+                             controller: _atletaController,
+                             decoration: InputDecoration(
+                               labelText: 'Atleta '
 
+                             ),
                            ),
                          ),
-                       ),
-                       RaisedButton(
-                         child: Text('Pesquisar'),
-                         onPressed: (){},
-                         color: Colors.green,
-                       ),
-                     ],
-                   ),
-                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-
-                        return Dismissible(
-                        key: Key(snapshot.data[index].documentId()),
-                        onDismissed: (direction) {
-                          _bloc.deleteAtleta(snapshot.data[index].documentId());
-                        },
-                        child: Card(
-                          child: CheckboxListTile(
-                            key: Key(snapshot.data[index].uid),
-                            secondary: snapshot.data[index].fotoUrl != null ?
-                            Container(
-                              child: CircleAvatar(backgroundImage: NetworkImage(snapshot.data[index].fotoUrl),
-                              ),
-                              height: 60,
-                              width: 60,
-                            ) : Container(),
-                            title: Text(
-                              snapshot.data[index].nickName == null || snapshot.data[index].nickName == '' ?
-                                snapshot.data[index].nome : snapshot.data[index].nickName),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(snapshot.data[index].fone, style: TextStyle(fontSize: 13),),
-                              ],
+                         RaisedButton(
+                           child: Text('Pesquisar'),
+                           onPressed: (){},
+                           color: Colors.green,
+                         ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView(
+                      children: atletas.data.map((atleta){
+                        return
+                          Dismissible(
+                          key: Key(atleta.documentId()),
+                          onDismissed: (direction) {
+                            _bloc.deleteAtleta(atleta.documentId());
+                          },
+                          child: !_verificaLista(atleta) ? Card(
+                            child: CheckboxListTile(
+                                key: Key(atleta.uid),
+                                secondary: atleta.fotoUrl != null ?
+                                Container(
+                                  child: CircleAvatar(backgroundImage: NetworkImage(atleta.fotoUrl),
+                                  ),
+                                  height: 60,
+                                  width: 60,
+                                ) : Container(),
+                                title: Text(
+                                    atleta.nickName == null || atleta.nickName == '' ?
+                                    atleta.nome : atleta.nickName),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(atleta.fone, style: TextStyle(fontSize: 13),),
+                                  ],
+                                ),
+                                value: _verificaLista(atleta),
+                                onChanged: (c){
+                                  setState(() {
+                                    print(c);
+                                    if(c){
+                                      _blocEquipe.addAtleta(atleta);
+                                    }
+                                    else{
+                                      _blocEquipe.removeAtleta(atleta);
+                                    }
+                                  });
+                                }
                             ),
-                            value: _verificaLista(snapshot.data[index]),
-                            onChanged: (c){
-                              setState(() {
-                                _atualizarListaAtletas(c, snapshot.data[index]);
-                              });
-                            }
-                          ),
-                        ),
-                      );
-                    }),
+                          ) : Container(),
+                        );
+                      }).toList(),
+                    ),
                   ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -131,42 +156,11 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
   bool _verificaLista(Atleta atleta){
     var ret = false;
     for(int i = 0; i < _listaAtletas.length; i++){
-      if(_listaAtletas[i].uid == atleta.uid)
+      if(_listaAtletas[i].uid == atleta.uid){
         return ret = true;
+      }
       else ret = false;
     }
     return ret;
-  }
-
-  void _atualizarListaAtletas(bool c, Atleta atleta){
-    if(c == true) {
-      _listaAtletas.add(atleta);
-      _listaAtletas.forEach((f){
-        if(!_listaAtletasRef.contains(f.referencia)){
-          _listaAtletasRef.add(f.referencia);
-        }
-      });
-    }
-    else {
-      for(int i = 0; i < _listaAtletas.length; i++){
-        if(_listaAtletas[i].uid == atleta.uid) {
-          _listaAtletas.removeAt(i);
-        }
-      }for(int i = 0; i < _listaAtletasRef.length; i++){
-        if(_listaAtletasRef[i].path == atleta.referencia.path) {
-          _listaAtletasRef.removeAt(i);
-        }
-      }
-    }
-    _listaAtletasRef.forEach((f){
-      print(f.path);
-    });
-  }
-
-
-  void setDialVisible(bool value) {
-    setState(() {
-      dialVisible = value;
-    });
   }
 }

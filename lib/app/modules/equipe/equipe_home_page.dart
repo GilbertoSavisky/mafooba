@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:mafooba/app/modules/atleta/atleta_home_page.dart';
 import 'package:mafooba/app/modules/atleta/atleta_page.dart';
 import 'package:mafooba/app/modules/equipe/equipe_page.dart';
 import 'package:mafooba/app/modules/equipe/lista_atletas.dart';
@@ -55,7 +54,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -75,7 +74,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -91,11 +90,11 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Lista de atletas'),
+                          Text('Configure sua equipe'),
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -115,7 +114,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -131,11 +130,11 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Sala de bate papo'),
+                          Text('Saldo da equipe'),
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,

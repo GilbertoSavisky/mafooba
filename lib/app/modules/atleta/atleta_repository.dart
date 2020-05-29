@@ -32,7 +32,7 @@ class AtletaRepository extends Disposable {
 
 
   Observable<List<Atleta>> get atleta =>
-      Observable(_collection.snapshots().map((query) => query.documents
+      Observable(_collection.orderBy('nickName').snapshots().map((query) => query.documents
           .map<Atleta>((document) => Atleta.fromMap(document))
           .toList()));
 

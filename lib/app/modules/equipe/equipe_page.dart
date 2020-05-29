@@ -256,7 +256,7 @@ class _EquipePageState extends State<EquipePage> {
                                                 color: Colors.red,
                                               ),
                                               onTap: (){
-                                                print('...................${atleta.documentId()}');
+                                                //print('...................${atleta.documentId()}');
                                               },
                                             ),
                                           ),

@@ -1,3 +1,4 @@
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -169,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                                 Text(_dateFormat.format(equipe.horario)),
                               ],
                             ),
-                            trailing: Icon(Icons.exit_to_app, color: Colors.blue[800],),
+                            trailing: Icon(MaterialCommunityIcons.location_exit,size: 32,  color: Colors.blue[800],),
                             onTap: () {
                               Navigator.push(
                                 context,

@@ -41,7 +41,7 @@ dependencies:
   image_cropper: ^1.0.2
   shimmer: ^1.0.0
   path_provider: ^1.6.5
-  async: 2.4.0
+  async: 2.4.1
   flutter:
     sdk: flutter
 

@@ -166,10 +166,20 @@ class EquipeBloc extends BlocBase {
     }
   }
 
+  void removeAtleta(Atleta atleta) {
+    _atletasRef.remove(atleta.referencia.path);
+    _atletas.removeWhere((element) => element.documentId() == atleta.documentId());
+    setAtletas(_atletas);
+    setAtletasRef(_atletasRef);
 
-//  void addAtleta(Atleta atleta){
-//    _atletas.add(atleta);
-//  }
+  }
+
+  void addAtleta(Atleta atleta){
+    _atletas.add(atleta);
+    _atletasRef.add(atleta.referencia.path);
+    setAtletasRef(_atletasRef);
+    setAtletas(_atletas);
+  }
 
   @override
   void dispose() {
