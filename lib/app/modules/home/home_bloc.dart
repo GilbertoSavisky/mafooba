@@ -10,6 +10,7 @@ import 'package:mafooba/app/modules/models/mensagens_model.dart';
 
 class
 HomeBloc extends BlocBase {
+  List<Atleta> atletaFiltrado = [];
   var _repositoryAtleta = AppModule.to.getDependency<AtletaRepository>();
   get atleta => _repositoryAtleta.atleta;
 
@@ -40,5 +41,4 @@ HomeBloc extends BlocBase {
   }
 
   Stream<DocumentSnapshot> getAtleta(String documentId) => _repositoryAtleta.getAtleta(documentId);
-//  Stream<DocumentSnapshot> getBatePapo(String documentId) => _repositoryBatePapo.getBatePapo(documentId);
 }

@@ -1,9 +1,8 @@
 import 'dart:io';
-
 import 'package:bloc_pattern/bloc_pattern.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mafooba/app/modules/atleta/atleta_repository.dart';
+import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
 import 'package:rxdart/rxdart.dart';
 

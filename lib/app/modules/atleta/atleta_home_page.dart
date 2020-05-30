@@ -1,3 +1,4 @@
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +6,10 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:mafooba/app/modules/atleta/atleta_bloc.dart';
 import 'package:mafooba/app/modules/atleta/atleta_page.dart';
+import 'package:mafooba/app/modules/atleta/user_bloc.dart';
 import 'package:mafooba/app/modules/equipe/equipe_bloc.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mafooba/app/modules/models/equipe_model.dart';
 
 class AtletaHomePage extends StatefulWidget {
@@ -22,6 +23,7 @@ class AtletaHomePage extends StatefulWidget {
 class _AtletaHomePageState extends State<AtletaHomePage> {
   final _bloc = HomeBloc();
   final _blocEquipe = EquipeBloc();
+  final _blocUsers = UserBloc();
 
   final _atletaController = TextEditingController();
 
@@ -69,11 +71,10 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
         ),
         body: Container(
           padding: EdgeInsets.all(10),
-          child: StreamBuilder<List<Atleta>>(
-            stream: _bloc.atleta,
+          child: StreamBuilder<List>(
+            stream: _blocUsers.outUsers,
             builder: (context, atletas) {
               if (!atletas.hasData) return CircularProgressIndicator();
-
               return Column(
                 children: <Widget>[
                   Container(
@@ -85,8 +86,8 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
                              controller: _atletaController,
                              decoration: InputDecoration(
                                labelText: 'Atleta '
-
                              ),
+                             onChanged: _blocUsers.buscaAtleta,
                            ),
                          ),
                          RaisedButton(
@@ -100,29 +101,31 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
                     Expanded(
                       child: ListView(
                       children: atletas.data.map((atleta){
+                        print('.............${atleta['nome']}');
+
                         return
                           Dismissible(
-                          key: Key(atleta.documentId()),
+                            key: Key('atleta.documentID'),
                           onDismissed: (direction) {
-                            _bloc.deleteAtleta(atleta.documentId());
+                            //_blocUsers.deleteAtleta(atleta.documentId());
                           },
                           child: !_verificaLista(atleta) ? Card(
                             child: CheckboxListTile(
-                                key: Key(atleta.uid),
-                                secondary: atleta.fotoUrl != null ?
+                                //key: Key(atleta.uid),
+                                secondary: atleta['fotoUrl'] != null ?
                                 Container(
-                                  child: CircleAvatar(backgroundImage: NetworkImage(atleta.fotoUrl),
+                                  child: CircleAvatar(backgroundImage: NetworkImage(atleta['fotoUrl']),
                                   ),
                                   height: 60,
                                   width: 60,
                                 ) : Container(),
                                 title: Text(
-                                    atleta.nickName == null || atleta.nickName == '' ?
-                                    atleta.nome : atleta.nickName),
+                                    atleta['nickName'] == null || atleta['nickName'] == '' ?
+                                    atleta['nome'] : atleta['nickName']),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(atleta.fone, style: TextStyle(fontSize: 13),),
+                                    Text(atleta['fone'], style: TextStyle(fontSize: 13),),
                                   ],
                                 ),
                                 value: _verificaLista(atleta),
@@ -130,10 +133,10 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
                                   setState(() {
                                     print(c);
                                     if(c){
-                                      _blocEquipe.addAtleta(atleta);
+                                      //_blocEquipe.addAtleta(atleta);
                                     }
                                     else{
-                                      _blocEquipe.removeAtleta(atleta);
+                                      //_blocEquipe.removeAtleta(atleta);
                                     }
                                   });
                                 }
@@ -153,7 +156,7 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
   }
 
 
-  bool _verificaLista(Atleta atleta){
+  bool _verificaLista(var atleta){
     var ret = false;
     for(int i = 0; i < _listaAtletas.length; i++){
       if(_listaAtletas[i].uid == atleta.uid){
