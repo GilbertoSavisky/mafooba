@@ -2,22 +2,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mafooba/app/shared/base_model.dart';
 
-class Sorteio extends BaseModel {
+class Partida extends BaseModel {
   String _documentId;
   String equipeId;
 
-  String timeA;
-  String timeB;
-  DateTime dthr_sorteio;
+  List timeA;
+  List timeB;
+  DateTime dthrSorteio;
+  List confirmados;
 
-  Sorteio();
+  Partida();
 
-  Sorteio.fromMap(DocumentSnapshot document) {
+  Partida.fromMap(DocumentSnapshot document) {
+
     _documentId =  document.data['uid'];//document.documentID;
     this.timeA = document.data["timeA"];
     this.timeB = document.data["timeB"];
-    Timestamp timestamp = document.data["dthr_sorteio"];
-    this.dthr_sorteio =
+    this.confirmados = document.data['confirmados'];
+    Timestamp timestamp = document.data["dthrSorteio"];
+    this.dthrSorteio =
         DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
   }
 
@@ -26,7 +29,8 @@ class Sorteio extends BaseModel {
     var map = new Map<String, dynamic>();
     map['timeA'] = this.timeA;
     map['timeB'] = this.timeB;
-    map['dthr_sorteio'] = this.dthr_sorteio;
+    map['dthrSorteio'] = this.dthrSorteio;
+    map['confirmados'] = this.confirmados;
 
     return map;
   }

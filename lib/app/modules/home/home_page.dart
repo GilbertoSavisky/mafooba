@@ -1,11 +1,8 @@
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mafooba/app/modules/atleta/atleta_bloc.dart';
-import 'package:mafooba/app/modules/atleta/atleta_home_page.dart';
 import 'package:mafooba/app/modules/atleta/atleta_page.dart';
-import 'package:mafooba/app/modules/bate_papo/bate_papo_home_page.dart';
 import 'package:mafooba/app/modules/equipe/equipe_home_page.dart';
 import 'package:mafooba/app/modules/equipe/equipe_page.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';

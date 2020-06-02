@@ -304,13 +304,15 @@ class _EquipePageState extends State<EquipePage> {
 
 
   Future _selecionarHoraJogo(BuildContext context, DateTime _dataSelecionada) async {
+    var newDate;
     final TimeOfDay picked = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now());
     if (picked != null) {
       setState(() {
-        //_bloc.setHorario(_selectedTime);
-        print('......picked....${picked.hour}');
+        newDate = new DateTime(_dataSelecionada.year, _dataSelecionada.month, _dataSelecionada.day, picked.hour, picked.minute);
+        print('----------------------------${newDate}');
+        _bloc.setHorario(newDate);
       });
     }
   }

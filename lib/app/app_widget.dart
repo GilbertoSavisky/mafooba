@@ -19,16 +19,14 @@ class AppWidget extends StatelessWidget {
         indicatorColor: Colors.teal,
         //buttonColor: Colors.green,
 
-
         textTheme: TextTheme(
-          headline: TextStyle(fontSize: 60.0, fontFamily: 'snap', color: Colors.green[800]),
-          title: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.blue),
-          body1: TextStyle(fontSize: 13.0, fontFamily: 'snap', color: Colors.blue[900]), //Text
-          caption: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.green[800]),
-          display1: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.green[800]),
-          subtitle: TextStyle(fontSize: 10.0, fontFamily: 'snap', color: Colors.green[800]),
-          subhead: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.blue[900], ),//Text, TextField(labelText),
-          display2: TextStyle(fontSize: 10.0, color: Colors.blue[800], ),
+          caption: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.green[800]),
+          bodyText1: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.green[800]),
+          bodyText2: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.blue[900]),
+          headline1: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.green[800]),
+          overline: TextStyle(fontSize: 8.0, fontFamily: 'snap', color: Colors.green[800]),
+          subtitle1: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.blue[900]),
+          subtitle2: TextStyle(fontSize: 8.0, fontFamily: 'snap', color: Colors.green[800]),
         ),
       ),
       localizationsDelegates: [

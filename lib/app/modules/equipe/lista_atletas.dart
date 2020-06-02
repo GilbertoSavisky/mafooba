@@ -1,6 +1,4 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -10,6 +8,8 @@ import 'package:mafooba/app/modules/equipe/equipe_bloc.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
 import 'package:mafooba/app/modules/models/equipe_model.dart';
+import 'package:mafooba/app/modules/models/partida_model.dart';
+import 'package:mafooba/app/modules/partida/partida_bloc.dart';
 import 'package:mafooba/app/shared/fundo_gradiente.dart';
 
 class ListaAtletas extends StatefulWidget {
@@ -25,24 +25,22 @@ class ListaAtletas extends StatefulWidget {
 class _ListaAtletasState extends State<ListaAtletas> {
 
   final _equipeBloc = EquipeBloc();
-  bool dialVisible = true;
+  final _sorteioBloc = PartidaBloc();
+  final _homeBloc = HomeBloc();
+  Flushbar flush;
+  bool _wasButtonClicked;
+
 
   void initState(){
     super.initState();
     _equipeBloc.setEquipe(widget.equipe);
-  }
 
-  void setDialVisible(bool value) {
-    setState(() {
-      dialVisible = value;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     _equipeBloc.outAtletas.listen((event) {
       setState(() {
-        //print('..........+++++++++++++++++++++');
       });
     });
 
@@ -74,7 +72,6 @@ class _ListaAtletasState extends State<ListaAtletas> {
       floatingActionButton:
       SpeedDial(
         animatedIcon: AnimatedIcons.add_event,
-        visible: dialVisible,
         children: [
           SpeedDialChild(
             child: Icon(Icons.group_add, color: Colors.white),
@@ -114,13 +111,84 @@ class _ListaAtletasState extends State<ListaAtletas> {
             child: StreamBuilder<List<Atleta>>(
               stream: _equipeBloc.outAtletas,
               builder: (context, atletas) {
+                if(atletas.data?.length == 0 && atletas.hasData && atletas.connectionState == ConnectionState.active){
+                  return
+                    Center(
+                    child: Container(
+                      padding: EdgeInsets.all(25),
+                        child: Text('Sua lista está vazia, \nadicione atletas ao seu time!',
+                          style: TextStyle(color: Colors.red, fontSize: 20, ),textAlign: TextAlign.center,)),
+                  );
+                }
                 return atletas.hasData && atletas.connectionState == ConnectionState.active ?
                   ListView(
                     children: atletas.data.map((atleta){
-                      return Dismissible(
+                      return
+                      Dismissible(
                         key: Key(atleta.documentId()),
                         onDismissed: (direction){
                           _equipeBloc.removeAtleta(atleta);
+                          flush = Flushbar<bool>(
+                            titleText:
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.center ,
+                                children: [
+                                  Text('Remover ${atleta.nickName != '' ? atleta.nickName : atleta.nome}?', style: TextStyle(fontSize: 18),),
+                                  SizedBox(height: 15,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      FlatButton(
+                                        onPressed: (){
+                                          flush.dismiss(true);
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Text('Confirmar?', style: TextStyle(fontSize: 15, color: Colors.blue[900]),),
+                                            Icon(FontAwesome.check_circle,size: 35, color: Colors.red,),
+                                          ],
+                                        ),
+                                      ),
+                                      FlatButton(
+                                        onPressed: (){
+                                          flush.dismiss(false);
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Text('Cancelar?', style: TextStyle(fontSize: 15, color: Colors.blue[900]),),
+                                            Icon(FontAwesome.reply, size: 35, color: Colors.red),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            message: ' ',
+                            flushbarPosition: FlushbarPosition.BOTTOM,
+                            icon: Container(
+                              padding: EdgeInsets.only(left: 15),
+                              child: Icon(
+                                  FontAwesome.thumbs_down, size: 40, color: Colors.red),
+                            ),//  Icon(Icons.check, color: Colors.red,),
+                            //duration: Duration(seconds: 2),
+                            borderRadius: 8,
+                            backgroundColor: Colors.grey[400],
+                            showProgressIndicator: true,
+                            //duration: Duration(seconds: 2),
+                            //titleText: Text('Remover ${atleta.nickName != '' ? atleta.nickName : atleta.nome}?', style: TextStyle(fontSize: 14),),
+                            margin: EdgeInsets.all(12),
+                            isDismissible: false,
+                            progressIndicatorBackgroundColor: Colors.red,
+                          )..show(context).then((result) {
+                            setState(() { // setState() is optional here
+                              _wasButtonClicked = result;
+                              if(result)
+                                _equipeBloc.removeAtleta(atleta);
+                              else
+                                _equipeBloc.addAtleta(atleta);
+                            });
+                          });
                         },
                         direction: DismissDirection.startToEnd,
                         child: Card(
@@ -137,18 +205,20 @@ class _ListaAtletasState extends State<ListaAtletas> {
                               ),
                             ),
                             title: Text(atleta.nickName != '' ? atleta.nickName : atleta.nome),
-                            subtitle: Text(atleta.posicao),
-                            trailing: Column(
-                              children: <Widget>[
-                                Icon(MaterialCommunityIcons.gesture_swipe_right, color: Colors.deepOrange,),
-                                Text('remover')
-                              ],
+                            subtitle: Text(atleta.posicao, style: TextStyle(color: atleta.posicao == 'Goleiro' ? Colors.red : Colors.teal),),
+                            trailing: StreamBuilder<List<Partida>>(
+                              stream: _homeBloc.sorteio(widget.equipe.documentId()),
+                              builder: (context, confirmado) {
+                              return  //_verificaConfirmado(confirmado.data, atleta) ?
+                                Icon(FontAwesome5Solid.thumbs_up, color: Colors.green,);// :
+                                //Icon(FontAwesome5Solid.thumbs_down, color: Colors.red,);
+                              }
                             ),
                           ),
                         ),
                       );
                     }).toList()
-                ) : CircularProgressIndicator();
+                ) : Center(child: CircularProgressIndicator(backgroundColor: Colors.green,));
               },
             ),
           ),
@@ -156,4 +226,17 @@ class _ListaAtletasState extends State<ListaAtletas> {
       ),
     );
   }
+  bool _verificaConfirmado (List<Partida> confirmados, Atleta atleta){
+    var ret = false;
+    for(int i = 0; i < confirmados.length; i++){
+      confirmados[i].confirmados.forEach((element) {
+        if(element.path == atleta.referencia.path){
+          return ret = true;
+        }
+        else ret = false;
+      });
+    }
+    return ret;
+  }
+
 }

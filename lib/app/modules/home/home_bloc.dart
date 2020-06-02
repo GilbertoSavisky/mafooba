@@ -7,10 +7,10 @@ import 'package:mafooba/app/modules/equipe/equipe_repository.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
 import 'package:mafooba/app/modules/models/bate_papo_model.dart';
 import 'package:mafooba/app/modules/models/mensagens_model.dart';
+import 'package:mafooba/app/modules/partida/partida_repository.dart';
 
 class
 HomeBloc extends BlocBase {
-  List<Atleta> atletaFiltrado = [];
   var _repositoryAtleta = AppModule.to.getDependency<AtletaRepository>();
   get atleta => _repositoryAtleta.atleta;
 
@@ -19,6 +19,9 @@ HomeBloc extends BlocBase {
 
   var _repositoryBatePapo = AppModule.to.getDependency<BatePapoRepository>();
   get batePapo => _repositoryBatePapo.batePapo;
+
+  var _repositorySorteio = AppModule.to.getDependency<PartidaRepository>();
+  sorteio(String equipeId) => _repositorySorteio.sorteio(equipeId);
 
   var _repositoryMsg = AppModule.to.getDependency<BatePapoRepository>();
   getMensagens(String documentID) => _repositoryMsg.getMensagens(documentID);

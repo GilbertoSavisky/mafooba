@@ -25,7 +25,6 @@ class AtletaBloc extends BlocBase {
   String _info;
 
   AtletaBloc() {
-    _nomeController.listen((value) => _nome = value);
     _nickNameController.listen((value) => _nickName = value);
     _fotoUrlController.listen((value) => _fotoUrl = value);
     _isAtivoController.listen((value) => _isAtivo = value);

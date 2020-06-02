@@ -10,6 +10,7 @@ import 'package:mafooba/app/modules/equipe/lista_atletas.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
 import 'package:mafooba/app/modules/models/equipe_model.dart';
+import 'package:mafooba/app/modules/partida/partida_page.dart';
 import 'package:mafooba/app/shared/fundo_gradiente.dart';
 
 class EquipeHomePage extends StatefulWidget {
@@ -45,7 +46,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                 children: <Widget>[
                   Card(
                     child: ListTile(
-                      leading: Icon(Foundation.torsos_all, size: 50, color: Colors.green,),
+                      leading: Icon(Foundation.torsos_all, size: 50, color: Colors.orange,),
                       title: Text('Atletas'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +55,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.indent, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -65,7 +66,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                     ),
                   ),Card(
                     child: ListTile(
-                      leading: Icon(MaterialCommunityIcons.soccer_field, size: 50, color: Colors.green,),
+                      leading: Icon(MaterialCommunityIcons.soccer_field, size: 50, color: Colors.teal,),
                       title: Text('Partidas'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,18 +75,18 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.indent, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EquipeHomePage(widget.equipe)),
+                              builder: (context) => PartidaPage(widget.equipe)),
                         );
                       },
                     ),
                   ),Card(
                     child: ListTile(
-                      leading: Icon(FontAwesome.cogs, size: 50, color: Colors.green,),
+                      leading: Icon(FontAwesome5Brands.whmcs, size: 50, color: Colors.red,),
                       title: Text('Configurações'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +95,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.indent, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -105,7 +106,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                     ),
                   ),Card(
                     child: ListTile(
-                      leading: Icon(AntDesign.wechat, size: 50, color: Colors.green,),
+                      leading: Icon(AntDesign.wechat, size: 50, color: Colors.amber,),
                       title: Text('Bate-Papo'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +115,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.indent, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -125,7 +126,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                     ),
                   ),Card(
                     child: ListTile(
-                      leading: Icon(MaterialCommunityIcons.cash_multiple, size: 50, color: Colors.green,),
+                      leading: Icon(FontAwesome5Solid.hand_holding_usd, size: 50, color: Colors.blue,),
                       title: Text('Finanças'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +135,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           //Text(_dateFormat.format(widget.equipe.horario)),
                         ],
                       ),
-                      trailing: Icon(FontAwesome5Solid.share_square, color: Colors.blue[800],),
+                      trailing: Icon(FontAwesome5Solid.indent, color: Colors.blue[800],),
                       onTap: () {
                         Navigator.push(
                           context,

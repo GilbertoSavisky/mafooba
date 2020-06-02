@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mafooba/app/app_module.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
@@ -166,8 +167,10 @@ class EquipeBloc extends BlocBase {
     }
   }
 
+  Stream<DocumentSnapshot>  getImagem() => Firestore.instance.collection('home').document('imgFundo').snapshots();
+
   void removeAtleta(Atleta atleta) {
-    _atletasRef.remove(atleta.referencia.path);
+    _atletasRef.remove(atleta.referencia);
     _atletas.removeWhere((element) => element.documentId() == atleta.documentId());
     setAtletas(_atletas);
     setAtletasRef(_atletasRef);
@@ -176,7 +179,7 @@ class EquipeBloc extends BlocBase {
 
   void addAtleta(Atleta atleta){
     _atletas.add(atleta);
-    _atletasRef.add(atleta.referencia.path);
+    _atletasRef.add(atleta.referencia);
     setAtletasRef(_atletasRef);
     setAtletas(_atletas);
   }

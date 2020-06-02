@@ -1,12 +1,11 @@
-import 'package:bloc_pattern/bloc_pattern.dart';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
-import 'package:mafooba/app/modules/atleta/atleta_bloc.dart';
-import 'package:mafooba/app/modules/atleta/atleta_page.dart';
-import 'package:mafooba/app/modules/atleta/user_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mafooba/app/modules/equipe/equipe_bloc.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
@@ -23,8 +22,7 @@ class AtletaHomePage extends StatefulWidget {
 class _AtletaHomePageState extends State<AtletaHomePage> {
   final _bloc = HomeBloc();
   final _blocEquipe = EquipeBloc();
-  final _blocUsers = UserBloc();
-
+  final GlobalKey<ScaffoldState> _snackBar = GlobalKey<ScaffoldState>();
   final _atletaController = TextEditingController();
 
   List<Atleta> _listaAtletas = [];
@@ -64,85 +62,96 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: _onBackPressed,
+      //onWillPop: _onBackPressed,
       child: Scaffold(
+        key: _snackBar,
         appBar: AppBar(
           title: Text("Atletas"),
         ),
         body: Container(
           padding: EdgeInsets.all(10),
-          child: StreamBuilder<List>(
-            stream: _blocUsers.outUsers,
+          child: StreamBuilder<List<Atleta>>(
+            stream: _bloc.atleta,
             builder: (context, atletas) {
               if (!atletas.hasData) return CircularProgressIndicator();
+
               return Column(
                 children: <Widget>[
                   Container(
-                     padding: EdgeInsets.only(left: 10, right: 10),
-                     child: Row(
-                       children: <Widget>[
-                         Expanded(
-                           child: TextField(
-                             controller: _atletaController,
-                             decoration: InputDecoration(
-                               labelText: 'Atleta '
-                             ),
-                             onChanged: _blocUsers.buscaAtleta,
-                           ),
-                         ),
-                         RaisedButton(
-                           child: Text('Pesquisar'),
-                           onPressed: (){},
-                           color: Colors.green,
-                         ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView(
-                      children: atletas.data.map((atleta){
-                        print('.............${atleta['nome']}');
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            controller: _atletaController,
+                            decoration: InputDecoration(
+                                labelText: 'Atleta '
 
+                            ),
+                          ),
+                        ),
+                        RaisedButton(
+                          child: Text('Pesquisar'),
+                          onPressed: (){},
+                          color: Colors.green,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      children: atletas.data.map((atleta){
                         return
-                          Dismissible(
-                            key: Key('atleta.documentID'),
-                          onDismissed: (direction) {
-                            //_blocUsers.deleteAtleta(atleta.documentId());
-                          },
-                          child: !_verificaLista(atleta) ? Card(
+                          Card(
+                            color: _verificaLista(atleta) ? Colors.grey[300] : Colors.white,
                             child: CheckboxListTile(
-                                //key: Key(atleta.uid),
-                                secondary: atleta['fotoUrl'] != null ?
+                                key: Key(atleta.uid),
+                                secondary: atleta.fotoUrl != null ?
                                 Container(
-                                  child: CircleAvatar(backgroundImage: NetworkImage(atleta['fotoUrl']),
+                                  child: CircleAvatar(backgroundImage: NetworkImage(atleta.fotoUrl),
                                   ),
                                   height: 60,
                                   width: 60,
                                 ) : Container(),
                                 title: Text(
-                                    atleta['nickName'] == null || atleta['nickName'] == '' ?
-                                    atleta['nome'] : atleta['nickName']),
+                                    atleta.nickName == null || atleta.nickName == '' ?
+                                    atleta.nome : atleta.nickName),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(atleta['fone'], style: TextStyle(fontSize: 13),),
+                                    Text(atleta.posicao, style: TextStyle(fontSize: 13),),
+                                    Text(atleta.fone, style: TextStyle(fontSize: 13),),
                                   ],
                                 ),
                                 value: _verificaLista(atleta),
                                 onChanged: (c){
                                   setState(() {
-                                    print(c);
                                     if(c){
-                                      //_blocEquipe.addAtleta(atleta);
+                                      _blocEquipe.addAtleta(atleta);
+                                      Flushbar(
+                                        title: '${atleta.nickName != '' ? atleta.nickName : atleta.nome}',
+                                        message: 'Adicionado à sua lista de atletas',
+                                        icon: Icon(FontAwesome.angellist, color: Colors.white, size: 35,),//  Icon(Icons.check, color: Colors.red,),
+                                        duration: Duration(seconds: 2),
+                                        margin: EdgeInsets.all(12),
+                                        borderRadius: 8,
+                                        backgroundColor: Colors.green,
+                                        showProgressIndicator: true,
+                                        progressIndicatorBackgroundColor: Colors.blueGrey,
+                                        mainButton: FlatButton(
+                                          onPressed: (){},
+                                          child: Icon(FontAwesome.check, color: Colors.white,),
+                                        ),
+                                      )..show(context);
+
                                     }
                                     else{
-                                      //_blocEquipe.removeAtleta(atleta);
+                                      _blocEquipe.removeAtleta(atleta);
                                     }
                                   });
                                 }
                             ),
-                          ) : Container(),
-                        );
+                          );
                       }).toList(),
                     ),
                   ),
@@ -156,7 +165,7 @@ class _AtletaHomePageState extends State<AtletaHomePage> {
   }
 
 
-  bool _verificaLista(var atleta){
+  bool _verificaLista(Atleta atleta){
     var ret = false;
     for(int i = 0; i < _listaAtletas.length; i++){
       if(_listaAtletas[i].uid == atleta.uid){

@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:mafooba/app/app_widget.dart';
 import 'package:mafooba/app/modules/atleta/atleta_bloc.dart';
 import 'package:mafooba/app/modules/atleta/atleta_repository.dart';
-import 'package:mafooba/app/modules/atleta/user_bloc.dart';
 import 'package:mafooba/app/modules/bate_papo/bate_papo_repository.dart';
 import 'package:mafooba/app/modules/bate_papo/mensagens_bloc.dart';
 import 'package:mafooba/app/modules/equipe/equipe_bloc.dart';
 import 'package:mafooba/app/modules/equipe/equipe_repository.dart';
-import 'package:mafooba/app/modules/equipe/sorteio/sorteio_bloc.dart';
-import 'package:mafooba/app/modules/equipe/sorteio/sorteio_repository.dart';
 import 'package:mafooba/app/modules/login/login_bloc.dart';
+import 'package:mafooba/app/modules/partida/partida_bloc.dart';
+import 'package:mafooba/app/modules/partida/partida_repository.dart';
 
 class AppModule extends ModuleWidget {
   @override
@@ -21,8 +20,7 @@ class AppModule extends ModuleWidget {
         Bloc((i) => AtletaBloc()),
         Bloc((i) => EquipeBloc()),
         Bloc((i) => MensagensBloc()),
-        Bloc((i) => SorteioBloc()),
-        Bloc((i) => UserBloc()),
+        Bloc((i) => PartidaBloc()),
       ];
 
   @override
@@ -30,7 +28,7 @@ class AppModule extends ModuleWidget {
     Dependency((i) => AtletaRepository()),
     Dependency((i) => EquipeRepository()),
     Dependency((i) => BatePapoRepository()),
-    Dependency((i) => SorteioRepository()),
+    Dependency((i) => PartidaRepository()),
   ];
 
   @override

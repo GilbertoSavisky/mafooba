@@ -17,6 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  flushbar: ^1.10.4
   #intl: ^0.16.1
   flutter_icons: ^1.1.0
   mask_text_input_formatter: ^1.0.6
