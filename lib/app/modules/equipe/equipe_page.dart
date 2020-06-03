@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -45,11 +46,10 @@ class _EquipePageState extends State<EquipePage> {
   String tipoValor = '';
 
   int _page = 0;
-  var _estilos =['Estilo','Areia','Campo','Futsal','Futvôlei', 'Showbol', 'Society', 'Outros'];
-  var _itemSelecionado = 'Estilo';
-  var _qtdeAletas =['Atletas','3', '4','5','6','7', '8', '9', '10', '11'];
-
-  var _qtdeSelecionado = 'Atletas';
+  var _estilos =['Estilo','Areia','Campo','Sintético', 'Terra', 'Outros'];
+  var _estiloSelecionado = 'Estilo';
+  var _qtdeAletas =['1 x 1','2 x 2', '3 x 3', '4 x 4',' 5x5',' 6x6',' 7x7', ' 8x8', ' 9x9', '10x10', '11x11'];
+  var _qtdeSelecionado = ' 4x4';
 
   SingingCharacter _character = SingingCharacter.UMTEMPO;
 
@@ -141,7 +141,7 @@ class _EquipePageState extends State<EquipePage> {
                             return foto.hasData && foto.connectionState == ConnectionState.active ?
                             Center(
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 30),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: StreamBuilder<bool>(
                                     initialData: false,
                                     stream: _bloc.outLoading,
@@ -154,11 +154,11 @@ class _EquipePageState extends State<EquipePage> {
                                           height: 140,
                                         ) :
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(70.0),
+                                          borderRadius: BorderRadius.circular(10.0),
                                           child: FadeInImage.assetNetwork(
                                             fit: BoxFit.cover,
-                                            width: 140,
-                                            height: 140,
+                                            //width: 140,
+                                            height: 180,
                                             placeholder: "images/216.gif",
                                             image: foto.data,
                                           ),
@@ -355,11 +355,78 @@ class _EquipePageState extends State<EquipePage> {
                           ),
                         ],
                       ),
-                      ExpansionTile(
-                        title: Text('Duração'),
-                        children: [
-                          Text('text')
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: BoxBorder.lerp(
+                                Border.all(color: Colors.white, width: 1),
+                                Border.all(color: Colors.black, width: 1), 10
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                            color: Colors.transparent,
+                          ),
+                          child: DropdownButton<String>(
+                            icon: Icon(Icons.keyboard_arrow_down),
+                            items: _estilos.map((estilo) {
+                              return DropdownMenuItem<String>(
+                                value: estilo,
+                                child: Container(
+                                  width: 250,
+                                  child: ListTile(
+                                    leading: Icon(Icons.accessibility),
+                                    title: Text(estilo),
+                                  ),
+                                ),
+                              );
+                            } ).toList(),
+                            onChanged: (novoItem){
+                              _dropDownEstiloSelected(novoItem);
+                              setState(() {
+                                _estiloSelecionado = novoItem;
+                              });
+                            },
+                            value: _estiloSelecionado,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: BoxBorder.lerp(
+                                Border.all(color: Colors.white, width: 1),
+                                Border.all(color: Colors.black, width: 1), 10
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                            color: Colors.transparent,
+                          ),
+                          child: DropdownButton<String>(
+                            icon: Icon(Icons.keyboard_arrow_down),
+                            items: _qtdeAletas.map((qtd) {
+                              return DropdownMenuItem<String>(
+                                value: qtd,
+                                child: Container(
+                                  width: 250,
+                                  child: ListTile(
+                                    leading: Icon(Icons.accessibility),
+                                    title: Text(qtd),
+                                  ),
+                                ),
+                              );
+                            } ).toList(),
+                            onChanged: (novoItem){
+                              _dropDownQtdeSelected(novoItem);
+                              setState(() {
+                                _qtdeSelecionado = novoItem;
+                              });
+                            },
+                            value: _qtdeSelecionado,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -496,7 +563,7 @@ class _EquipePageState extends State<EquipePage> {
   }
   void _dropDownEstiloSelected(String novoItem){
     setState(() {
-      this._itemSelecionado = novoItem;
+      this._estiloSelecionado = novoItem;
     });
   }
   void _dropDownQtdeSelected(String novoItem){
