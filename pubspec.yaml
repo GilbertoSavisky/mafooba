@@ -17,6 +17,8 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  intl_phone_number_input: ^0.4.4
+  mask_shifter: ^0.1.0
   flushbar: ^1.10.4
   #intl: ^0.16.1
   flutter_icons: ^1.1.0
