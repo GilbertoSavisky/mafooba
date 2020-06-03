@@ -141,7 +141,7 @@ class _EquipePageState extends State<EquipePage> {
                             return foto.hasData && foto.connectionState == ConnectionState.active ?
                             Center(
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 30),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: StreamBuilder<bool>(
                                     initialData: false,
                                     stream: _bloc.outLoading,
@@ -150,15 +150,15 @@ class _EquipePageState extends State<EquipePage> {
                                         child: loading.data ?
                                         Image.asset(
                                           'images/216.gif',
-                                          width: 140,
-                                          height: 140,
+                                          //width: 140,
+                                          height: 200,
                                         ) :
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(70.0),
+                                          borderRadius: BorderRadius.circular(10.0),
                                           child: FadeInImage.assetNetwork(
-                                            fit: BoxFit.cover,
-                                            width: 140,
-                                            height: 140,
+//                                            fit: BoxFit.contain,
+                                            //width: 140,
+                                            height: 180,
                                             placeholder: "images/216.gif",
                                             image: foto.data,
                                           ),
