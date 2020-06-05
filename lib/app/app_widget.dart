@@ -17,21 +17,53 @@ class AppWidget extends StatelessWidget {
         fontFamily: 'snap',
         //hintColor: Colors.black, //labelText
         indicatorColor: Colors.teal,
-        //buttonColor: Colors.green,
+        bannerTheme: MaterialBannerThemeData(
+          backgroundColor: Colors.red,
+          contentTextStyle: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+        ),
+        accentTextTheme: TextTheme(
+          caption: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+          bodyText1: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+          bodyText2: TextStyle(fontSize: 13.0, fontFamily: 'snap', color: Colors.blue[900]),//ok
+          headline1: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.green[800]),
+          overline: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+          subtitle1: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.blue[900]),
+          subtitle2: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.amber[800]),//data
+          button: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.green[800]), //ok
+          headline2: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.amber[800]),
+          headline3: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.amber[800]),
+          headline4: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.amber[800]),
+          headline5: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.amber[800]),
+
+        ),
+        buttonColor: Colors.green,
+
+        tooltipTheme: TooltipThemeData(
+          textStyle: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+        ),
+
+        dialogTheme: DialogTheme(
+          contentTextStyle: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.green[800]), // showdialog
+        ),
+
+        hintColor: Colors.red,
+        popupMenuTheme: PopupMenuThemeData(
+          textStyle: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+        ),
 
         textTheme: TextTheme(
-          caption: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.green[800]),
-          bodyText1: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.green[800]),
-          bodyText2: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.blue[900]),
-          headline1: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.green[800]),
-          overline: TextStyle(fontSize: 8.0, fontFamily: 'snap', color: Colors.green[800]),
-          subtitle1: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.blue[900]),
-          subtitle2: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.amber[800]),//data
+          caption: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+          bodyText1: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+          bodyText2: TextStyle(fontSize: 13.0, fontFamily: 'snap', color: Colors.blue[900]),//ok
+          headline1: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.green[800]),
+          overline: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.green[800]),
+          subtitle1: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.blue[900]),
+          subtitle2: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.amber[800]),//data
           button: TextStyle(fontSize: 15.0, fontFamily: 'snap', color: Colors.green[800]), //ok
-          headline2: TextStyle(fontSize: 8.0, fontFamily: 'snap', color: Colors.amber[800]),
-          headline3: TextStyle(fontSize: 8.0, fontFamily: 'snap', color: Colors.amber[800]),
-          headline4: TextStyle(fontSize: 8.0, fontFamily: 'snap', color: Colors.amber[800]),
-          headline5: TextStyle(fontSize: 8.0, fontFamily: 'snap', color: Colors.amber[800]),
+          headline2: TextStyle(fontSize: 28.0, fontFamily: 'snap', color: Colors.amber[800]),
+          headline3: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.amber[800]),
+          headline4: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.amber[800]),
+          headline5: TextStyle(fontSize: 18.0, fontFamily: 'snap', color: Colors.amber[800]),
         ),
       ),
       localizationsDelegates: [

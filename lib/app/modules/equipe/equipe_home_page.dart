@@ -5,6 +5,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mafooba/app/modules/atleta/atleta_page.dart';
+import 'package:mafooba/app/modules/bate_papo/bkp2.dart';
 import 'package:mafooba/app/modules/equipe/equipe_page.dart';
 import 'package:mafooba/app/modules/equipe/lista_atletas.dart';
 import 'package:mafooba/app/modules/home/home_bloc.dart';
@@ -100,6 +101,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+//                              builder: (context) => EquipePage(widget.equipe)),
                               builder: (context) => EquipePage(widget.equipe)),
                         );
                       },
@@ -120,11 +122,12 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EquipeHomePage(widget.equipe)),
+                              builder: (context) => Chat()),
                         );
                       },
                     ),
-                  ),Card(
+                  ),
+                  Card(
                     child: ListTile(
                       leading: Icon(FontAwesome5Solid.hand_holding_usd, size: 50, color: Colors.blue,),
                       title: Text('Finanças'),
@@ -142,6 +145,27 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           MaterialPageRoute(
                               builder: (context) => EquipeHomePage(widget.equipe)),
                         );
+                      },
+                    ),
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(FontAwesome5Solid.ticket_alt, size: 50, color: Colors.blue,),
+                      title: Text('Testes'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('testes'),
+                          //Text(_dateFormat.format(widget.equipe.horario)),
+                        ],
+                      ),
+                      trailing: Icon(FontAwesome5Solid.indent, color: Colors.blue[800],),
+                      onTap: () {
+//                        Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                              builder: (context) => MyHomePage()),
+//                        );
                       },
                     ),
                   ),
