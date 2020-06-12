@@ -107,7 +107,6 @@ class _HomePageState extends State<HomePage> {
               ..nome = ""
               ..estilo = ''
               ..local = ""
-              ..fone = ""
               ..qtdeAtletas = 0;
 
             Navigator.push(

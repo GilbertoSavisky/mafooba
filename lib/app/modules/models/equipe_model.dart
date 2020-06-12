@@ -10,11 +10,16 @@ class Equipe extends BaseModel {
   String info;
   String imagem;
   int qtdeAtletas;
-  String fone;
+  String foneContato;
   DateTime horario;
   bool ativo;
   int valor;
   String tipoSorteio;
+  String temposPartida;
+  String duracaoPartida;
+  String tipoPagamento;
+  String sortearPor;
+  String horaSorteio;
 
   List capitaoRef;
   List atletasRef;
@@ -29,7 +34,7 @@ class Equipe extends BaseModel {
     this.nome = document.data["nome"];
     this.estilo = document.data["estilo"];
     this.local = document.data["local"];
-    this.fone = document.data["fone"];
+    this.foneContato = document.data["foneContato"];
     this.info = document.data["info"];
     this.valor = (document.data["valor"]);
     this.imagem = document.data["imagem"];
@@ -37,7 +42,13 @@ class Equipe extends BaseModel {
     this.ativo = document.data["ativo"] ?? false;
     this.capitaoRef = document.data["capitaoRef"];
     this.atletasRef = document.data["atletasRef"];
-    this.tipoSorteio = document.data["tipoSorteio"];
+    this.tipoSorteio = document.data["tipoSorteio"] ?? '0';
+    this.temposPartida = document.data["temposPartida"] ?? '0';
+    this.duracaoPartida = document.data["duracaoPartida"] ?? '0';
+    this.tipoPagamento = document.data["tipoPagamento"] ?? '0';
+    this.sortearPor = document.data["sortearPor"] ?? '0';
+    this.horaSorteio = document.data["horaSorteio"] ?? '0';
+
 
     Timestamp timestamp = document.data["horario"];
     this.horario =
@@ -67,12 +78,17 @@ class Equipe extends BaseModel {
     map['valor'] = this.valor;
     map['imagem'] = this.imagem;
     map['qtdeAtletas'] = this.qtdeAtletas;
-    map['fone'] = this.fone;
+    map['foneContato'] = this.foneContato;
     map['capitaoRef'] = this.capitaoRef;
     map['atletasRef'] = this.atletasRef;
     map['ativo'] = this.ativo;
     map['horario'] = this.horario;
     map['tipoSorteio'] = this.tipoSorteio;
+    map['temposPartida'] = this.temposPartida;
+    map['duracaoPartida'] = this.duracaoPartida;
+    map['tipoPagamento'] = this.tipoPagamento;
+    map['sortearPor'] = this.sortearPor;
+    map['horaSorteio'] = this.horaSorteio;
     return map;
   }
 

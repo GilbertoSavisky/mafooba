@@ -226,7 +226,6 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
               ..nome = ""
               ..estilo = ''
               ..local = ""
-              ..fone = ""
               ..qtdeAtletas = 0;
 
             Navigator.push(

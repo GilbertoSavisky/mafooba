@@ -278,7 +278,6 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
               ..nome = ""
               ..estilo = ''
               ..local = ""
-              ..fone = ""
               ..qtdeAtletas = 0;
 
             Navigator.push(

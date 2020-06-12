@@ -13,11 +13,11 @@ import 'package:mafooba/app/shared/fundo_gradiente.dart';
 import 'package:mafooba/app/shared/image_source_sheet.dart';
 import 'package:mafooba/app/shared/input_field.dart';
 import 'package:mafooba/app/shared/radio_button.dart';
+import 'package:mafooba/app/shared/teste.dart';
+import 'package:mask_shifter/mask_shifter.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
-enum TemposPartida { UMTEMPO, DOISTEMPO }
-enum TipoSorteio { MANUAL, AUTO }
-enum Valor { PORDIA, MENSAL }
+import 'package:multi_masked_formatter/multi_masked_formatter.dart';
+import 'package:string_mask/string_mask.dart';
 
 class EquipePage extends StatefulWidget {
   EquipePage(this.equipe);
@@ -29,8 +29,10 @@ class EquipePage extends StatefulWidget {
 }
 
 class _EquipePageState extends State<EquipePage> {
-  final _celFormat = MaskTextInputFormatter(mask: '(##) # ####-####', filter: { "#": RegExp(r'[0-9]') });
-  MaskTextInputFormatter _foneFormat = MaskTextInputFormatter(mask: '(##) ####-#####', filter: { "#": RegExp(r'[0-9]') });
+  var formCel = new StringMask('(00)0 0000-0000');
+  var formTel = new StringMask('(00) 0000-0000');
+  final _celFormat = MaskTextInputFormatter(mask: '(##) # ####-####');
+  final _foneFormat = MaskTextInputFormatter(mask: '(##) ####-#####');
   final _dateFormat = DateFormat("dd/MM/yyyy").add_Hm();
   TextEditingController _nomeController;
   TextEditingController _localController;
@@ -41,48 +43,50 @@ class _EquipePageState extends State<EquipePage> {
   TextEditingController _qtdeAtletasController;
   TextEditingController _valorController;
   TextEditingController _tipoSorteioController;
+  TextEditingController _tipoPagamentoController;
   TextEditingController _estiloController;
+  TextEditingController _temposPartidaController;
+  TextEditingController _duracaoPartidaController;
+  TextEditingController _sortearPorController;
+  TextEditingController _horaSorteioController;
+  TextEditingController _capitaoController;
   PageController _pageController;
 
   final _bloc = EquipeBloc();
   bool onListaAtletas = false;
 
+  //final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
+
   int _page = 0;
-  List _qtdeAtletas = [{"display": "1 x 1", "value": "1 x 1",},
-                      {"display": "2 x 2","value": "2 x 2",},
-                      {"display": "3 x 3", "value": "3 x 3",},
-                      {"display": "4 x 4", "value": "4 x 4",},
-                      {"display": "5 x 5", "value": "5 x 5",},
-                      {"display": "6 x 6", "value": "6 x 6",},
-                      {"display": "7 x 7", "value": "7 x 7",},
-                      {"display": "8 x 8", "value": "8 x 8",},
-                      {"display": "9 x 9", "value": "9 x 9",},
-                      {"display": "10 x 10", "value": "10 x 10",},
-                      {"display": "11 x 11", "value": "11 x 11",},];
+  List _qtdeAtletas = [ {"display": "selecione", "value": "0",},
+                        {"display": "1 x 1", "value": "1",},
+                        {"display": "2 x 2", "value": "2",},
+                        {"display": "3 x 3", "value": "3",},
+                        {"display": "4 x 4", "value": "4",},
+                        {"display": "5 x 5", "value": "5",},
+                        {"display": "6 x 6", "value": "6",},
+                        {"display": "7 x 7", "value": "7",},
+                        {"display": "8 x 8", "value": "8",},
+                        {"display": "9 x 9", "value": "9",},
+                        {"display": "10 x 10", "value": "10",},
+                        {"display": "11 x 11", "value": "11",},];
 
-  List _tiposDeCampos = [{"display": "Areia", "value": "Areia",},
-                        {"display": "Grama","value": "Grama",},
-                        {"display": "Sintético", "value": "Sintético",},
-                        {"display": "Terra", "value": "Terra",},
-                        {"display": "Outros", "value": "Outros",}];
+  List _tiposDeCampos = [{"display": "selecione", "value": "0",},
+                        {"display": "Areia","value": "areia",},
+                        {"display": "Grama","value": "grama",},
+                        {"display": "Sintético", "value": "sintetico",},
+                        {"display": "Terra", "value": "terra",},
+                        {"display": "Outros", "value": "outros",}];
 
-  List _sortearPor = [{"display": "Horário", "value": "Horário",},
-                        {"display": "Confirmação","value": "Confirmação",},
-                        {"display": "Habilidade", "value": "Habilidade",},
-                        {"display": "Nenhum", "value": "Nenhum",}];
+  List<Map<String, dynamic>>  _sortearPor =
+                      [{"display": "selecione","value": "0",},
+                      {"display": "Por Ordem de Confirmação", "value": "habilidade",},
+                      {"display": "Por Habilidade dos atletas", "value": "habilidade",},
+                      {"display": "Por Posição dos atletas", "value": "posicao",}];
 
   List<Map<String, dynamic>> _duracaoPartida = [];
 
 
-  String _tipoCampoSelecionado;
-  String _qtdeSelecionado;
-  String _tempoPartidaSelecionado;
-  String _sorteioSelecionado;
-
-
-  TemposPartida _temposPartida;
-  TipoSorteio _tipoSorteio;
-  Valor _valor;
   @override
   void initState() {
     _bloc.setEquipe(widget.equipe);
@@ -90,11 +94,17 @@ class _EquipePageState extends State<EquipePage> {
     _localController = TextEditingController(text: widget.equipe.local);
     _infoController = TextEditingController(text: widget.equipe.info);
     _imagemController = TextEditingController(text: widget.equipe.imagem);
-    _foneController = TextEditingController(text: widget.equipe.fone);
+    _foneController = TextEditingController(text: widget.equipe.foneContato);
     _estiloController = TextEditingController(text: widget.equipe.estilo);
+    _temposPartidaController = TextEditingController(text: widget.equipe.temposPartida);
     _valorController = TextEditingController(text: widget.equipe.valor?.toStringAsFixed(2));
     _tipoSorteioController = TextEditingController(text: widget.equipe.tipoSorteio);
+    _tipoPagamentoController = TextEditingController(text: widget.equipe.tipoPagamento);
     _qtdeAtletasController = TextEditingController(text: widget.equipe.qtdeAtletas.toString());
+    _duracaoPartidaController = TextEditingController(text: widget.equipe.duracaoPartida);
+    _sortearPorController = TextEditingController(text: widget.equipe.sortearPor);
+    _horaSorteioController = TextEditingController(text: widget.equipe.horaSorteio);
+    _capitaoController = TextEditingController(text: widget.equipe.capitao.toList().toString());
 
     _pageController = PageController();
 
@@ -104,7 +114,7 @@ class _EquipePageState extends State<EquipePage> {
   }
 
   void carregarDuracao(){
-    for(int i = 1; i < 61; i++){
+    for(int i = 60; i > 0; i--){
       if(i == 1){
         _duracaoPartida.add({
           'display': '00:0${i} - minuto',
@@ -135,8 +145,13 @@ class _EquipePageState extends State<EquipePage> {
     _foneController.dispose();
     _valorController.dispose();
     _tipoSorteioController.dispose();
+    _tipoPagamentoController.dispose();
     _qtdeAtletasController.dispose();
-
+    _temposPartidaController.dispose();
+    _duracaoPartidaController.dispose();
+    _sortearPorController.dispose();
+    _horaSorteioController.dispose();
+    _capitaoController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -169,10 +184,6 @@ class _EquipePageState extends State<EquipePage> {
               icon: Icon(FontAwesome5Solid.cogs),
               title: Text('Configurações'),
             ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.people),
-                title: Text('Atletas')
-            )
           ],
         ),
         body:
@@ -230,11 +241,87 @@ class _EquipePageState extends State<EquipePage> {
                                     );
                                   }
                               ),
-                            ) : Container();
+                            ) :
+                            InkWell(
+                              child: Container(
+                                height: 150,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.black12,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.add),
+                                      Text('Add imagem')
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              onTap: () async {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => ImageSourceSheet(
+                                    onImageSelected: (image) {
+                                      _bloc.trocarImagem(image);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                );
+                              },
+                            );
                           },
                         ),
 
+                        Container(
+                            child: MafoobaInputField(
+                              readOnly: false,
+                              onChanged: _bloc.setNome,
+                              obscuro: false,
+                              hint: 'Nome',
+                              stream: _bloc.outNome,
+                              icon: FontAwesome5Solid.kaaba,
+                              controller: _nomeController,
+                            ),
+                            padding: EdgeInsets.only(top: 10, right: 5, left: 5)
+                        ),
+                        Container(
+                            child: MafoobaInputField(
+                              readOnly: true,
+                              onChanged: (s){},
+                              obscuro: false,
+                              hint: "'Capitão do time' - (admin)",
+                              stream: _bloc.outCapitao,
+                              icon: FontAwesome5Solid.kaaba,
 
+                            ),
+                            padding: EdgeInsets.only(top: 10, right: 5, left: 5)
+                        ),
+
+                        Container(
+                          child: TextField(
+
+                            keyboardType: TextInputType.number,
+                            onChanged: (s){
+                          },
+                            inputFormatters: [
+
+                                MafoobaMasked(
+                                    maskONE: "(XX)XXXX-XXXX",
+                                    maskTWO: "(XX) XXXXX-XXXX"
+                                )
+
+
+                            ],
+                            onEditingComplete: (){
+                              print('----------------${'asasd'}');
+                          },
+
+
+                            decoration:
+                            InputDecoration(
+                                labelText: 'PhoneNumber',
+                            ),
+                          ),
+                        ),
                         Container(
                           child: StreamBuilder<List<Atleta>>(
                             stream: _bloc.outCapitao,
@@ -244,7 +331,7 @@ class _EquipePageState extends State<EquipePage> {
                                 children: capitaes.data.map((capitao) {
                                   return TextFormField(
                                     decoration: InputDecoration(
-                                        labelText: "'Capitão da equipe - (admin)'",
+                                        labelText: "'Capitão do time' - (admin)",
                                         icon: Icon(FontAwesome5Solid.user_cog, color: Colors.blue[900],),
                                         border: OutlineInputBorder(),
                                     ),
@@ -260,24 +347,40 @@ class _EquipePageState extends State<EquipePage> {
                         ),
                         Container(
                           padding: EdgeInsets.all(5),
-                          child: InputField(
-                            icon: FontAwesome.location_arrow,
+                          child: MafoobaInputField(
+                            readOnly: false,
+                            icon: FontAwesome5Solid.map_marked_alt,
                             obscuro: false, hint: 'Local',
                             controller: _localController,
                             onChanged: _bloc.setLocal,
+                            stream: _bloc.outLocal,
                           ),
                         ),
                         Container(
                           padding: EdgeInsets.all(5),
-                          child: InputField(
+                          child: MafoobaInputField(
+                            readOnly: false,
                             icon: FontAwesome.phone,
                             obscuro: false,
                             hint: 'Contato',
                             controller: _foneController,
-                            onChanged: _bloc.setFone,
+                            onChanged: (s){
+                              setState(() {
+                            });
+                            },
+                            stream: _bloc.outFoneContato,
                             tipo: TextInputType.phone,
+
+                            format: [
+                              MaskedTextInputFormatterShifter(
+                                maskONE: "XX.XXXX-XXXX",
+                                maskTWO: "XX-XXXXX-XXXX"
+                              )
+                            ],
                           ),
                         ),
+
+
 
 
                         Container(
@@ -317,180 +420,139 @@ class _EquipePageState extends State<EquipePage> {
                 children: <Widget>[
                   FundoGradiente(),
                   ListView(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.only(left: 15,right: 15),
                     children: [
-                      MafoobaRadioButton(
-                        valor: [TemposPartida.UMTEMPO, TemposPartida.DOISTEMPO],
-                        grupoValor: _temposPartida,
-                        nomeCampos: ['1 tempo', '2 tempo'],
-                        caption: 'Tempos da partida',
-                        onChange: (valor){
-                          setState(() {
-                            _temposPartida = valor;
-                          });
-                        },
-                      ),
-                      _temposPartida != null ? Container(
-                        child: ExpansionTile(
-                          title: Text(formatarTituloDuracao()),
-                          leading: Icon(FontAwesome5.clock),
-                          children: [
-                            MafoobaDropDownFF(
-                              hint: 'minutos',
-                              titleText: 'Selecione quantos min para cada tempo',
-                              dataSource: _duracaoPartida,
-                              myActivityResult: _tempoPartidaSelecionado,
-                              onChanged: (valor){
-                                setState(() {
-                                  _tempoPartidaSelecionado = valor;
-                                });
-                              },
-                            ),
-                          ],
+
+                      Container(
+                        child: MafoobaRadioButton(
+                          valor: ['um_tempo', 'dois_tempos'],
+                          valorSelecionado: _temposPartidaController.text,
+                          nomeCampos: ['1 tempo', '2 tempos'],
+                          caption: 'O jogo terá',
+                          onChange: (valor){
+                            setState(() {
+                              _bloc.setTemposPartida(valor);
+                              _temposPartidaController.text = valor;
+                            });
+                          },
                         ),
-                      ) : Container( padding: EdgeInsets.only(top: 5),),
-                      MafoobaRadioButton(
-                        valor: [TipoSorteio.AUTO, TipoSorteio.MANUAL],
-                        grupoValor: _tipoSorteio,
-                        nomeCampos: ['automático', 'manual'],
-                        caption: 'Tipo Sorteio',
-                        onChange: (valor){
-                          setState(() {
-                            _tipoSorteio = valor;
-                          });
-                        },
                       ),
-                      _tipoSorteio != null ? Container(
-                        child: ExpansionTile(
-                          title: Text(formatarTituloSorteio()),
-                          leading: Icon(FontAwesome5Solid.random),
-                          children: [
-                            MafoobaDropDownFF(
-                              hint: 'Sorteio',
-                              titleText: 'Selecione o tipo de sorteio',
-                              dataSource: _sortearPor,
-                              myActivityResult: _sorteioSelecionado,
-                              onChanged: (valor){
-                                setState(() {
-                                  _sorteioSelecionado = valor;
-                                });
-                              },
-                            ),
-                          ],
+                      _temposPartidaController.text != null && _temposPartidaController.text != ''?
+                      Container(
+                        padding: EdgeInsets.only(top: 7),
+                        child: MafoobaDropDownFF(
+                          dataSource: _duracaoPartida,
+                          onChanged: _bloc.setEstilo,
+                          controller: _duracaoPartidaController,
+                          icon: FontAwesome5.clock,
+                          stream: _bloc.outDuracaoPartida,
+                          labelText: 'Com duração de',
+                          hint: 'sdfsd',
                         ),
                       ) : Container( padding: EdgeInsets.only(top: 5),),
 
-                      MafoobaRadioButton(
-                        valor: [Valor.PORDIA, Valor.MENSAL],
-                        grupoValor: _valor,
-                        nomeCampos: ['por partida', 'mensal'],
-                        caption: 'Tipo pagamento',
-                        onChange: (valor){
-                          setState(() {
-                            _valor = valor;
-                          });
-                        },
-                      ),
-                      _valor != null ? InputField(
-                        hint: 'Valor',
-                        icon: FontAwesome5Solid.money_bill,
-                        obscuro: false,
-                        onChanged: (s){},
-                        tipo: TextInputType.number,
-                      ) : Container(),
                       Container(
-                        child: MafoobaDropDownFF(
-                          hint: 'Selecione um tipo de campo',
-                          titleText: 'Tipo de Campo',
-                          dataSource: _tiposDeCampos,
-                          myActivityResult: _tipoCampoSelecionado,
-                          onChanged: (value){
+                        padding: EdgeInsets.only(top: 5),
+                        child: MafoobaRadioButton(
+                          valor: ['auto', 'manual', 'nenhum'],
+                          valorSelecionado: _tipoSorteioController.text,
+                          nomeCampos: ['auto', 'manual', 'nenhum'],
+                          caption: 'Tipo de Sorteio',
+                          onChange: (valor){
                             setState(() {
-                              _tipoCampoSelecionado = value;
+                              _bloc.setTipoSorteio(valor);
+                              _tipoSorteioController.text = valor;
                             });
                           },
                         ),
                       ),
+                      _tipoSorteioController.text != null  && _tipoSorteioController.text != 'nenhum'?
                       Container(
+                        padding: EdgeInsets.only(top: 5),
                         child: MafoobaDropDownFF(
-                          hint: 'Quantos por time',
-                          titleText: 'Quantidade de atletas',
-                          dataSource: _qtdeAtletas,
-                          myActivityResult: _qtdeSelecionado,
+                          dataSource: _sortearPor,
+                          onChanged: _bloc.setSortearPor,
+                          controller: _sortearPorController,
+                          icon: MaterialIcons.swap_vert,
+                          stream: _bloc.outSortearPor,
+                          labelText: 'Critérios para o sorteio',
+                        ),
+                      ) : Container( padding: EdgeInsets.only(top: 5),),
+
+                      //horario
+                      _tipoSorteioController.text != null  && _tipoSorteioController.text == 'auto'?
+                          Container(
+                            padding: EdgeInsets.only(bottom: 5, top: 5),
+                            child: MafoobaInputField(
+                              readOnly: true,
+                              onChanged: (valor){},
+                              onTap: _selecionarHoraSorteio,
+                              obscuro: false,
+                              icon: Icons.alarm_on,
+                              controller: _horaSorteioController,
+                            ),
+                          ) : Container(),
+
+                      Container(
+                        padding: EdgeInsets.only(top: 5),
+                        child: MafoobaRadioButton(
+                          valor: ['por_jogo', 'mensal'],
+                          valorSelecionado: _tipoPagamentoController.text,
+                          nomeCampos: ['por jogo', 'mensal'],
+                          caption: 'Forma de pagamento',
+                          onChange: (valor){
+                            setState(() {
+                              _bloc.setTemposPartida(valor);
+                              _tipoPagamentoController.text = valor;
+                            });
+                          },
+                        ),
+                      ),
+                      _tipoPagamentoController.text != null && _tipoPagamentoController.text != '' ?
+                      Container(
+                        padding: EdgeInsets.only(top: 5),
+                        child: MafoobaInputField(
+                          readOnly: false,
+                          //stream: _bloc.outValor,
+                          icon: FontAwesome5Solid.hand_holding_usd,
+                          controller: _valorController,
+                          tipo: TextInputType.number,
+                          hint: 'Valor',
                           onChanged: (valor){
                             setState(() {
-                              _qtdeSelecionado = valor;
+                              _bloc.setValor(valor as int);
+                            });
+                          },
+                          obscuro: false,
+
+                        ),
+                      ) : Container( padding: EdgeInsets.only(top: 7),),
+
+                      Container(
+                        padding: EdgeInsets.only(top: 5),
+                        child: MafoobaDropDownFF(
+                          labelText: 'Tipo de campo',
+                          icon: MaterialCommunityIcons.soccer_field,
+                          controller: _estiloController,
+                          dataSource: _tiposDeCampos,
+                          onChanged: _bloc.setEstilo,
+                        ),
+                      ),
+
+                      Container(
+                        padding: EdgeInsets.only(top: 5),
+                        child: MafoobaDropDownFF(
+                          hint: 'Quantos por time',
+                          icon: FontAwesome5Solid.running,
+                          labelText: 'Quantidade de atletas',
+                          dataSource: _qtdeAtletas,
+                          controller: _qtdeAtletasController,
+                          onChanged: (valor){
+                            setState(() {
+                              _qtdeAtletasController.text = valor;
                             });
                           },
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Stack(
-                children: <Widget>[
-                  FundoGradiente(),
-                  ListView(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          StreamBuilder<List<Atleta>>(
-                              stream: _bloc.outAtletas,
-                              builder: (context, atletas) {
-                                return atletas.hasData ?
-                                ExpansionTile(
-                                  title: Text('Lista de Atletas'),
-                                  leading: Icon(Icons.people, color: Colors.deepOrange,),
-                                  trailing: Icon(!onListaAtletas ? Icons.file_download : Icons.file_upload, color: Colors.deepOrange,),
-                                  onExpansionChanged: (c){
-                                    setState(() {
-                                      onListaAtletas = c;
-                                    });
-                                  },
-                                  children: <Widget>[
-                                    Column(
-                                      children: atletas.data.map((atleta){
-                                        return Card(
-                                          child: ListTile(
-                                            leading: CircleAvatar(
-                                              radius: 25,
-                                              backgroundImage: NetworkImage(atleta.fotoUrl),
-                                            ),
-                                            title: Text(atleta.nickName == null || atleta.nickName == '' ? atleta.nome : atleta.nickName),
-                                            trailing: GestureDetector(
-                                              //key: Key(atleta.documentId()),
-                                              child: atleta.selecionado ?
-                                              Icon(
-                                                Icons.thumb_up,
-                                                color: Colors.green,
-                                              ) :
-                                              Icon(
-                                                Icons.thumb_down,
-                                                color: Colors.red,
-                                              ),
-                                              onTap: (){
-                                                //print('...................${atleta.documentId()}');
-                                              },
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ],
-                                ) : Container();
-                              }
-                          ),
-                          FlatButton(
-                            child: Text('Add/remover jogador'),
-                            onPressed: (){
-                             // Navigator.of(context).push(
-                                  //MaterialPageRoute(builder: (context) => AtletaHomePage(listAtletas: atletas.data, equipe: widget.equipe,))
-                              //);
-                            },
-                            color: Colors.green,
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -530,6 +592,16 @@ class _EquipePageState extends State<EquipePage> {
       });
     }
   }
+  Future _selecionarHoraSorteio() async {
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now());
+    if (picked != null) {
+      setState(() {
+        print('----------------------------${picked}');
+      });
+    }
+  }
 
   Future<bool> _onBackPressed() {
     return showDialog(
@@ -561,32 +633,10 @@ class _EquipePageState extends State<EquipePage> {
   String formatarTituloDuracao(){
     String tempo;
     String retorno;
-
-    if(_temposPartida != null){
-      tempo = _temposPartida == TemposPartida.UMTEMPO ? '1 tempo de ' : '2 tempos de ';
-    }
-
-    if(_tempoPartidaSelecionado == null){
-      retorno = 'selecione o tempo da partida';
-    } else {
-      retorno = _tempoPartidaSelecionado.length == 1 ? '${tempo}00:0${_tempoPartidaSelecionado} min.' : '${tempo}00:${_tempoPartidaSelecionado} min.';
-    }
-    return retorno;
+    return 'formatarTituloDuracao';
   }
 
   String formatarTituloSorteio(){
-    String tipo;
-    String retorno;
-
-    if(_tipoSorteio != null){
-      tipo = _tipoSorteio == TipoSorteio.MANUAL ? 'tipo de sorteio manual ' : 'tipo de sorteio auto por ';
-    }
-
-    if(_sorteioSelecionado == null){
-      retorno = 'selecione o tipo de sorteio';
-    } else {
-      retorno = _sorteioSelecionado.length == 1 ? '${tipo} ${_sorteioSelecionado}' : '${tipo} ${_sorteioSelecionado}';
-    }
-    return retorno;
+    return ('formatarTituloSorteio');
   }
 }

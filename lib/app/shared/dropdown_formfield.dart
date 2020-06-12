@@ -1,42 +1,57 @@
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 
 class MafoobaDropDownFF extends StatelessWidget {
 
-  final String titleText;
+  final String labelText;
   final String hint;
   final Stream<String> stream;
   final Function(String) onChanged;
-  final TextEditingController controller;
   final TextInputType tipo;
   final List dataSource;
-  final String myActivityResult;
+  final TextEditingController controller;
+  final IconData icon;
 
-  MafoobaDropDownFF({Key key, this.titleText, this.hint, this.stream, this.onChanged, this.controller, this.tipo, this.dataSource, this.myActivityResult}) : super(key: key);
+
+
+  MafoobaDropDownFF({
+    Key key,
+    this.labelText,
+    this.hint,
+    this.stream,
+    this.onChanged,
+    this.controller,
+    this.tipo,
+    this.dataSource,
+    this.icon
+  }) : super(key: key);
 
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Form(
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.zero,
-              child: DropDownFormField(
-                filled: false,
-                titleText: titleText,
-                hintText: hint,
-                value: myActivityResult,
-                onChanged: onChanged,
-                dataSource: dataSource,
-                textField: 'display',
-                valueField: 'value',
-              ),
+    print('...controller.....${controller}');
+    print('....dataSource....${dataSource}');
+    return StreamBuilder<String>(
+      stream: stream,
+      builder: (context, snapshot) {
+        return Container(
+          padding: EdgeInsets.zero,
+          child: DropdownButtonFormField(
+            value: controller.text,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              icon: Icon(icon, color: Colors.blue[900],),
+              labelText: labelText,
             ),
-          ],
-        ),
-      ),
+            items: dataSource.map<DropdownMenuItem<String>>((item) {
+              return DropdownMenuItem(
+                value: item['value'],
+                child: Text(item['display']),
+              );
+            }).toList(),
+            onChanged: onChanged,
+          ),
+        );
+      }
     );
   }
 }

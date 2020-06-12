@@ -10,19 +10,19 @@ class MafoobaRadioButton extends StatelessWidget {
   final String caption;
   final List nomeCampos;
   final List valor;
-  final grupoValor;
+  final valorSelecionado;
+
 
   MafoobaRadioButton(
       {this.onChange,
         this.caption,
         this.nomeCampos,
-        this.grupoValor,
+        this.valorSelecionado,
         this.valor});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-//      margin: EdgeInsets.only(bottom: 7),
       decoration: BoxDecoration(
         border: BoxBorder.lerp(Border.all(color: Colors.white, width: 0),
             Border.all(color: Colors.black, width: 0), 1),
@@ -45,8 +45,9 @@ class MafoobaRadioButton extends StatelessWidget {
                         contentPadding: EdgeInsets.zero,
                         title: Text(nomeCampos[nomeCampos.indexOf(e)]),
                         leading: Radio(
+                          activeColor: Colors.deepOrange,
                           value: valor[nomeCampos.indexOf(e)],
-                          groupValue: grupoValor,
+                          groupValue: valorSelecionado,
                           onChanged: onChange,
                         ),
                         horizontalTitleGap: 0,

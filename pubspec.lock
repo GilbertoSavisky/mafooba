@@ -22,20 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  built_collection:
-    dependency: transitive
-    description:
-      name: built_collection
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.3.2"
-  built_value:
-    dependency: transitive
-    description:
-      name: built_value
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "7.1.0"
   cached_network_image:
     dependency: transitive
     description:
@@ -141,20 +127,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.9"
-  direct_select:
-    dependency: "direct main"
-    description:
-      name: direct_select
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2+1"
-  direct_select_flutter:
-    dependency: "direct main"
-    description:
-      name: direct_select_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.6"
   dropdown_formfield:
     dependency: "direct main"
     description:
@@ -162,13 +134,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
-  equatable:
-    dependency: transitive
+  dropdownfield:
+    dependency: "direct main"
     description:
-      name: equatable
+      name: dropdownfield
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.0.3"
   fake_async:
     dependency: transitive
     description:
@@ -232,13 +204,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.6"
-  fixnum:
-    dependency: transitive
-    description:
-      name: fixnum
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.10.11"
   flushbar:
     dependency: "direct main"
     description:
@@ -378,13 +343,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
-  intl_phone_number_input:
-    dependency: "direct main"
-    description:
-      name: intl_phone_number_input
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.4"
   js:
     dependency: transitive
     description:
@@ -392,13 +350,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.1+1"
-  libphonenumber:
-    dependency: transitive
-    description:
-      name: libphonenumber
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   list_tile_more_customizable:
     dependency: "direct main"
     description:
@@ -427,6 +378,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.6"
+  menu_button:
+    dependency: "direct main"
+    description:
+      name: menu_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   meta:
     dependency: transitive
     description:
@@ -441,6 +399,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.1"
+  multi_masked_formatter:
+    dependency: "direct main"
+    description:
+      name: multi_masked_formatter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   path:
     dependency: transitive
     description:
@@ -511,13 +476,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
-  rect_getter:
-    dependency: transitive
-    description:
-      name: rect_getter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -579,6 +537,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  string_mask:
+    dependency: "direct main"
+    description:
+      name: string_mask
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   string_scanner:
     dependency: transitive
     description:
@@ -656,6 +621,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.4"
+  vader_mask:
+    dependency: "direct main"
+    description:
+      name: vader_mask
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   vector_math:
     dependency: transitive
     description:
@@ -684,6 +656,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3+1"
+  weekday_selector_formfield:
+    dependency: "direct main"
+    description:
+      name: weekday_selector_formfield
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
 sdks:
   dart: ">=2.7.2 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"

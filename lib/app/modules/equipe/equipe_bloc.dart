@@ -18,10 +18,15 @@ class EquipeBloc extends BlocBase {
   String _imagem;
   bool _ativo;
   DateTime _horario;
-  String _fone;
+  String _foneContato;
   int _qtdeAtletas;
   int _valor;
   String _tipoSorteio;
+  String _temposPartida;
+  String _duracaoPartida;
+  String _tipoPagamento;
+  String _sortearPor;
+  String _horaSorteio;
 
   List _capitaoRef;
   List _atletasRef;
@@ -36,11 +41,16 @@ class EquipeBloc extends BlocBase {
     _estiloController.listen((value) => _estilo = value);
     _infoController.listen((value) => _info = value);
     _imagemController.listen((value) => _imagem = value);
-    _foneController.listen((value) => _fone = value);
+    _foneContatoController.listen((value) => _foneContato = value);
     _qtdeAtletasController.listen((value) => _qtdeAtletas = value);
     _ativoController.listen((value) => _ativo = value);
     _valorController.listen((value) => _valor = value);
     _tipoSorteioController.listen((value) => _tipoSorteio = value);
+    _temposPartidaController.listen((value) => _temposPartida = value);
+    _duracaoPartidaController.listen((value) => _duracaoPartida = value);
+    _tipoPagamentoController.listen((value) => _tipoPagamento = value);
+    _sortearPorController.listen((value) => _sortearPor = value);
+    _horaSorteioController.listen((value) => _horaSorteio = value);
 
     _capitaoRefController.listen((value) => _capitaoRef = value);
     _atletasRefController.listen((value) => _atletasRef = value);
@@ -55,7 +65,7 @@ class EquipeBloc extends BlocBase {
     setNome(equipe.nome);
     setEstilo(equipe.estilo);
     setLocal(equipe.local);
-    setFone(equipe.fone);
+    setFoneContato(equipe.foneContato);
     setInfo(equipe.info);
     setValor(equipe.valor);
     setImagem(equipe.imagem);
@@ -67,6 +77,11 @@ class EquipeBloc extends BlocBase {
     setAtletasRef(equipe.atletasRef);
     setCapitao(equipe.capitao);
     setAtletas(equipe.atletas);
+    setTemposPartida(equipe.temposPartida);
+    setDuracaoPartida(equipe.duracaoPartida);
+    setTipoPagamento(equipe.tipoPagamento);
+    setSortearPor(equipe.sortearPor);
+    setHoraSorteio(equipe.horaSorteio);
   }
 
   var _horarioController = BehaviorSubject<DateTime>();
@@ -81,12 +96,22 @@ class EquipeBloc extends BlocBase {
   Stream<String> get outInfo => _infoController.stream;
   var _imagemController = BehaviorSubject<String>();
   Stream<String> get outImagem => _imagemController.stream;
-  var _foneController = BehaviorSubject<String>();
-  Stream<String> get outFone => _foneController.stream;
+  var _foneContatoController = BehaviorSubject<String>();
+  Stream<String> get outFoneContato => _foneContatoController.stream;
   var _qtdeAtletasController = BehaviorSubject<int>();
   Stream<int> get outQtdeAtletas => _qtdeAtletasController.stream;
   var _ativoController = BehaviorSubject<bool>();
   Stream<bool> get outAtivo => _ativoController.stream;
+  var _temposPartidaController = BehaviorSubject<String>();
+  Stream<String> get outTemposPartida => _temposPartidaController.stream;
+  var _duracaoPartidaController = BehaviorSubject<String>();
+  Stream<String> get outDuracaoPartida => _duracaoPartidaController.stream;
+  var _tipoPagamentoController = BehaviorSubject<String>();
+  Stream<String> get outTipoPagamento => _tipoPagamentoController.stream;
+  var _sortearPorController = BehaviorSubject<String>();
+  Stream<String> get outSortearPor => _sortearPorController.stream;
+  var _horaSorteioController = BehaviorSubject<String>();
+  Stream<String> get outHoraSorteio => _horaSorteioController.stream;
 
   var _atletasRefController = BehaviorSubject<List>();
   Stream<List> get outAtletasRef => _atletasRefController.stream;
@@ -114,9 +139,14 @@ class EquipeBloc extends BlocBase {
   void setInfo(String value) => _infoController.sink.add(value);
   void setImagem(String value) => _imagemController.sink.add(value);
   void setQtdeAtletas(int value) => _qtdeAtletasController.sink.add(value);
-  void setFone(String value) => _foneController.sink.add(value);
+  void setFoneContato(String value) => _foneContatoController.sink.add(value);
   void setValor(int value) => _valorController.sink.add(value);
   void setTipoSorteio(String value) => _tipoSorteioController.sink.add(value);
+  void setTemposPartida(String value) => _temposPartidaController.sink.add(value);
+  void setDuracaoPartida(String value) => _duracaoPartidaController.sink.add(value);
+  void setTipoPagamento(String value) => _tipoPagamentoController.sink.add(value);
+  void setSortearPor(String value) => _sortearPorController.sink.add(value);
+  void setHoraSorteio(String value) => _horaSorteioController.sink.add(value);
 
   void setCapitaoRef(List value) => _capitaoRefController.sink.add(value);
   void setAtletasRef(List value) => _atletasRefController.sink.add(value);
@@ -132,11 +162,16 @@ class EquipeBloc extends BlocBase {
     ..imagem = _imagem
     ..qtdeAtletas = _qtdeAtletas
     ..valor = _valor
-    ..fone = _fone
+    ..foneContato = _foneContato
     ..horario = _horario
     ..capitaoRef = _capitaoRef
     ..ativo = _ativo
     ..tipoSorteio = _tipoSorteio
+    ..temposPartida = _temposPartida
+    ..duracaoPartida = _duracaoPartida
+    ..tipoPagamento = _tipoPagamento
+    ..sortearPor = _sortearPor
+    ..horaSorteio = _horaSorteio
     ..atletasRef = _atletasRef;
 
     if (_documentId?.isEmpty ?? true) {
@@ -195,12 +230,17 @@ class EquipeBloc extends BlocBase {
     _valorController.close();
     _imagemController.close();
     _qtdeAtletasController.close();
-    _foneController.close();
+    _foneContatoController.close();
     _capitaoRefController.close();
     _atletasRefController.close();
     _capitaoController.close();
     _atletasController.close();
     _tipoSorteioController.close();
+    _temposPartidaController.close();
+    _duracaoPartidaController.close();
+    _tipoPagamentoController.close();
+    _sortearPorController.close();
+    _horaSorteioController.close();
     super.dispose();
   }
 }
