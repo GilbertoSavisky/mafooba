@@ -15,12 +15,16 @@ class MafoobaMasked extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
+    
     TextEditingValue teste;
     String cod;
     int select;
+    print('${ newValue.text[0]}');
     if (newValue.text.length > 0) {
       if (newValue.text.length > oldValue.text.length) {
-        if (newValue.text.length > maskTWO.length) return oldValue;
+        if (newValue.text.length > maskTWO.length) {
+          return oldValue;
+        }
 
         if (newValue.text.length <= maskONE.length && (maskONE[newValue.text.length - 1] != "X") && newValue.text.length != oldValue.text.length) {
           if ((maskONE[newValue.text.length - 1] != "X")) {
@@ -43,54 +47,48 @@ class MafoobaMasked extends TextInputFormatter {
 
          else if (newValue.text.length > maskONE.length) {
           String TWO = "";
-
-          print('.......${oldValue.text.length}');
-          print('............${maskONE.length}');
           if (oldValue.text.length == maskONE.length) {
             newValue.text.runes.forEach((int rune) {
               var character = new String.fromCharCode(rune);
 
-              if(character != '-')
-                TWO = TWO + character;
-              if (maskTWO[TWO.length - 1] == ' ') {
+              if (maskTWO[TWO.length ] == ' ') {
                 TWO += ' ';
               }
-              if (maskTWO[TWO.length - 1] == '-') {
+              if (maskTWO[TWO.length ] == '-') {
                 TWO += '-';
               }
-              print('------------------ = ${TWO}');
+              if(character != '-')
+                TWO = TWO + character;
             });
 
             return TextEditingValue(
               text: '$TWO',
               selection: TextSelection.collapsed(
-                offset: newValue.selection.end + 1,
+                offset: newValue.selection.end + 2,
               ),
             );
           }
         }
       } else if (oldValue.text.length > newValue.text.length) {
-        if (oldValue.text.length == (maskONE.length + 1)) {
+        if (oldValue.text.length == (maskTWO.length)) {
           String ONE = "";
           newValue.text.runes.forEach((int rune) {
             var character = new String.fromCharCode(rune);
-            if (character != "(" && character != "-" && character != ")") {
+            if(character != ')' && character != '-' && character != ' ') {
               ONE = ONE + character;
-              try{
+              try {
                 if (maskONE[ONE.length] != "X") {
                   ONE = '$ONE' + maskONE[ONE.length];
                 }
               }
-              catch(Exception){
-
+              catch (Exception) {
               }
-
             }
           });
           return TextEditingValue(
             text: '$ONE',
             selection: TextSelection.collapsed(
-              offset: newValue.selection.end,
+              offset: ONE.length,
             ),
           );
         }

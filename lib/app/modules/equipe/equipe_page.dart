@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
@@ -12,11 +13,10 @@ import 'package:mafooba/app/shared/dropdown_formfield.dart';
 import 'package:mafooba/app/shared/fundo_gradiente.dart';
 import 'package:mafooba/app/shared/image_source_sheet.dart';
 import 'package:mafooba/app/shared/input_field.dart';
+import 'package:mafooba/app/shared/mascara_telefones.dart';
 import 'package:mafooba/app/shared/radio_button.dart';
-import 'package:mafooba/app/shared/teste.dart';
 import 'package:mask_shifter/mask_shifter.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:multi_masked_formatter/multi_masked_formatter.dart';
 import 'package:string_mask/string_mask.dart';
 
 class EquipePage extends StatefulWidget {
@@ -303,10 +303,9 @@ class _EquipePageState extends State<EquipePage> {
                             onChanged: (s){
                           },
                             inputFormatters: [
-
                                 MafoobaMasked(
                                     maskONE: "(XX)XXXX-XXXX",
-                                    maskTWO: "(XX) XXXXX-XXXX"
+                                    maskTWO: "(XX) X XXXX-XXXX"
                                 )
 
 
