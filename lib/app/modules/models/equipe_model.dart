@@ -44,12 +44,10 @@ class Equipe extends BaseModel {
     this.atletasRef = document.data["atletasRef"];
     this.tipoSorteio = document.data["tipoSorteio"] ?? '0';
     this.temposPartida = document.data["temposPartida"] ?? '0';
-    this.duracaoPartida = document.data["duracaoPartida"] ?? '0';
+    this.duracaoPartida = document.data["duracaoPartida"];
     this.tipoPagamento = document.data["tipoPagamento"] ?? '0';
     this.sortearPor = document.data["sortearPor"] ?? '0';
     this.horaSorteio = document.data["horaSorteio"] ?? '0';
-
-
     Timestamp timestamp = document.data["horario"];
     this.horario =
         DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);

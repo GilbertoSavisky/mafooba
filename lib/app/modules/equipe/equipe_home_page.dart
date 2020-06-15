@@ -102,7 +102,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
                           context,
                           MaterialPageRoute(
 //                              builder: (context) => EquipePage(widget.equipe)),
-                              builder: (context) => EquipePage(widget.equipe)),
+                              builder: (context) => EquipePage(equipe: widget.equipe)),
                         );
                       },
                     ),
@@ -230,7 +230,7 @@ class _EquipeHomePageState extends State<EquipeHomePage> {
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
+              MaterialPageRoute(builder: (context) => EquipePage(equipe: equipe)),
             );
           },
           label: 'Equipes',

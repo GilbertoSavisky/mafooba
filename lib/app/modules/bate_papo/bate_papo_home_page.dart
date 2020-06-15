@@ -282,7 +282,7 @@ class _BatePapoHomePageState extends State<BatePapoHomePage> {
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
+              MaterialPageRoute(builder: (context) => EquipePage(equipe: equipe)),
             );
           },
           label: 'Equipes',

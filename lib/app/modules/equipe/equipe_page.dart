@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
+import 'package:mafooba/app/modules/atleta/atleta_bloc.dart';
 import 'package:mafooba/app/modules/equipe/equipe_bloc.dart';
 import 'package:mafooba/app/modules/models/atleta_model.dart';
 import 'package:mafooba/app/modules/models/equipe_model.dart';
@@ -15,28 +16,22 @@ import 'package:mafooba/app/shared/image_source_sheet.dart';
 import 'package:mafooba/app/shared/input_field.dart';
 import 'package:mafooba/app/shared/mascara_telefones.dart';
 import 'package:mafooba/app/shared/radio_button.dart';
-import 'package:mask_shifter/mask_shifter.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:string_mask/string_mask.dart';
 
 class EquipePage extends StatefulWidget {
-  EquipePage(this.equipe);
+  EquipePage({this.equipe, this.atleta});
 
   final Equipe equipe;
+  final Atleta atleta;
 
   @override
   _EquipePageState createState() => _EquipePageState();
 }
 
 class _EquipePageState extends State<EquipePage> {
-  var formCel = new StringMask('(00)0 0000-0000');
-  var formTel = new StringMask('(00) 0000-0000');
-  final _celFormat = MaskTextInputFormatter(mask: '(##) # ####-####');
-  final _foneFormat = MaskTextInputFormatter(mask: '(##) ####-#####');
   final _dateFormat = DateFormat("dd/MM/yyyy").add_Hm();
+
   TextEditingController _nomeController;
   TextEditingController _localController;
-  TextEditingController _horarioController;
   TextEditingController _infoController;
   TextEditingController _imagemController;
   TextEditingController _foneController;
@@ -53,9 +48,8 @@ class _EquipePageState extends State<EquipePage> {
   PageController _pageController;
 
   final _bloc = EquipeBloc();
+  final _atletaBloc = AtletaBloc();
   bool onListaAtletas = false;
-
-  //final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
   int _page = 0;
   List _qtdeAtletas = [ {"display": "selecione", "value": "0",},
@@ -80,7 +74,7 @@ class _EquipePageState extends State<EquipePage> {
 
   List<Map<String, dynamic>>  _sortearPor =
                       [{"display": "selecione","value": "0",},
-                      {"display": "Por Ordem de Confirmação", "value": "habilidade",},
+                      {"display": "Por Ordem de Confirmação", "value": "confirmacao",},
                       {"display": "Por Habilidade dos atletas", "value": "habilidade",},
                       {"display": "Por Posição dos atletas", "value": "posicao",}];
 
@@ -89,6 +83,7 @@ class _EquipePageState extends State<EquipePage> {
 
   @override
   void initState() {
+    print('eqi = ${widget.equipe.toMap()}');
     _bloc.setEquipe(widget.equipe);
     _nomeController = TextEditingController(text: widget.equipe.nome);
     _localController = TextEditingController(text: widget.equipe.local);
@@ -289,61 +284,13 @@ class _EquipePageState extends State<EquipePage> {
                               onChanged: (s){},
                               obscuro: false,
                               hint: "'Capitão do time' - (admin)",
-                              stream: _bloc.outCapitao,
-                              icon: FontAwesome5Solid.kaaba,
-
+                              //stream: _loginBloc.outUser,
+                              icon: FontAwesome5Solid.user_cog,
+                              //initialValue: widget.atleta.nickName == '' || widget.atleta.nickName == null ? widget.atleta.nome : widget.atleta.nickName,
                             ),
                             padding: EdgeInsets.only(top: 10, right: 5, left: 5)
                         ),
 
-                        Container(
-                          child: TextField(
-
-                            keyboardType: TextInputType.number,
-                            onChanged: (s){
-                          },
-                            inputFormatters: [
-                                MafoobaMasked(
-                                    maskONE: "(XX)XXXX-XXXX",
-                                    maskTWO: "(XX) X XXXX-XXXX"
-                                )
-
-
-                            ],
-                            onEditingComplete: (){
-                              print('----------------${'asasd'}');
-                          },
-
-
-                            decoration:
-                            InputDecoration(
-                                labelText: 'PhoneNumber',
-                            ),
-                          ),
-                        ),
-                        Container(
-                          child: StreamBuilder<List<Atleta>>(
-                            stream: _bloc.outCapitao,
-                            builder: (context, capitaes){
-                              return capitaes.hasData && capitaes.connectionState == ConnectionState.active ?
-                              ListView(
-                                children: capitaes.data.map((capitao) {
-                                  return TextFormField(
-                                    decoration: InputDecoration(
-                                        labelText: "'Capitão do time' - (admin)",
-                                        icon: Icon(FontAwesome5Solid.user_cog, color: Colors.blue[900],),
-                                        border: OutlineInputBorder(),
-                                    ),
-                                    initialValue: capitao.nome,
-                                    enabled: false,
-                                  );
-                                }).toList(),
-                              ) : Container();
-                            },
-                          ),
-                          height: 75,
-                          padding: EdgeInsets.all(5),
-                        ),
                         Container(
                           padding: EdgeInsets.all(5),
                           child: MafoobaInputField(
@@ -363,24 +310,17 @@ class _EquipePageState extends State<EquipePage> {
                             obscuro: false,
                             hint: 'Contato',
                             controller: _foneController,
-                            onChanged: (s){
-                              setState(() {
-                            });
-                            },
+                            onChanged: _bloc.setFoneContato,
                             stream: _bloc.outFoneContato,
                             tipo: TextInputType.phone,
-
                             format: [
-                              MaskedTextInputFormatterShifter(
-                                maskONE: "XX.XXXX-XXXX",
-                                maskTWO: "XX-XXXXX-XXXX"
+                              MafoobaMasked(
+                                maskONE: "(XX)XXXX-XXXX",
+                                maskTWO: "(XX) X XXXX-XXXX"
                               )
                             ],
                           ),
                         ),
-
-
-
 
                         Container(
                           padding: EdgeInsets.all(5),
@@ -437,18 +377,39 @@ class _EquipePageState extends State<EquipePage> {
                         ),
                       ),
                       _temposPartidaController.text != null && _temposPartidaController.text != ''?
+
+//                      StreamBuilder<Object>(
+//                        stream: _bloc.outDuracaoPartida,
+//                        builder: (context, snapshot) {
+//                          return DropdownButtonFormField(
+//                            onChanged: (valor){
+//                              setState(() {
+//                                _duracaoPartidaController.text = valor;
+//                              });
+//                            },
+//                            value:  _duracaoPartidaController.text,
+//                            items: _duracaoPartida.map<DropdownMenuItem<String>>((item) {
+//                                  return DropdownMenuItem(
+//                                value: item['value'],
+//                                child: Text(item['display']),
+//                              );
+//                            }).toList(),
+//                          );
+//                        }
+//                      )
                       Container(
                         padding: EdgeInsets.only(top: 7),
                         child: MafoobaDropDownFF(
                           dataSource: _duracaoPartida,
-                          onChanged: _bloc.setEstilo,
                           controller: _duracaoPartidaController,
+                          onChanged: _bloc.setEstilo,
                           icon: FontAwesome5.clock,
-                          stream: _bloc.outDuracaoPartida,
                           labelText: 'Com duração de',
-                          hint: 'sdfsd',
+                          stream: _bloc.outDuracaoPartida,
                         ),
-                      ) : Container( padding: EdgeInsets.only(top: 5),),
+                      )
+
+                          : Container( padding: EdgeInsets.only(top: 5),),
 
                       Container(
                         padding: EdgeInsets.only(top: 5),
@@ -470,7 +431,12 @@ class _EquipePageState extends State<EquipePage> {
                         padding: EdgeInsets.only(top: 5),
                         child: MafoobaDropDownFF(
                           dataSource: _sortearPor,
-                          onChanged: _bloc.setSortearPor,
+                          onChanged: (valor){
+                            setState(() {
+                              _bloc.setSortearPor(valor);
+                              _sortearPorController.text = valor;
+                            });
+                          },
                           controller: _sortearPorController,
                           icon: MaterialIcons.swap_vert,
                           stream: _bloc.outSortearPor,

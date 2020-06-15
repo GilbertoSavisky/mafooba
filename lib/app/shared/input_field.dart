@@ -14,6 +14,7 @@ class MafoobaInputField extends StatelessWidget {
   final Function onTap;
   final readOnly;
   final format;
+  final initialValue;
 
   const MafoobaInputField({
     Key key,
@@ -26,7 +27,8 @@ class MafoobaInputField extends StatelessWidget {
     this.tipo,
     this.onTap,
     this.readOnly,
-    this.format
+    this.format,
+    this.initialValue
   }) : super(key: key);
 
 
@@ -35,21 +37,21 @@ class MafoobaInputField extends StatelessWidget {
     return StreamBuilder(
       stream: stream,
       builder: (context, snapshot) {
-        //print('..............${snapshot.data}');
           return TextFormField(
-          onTap: onTap,
-          readOnly: readOnly,
-          controller: controller,
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            icon: Icon(icon, color: Colors.blue[900],),
-            labelText: hint,
-            prefix: hint == 'Valor' ? Text('R\$ ') : null,
-          ),
-          obscureText: obscuro,
-          keyboardType: tipo,
-          inputFormatters: format,
+            onTap: onTap,
+            readOnly: readOnly,
+            controller: controller,
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              icon: Icon(icon, color: Colors.blue[900],),
+              labelText: hint,
+              prefix: hint == 'Valor' ? Text('R\$ ') : null,
+            ),
+            obscureText: obscuro,
+            keyboardType: tipo,
+            inputFormatters: format,
+            initialValue: initialValue,
         );
       }
     );

@@ -19,7 +19,6 @@ class MafoobaMasked extends TextInputFormatter {
     TextEditingValue teste;
     String cod;
     int select;
-    print('${ newValue.text[0]}');
     if (newValue.text.length > 0) {
       if (newValue.text.length > oldValue.text.length) {
         if (newValue.text.length > maskTWO.length) {
@@ -64,7 +63,7 @@ class MafoobaMasked extends TextInputFormatter {
             return TextEditingValue(
               text: '$TWO',
               selection: TextSelection.collapsed(
-                offset: newValue.selection.end + 2,
+                offset: TWO.length,
               ),
             );
           }

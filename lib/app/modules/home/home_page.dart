@@ -107,11 +107,13 @@ class _HomePageState extends State<HomePage> {
               ..nome = ""
               ..estilo = ''
               ..local = ""
-              ..qtdeAtletas = 0;
+              ..qtdeAtletas = 0
+              ..duracaoPartida = '60'
+              ..capitao.add(widget.atleta);
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EquipePage(equipe)),
+              MaterialPageRoute(builder: (context) => EquipePage(equipe: equipe, atleta: widget.atleta,)),
             );
 
           },

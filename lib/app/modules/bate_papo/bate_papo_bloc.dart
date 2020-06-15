@@ -30,7 +30,6 @@ class BatePapoBloc extends BlocBase {
     setRemetente(batePapo.remetente);
     setVisualizado(batePapo.visualizado);
 
-    print('setBAtePapo : ${batePapo.documentId()}');
 
   }
 

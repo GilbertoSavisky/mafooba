@@ -28,8 +28,6 @@ class MafoobaDropDownFF extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('...controller.....${controller}');
-    print('....dataSource....${dataSource}');
     return StreamBuilder<String>(
       stream: stream,
       builder: (context, snapshot) {
